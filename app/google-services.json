@@ -1,0 +1,38 @@
+{
+  "project_info": {
+    "project_number": "71528358113",
+    "project_id": "firebase-capalino"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:71528358113:android:6a08c41622be554e",
+        "android_client_info": {
+          "package_name": "com.MWBE.Connects.NY"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQY_zebM3KuRsmeDULMT9yQ7aQ0Vb455U"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-97223701-1"
+          }
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

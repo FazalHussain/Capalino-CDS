@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.MWBE.Connects.NY.Activities.Splash">
+
+    <ImageView
+        android:id="@+id/splash_image"
+        android:background="@drawable/splash2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.github.lzyzsd.circleprogress.DonutProgress
+        android:layout_marginLeft="50dp"
+        android:id="@+id/donut_progress"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        custom:donut_unfinished_stroke_width="5dp"
+        custom:donut_finished_stroke_width="10dp"
+        custom:donut_progress="0"
+        custom:donut_inner_bottom_text="Loading..."
+        custom:donut_inner_bottom_text_size="10dp"
+        custom:donut_inner_bottom_text_color="#2b3f04"/>
+
+</RelativeLayout>

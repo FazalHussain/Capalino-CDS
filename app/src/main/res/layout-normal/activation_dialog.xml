@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+  <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
+      android:layout_marginTop="4dp"
+      android:layout_marginLeft="16dp"
+      android:text="MBE"
+      android:textSize="16sp"
+      android:textColor="@color/black"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content" />
+
+    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
+        android:layout_marginLeft="16dp"
+        android:text="Minorities-owned Business Enterprise"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
+        android:layout_marginTop="4dp"
+        android:layout_marginLeft="16dp"
+        android:text="WBE"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
+        android:layout_marginLeft="16dp"
+        android:text="Women-owned Business Enterprise"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
+        android:layout_marginTop="4dp"
+        android:layout_marginLeft="16dp"
+        android:text="LBE"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
+        android:layout_marginLeft="16dp"
+        android:text="Locally Based Enterprise"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
+        android:layout_marginTop="4dp"
+        android:layout_marginLeft="16dp"
+        android:text="EBE"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
+        android:layout_marginLeft="16dp"
+        android:text="Emerging Business Enterprise"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
+        android:layout_marginTop="4dp"
+        android:layout_marginLeft="16dp"
+        android:text="DBE"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
+        android:layout_marginLeft="16dp"
+        android:text="Disadvantaged Business Enterprise"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
+        android:layout_marginTop="4dp"
+        android:layout_marginLeft="16dp"
+        android:text="SDVOB"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
+        android:layout_marginLeft="16dp"
+        android:text="Service-Disabled Veteran-Owned Business"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
+        android:layout_marginTop="4dp"
+        android:layout_marginLeft="16dp"
+        android:text="DVBE"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
+        android:layout_marginLeft="16dp"
+        android:text="Disabled Veteran Business Enterprise"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
+        android:layout_marginTop="4dp"
+        android:layout_marginLeft="16dp"
+        android:text="HUB"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
+        android:layout_marginLeft="16dp"
+        android:text="Historically Underutilized Business "
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
+        android:layout_marginTop="4dp"
+        android:layout_marginLeft="16dp"
+        android:text="8A"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
+        android:layout_marginLeft="16dp"
+        android:text="U.S. Small Business Association Certification"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.MWBE.Connects.NY.CustomViews.CustomButton
+        android:textColor="@color/white"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:id="@+id/okbtn"
+        android:layout_gravity="center_horizontal"
+        android:text="OK"
+        android:background="@drawable/button_round"
+        android:layout_width="130dp"
+        android:layout_height="35dp" />
+
+</LinearLayout>

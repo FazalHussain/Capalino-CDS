@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.MWBE.Connects.NY.CheckBoxAdapter.CheckableRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:paddingTop="20dp"
+    android:id="@+id/layout"
+    android:paddingBottom="20dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:layout_height="wrap_content">
+
+    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+        android:singleLine="false"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:text="DOE"
+        android:textSize="17sp"
+        android:id="@+id/title"
+        android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.MWBE.Connects.NY.CheckBoxAdapter.InertCheckBox
+        android:id="@+id/checkbox_"
+        android:button="@drawable/checkbox"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:focusable="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+
+</com.MWBE.Connects.NY.CheckBoxAdapter.CheckableRelativeLayout>

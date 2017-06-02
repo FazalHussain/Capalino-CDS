@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp" />
+
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_below="@+id/logo"
+        android:background="@color/text_color"
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+
+        <ImageView
+            android:src="@drawable/back"
+            android:onClick="BackClick"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:paddingRight="16dp"
+            android:paddingLeft="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp" />
+
+        <com.MWBE.Connects.NY.CustomViews.CustomTextView
+            android:textColor="@color/white"
+            android:layout_centerInParent="true"
+            android:text="@string/myrefs"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+    </RelativeLayout>
+    <!--
+    *************Main Content********************
+    -->
+
+
+
+    <LinearLayout
+        android:layout_below="@+id/header"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_above="@+id/footer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:paddingRight="8dp"
+            android:layout_marginLeft="12dp"
+            android:id="@+id/message_head"
+            android:text="@string/message_head"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <ListView
+            android:layout_weight="5"
+            android:layout_below="@+id/header"
+            android:id="@+id/list_tracking_cmnt"
+            android:layout_above="@+id/footer"
+            android:background="@drawable/round_list"
+            android:layout_width="match_parent"
+            android:overScrollMode="never"
+            android:listSelector="@android:color/transparent"
+            android:layout_marginBottom="10dp"
+            android:layout_height="0dp"/>
+
+        <com.MWBE.Connects.NY.CustomViews.CustomEditText_Book
+            android:padding="8dp"
+            android:background="@drawable/round"
+            android:layout_width="match_parent"
+            android:maxLines="3"
+            android:id="@+id/request_text_et"
+            android:layout_weight="2"
+            android:hint="@string/comment"
+            android:gravity="top"
+            style="@style/App_EditTextStyle"
+            android:textColor="@color/editext_color"
+            android:inputType="textMultiLine|textCapSentences"
+            android:layout_height="0dp"
+            android:layout_marginBottom="5dp"/>
+
+        <com.MWBE.Connects.NY.CustomViews.CustomButton
+            android:id="@+id/sendbtn"
+            android:textColor="@color/white"
+            android:layout_below="@+id/duedate_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="10dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="5dp"
+            android:text="@string/send_btn_name"
+            android:background="@drawable/button_round"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content" />
+
+
+
+
+
+    </LinearLayout>
+
+
+    <!--
+       *******************Footer Layot**************************
+    -->
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/footer"
+        android:layout_gravity="bottom"
+        android:weightSum="5"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:background="@drawable/bar3"
+        android:layout_width="match_parent"
+        android:layout_height="70dp">
+
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@drawable/home"
+            android:onClick="HomeClick"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@drawable/browse"
+            android:onClick="BrowseClick"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@drawable/track"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@drawable/setting"
+            android:onClick="SettingsClick"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@drawable/resources"
+            android:onClick="ResourceClick"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+
+
+    </LinearLayout>
+
+</RelativeLayout>

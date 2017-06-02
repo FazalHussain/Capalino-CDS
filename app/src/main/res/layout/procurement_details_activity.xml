@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:src="@drawable/logo2"
+        android:id="@+id/logo2"
+        android:layout_marginLeft="16dp"
+        />
+
+    <ImageView
+        android:id="@+id/logo"
+        android:src="@drawable/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="16dp"
+        />
+    <!--<ImageView
+        android:id="@+id/logo"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp" />-->
+
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_below="@+id/logo"
+        android:background="@color/text_color"
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+
+        <ImageView
+            android:src="@drawable/back"
+            android:onClick="BackClick"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:paddingRight="16dp"
+            android:paddingLeft="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp" />
+
+        <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
+            android:textColor="@color/white"
+            android:id="@+id/headertext"
+            android:layout_centerInParent="true"
+            android:text="@string/desc"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:layout_centerInParent="true"
+            android:src="@drawable/email"
+            android:onClick="EmailClick"
+            android:id="@+id/emailbtn"
+            android:paddingTop="8dp"
+            android:layout_alignParentRight="true"
+            android:paddingBottom="8dp"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:layout_centerInParent="true"
+            android:src="@drawable/messaging"
+            android:layout_toLeftOf="@+id/emailbtn"
+            android:id="@+id/messaging"
+            android:onClick="MessagingClick"
+            android:paddingTop="10dp"
+            android:paddingBottom="6dp"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content" />
+
+
+
+
+
+
+
+    </RelativeLayout>
+    <!--
+    *************Main Content********************
+    -->
+
+
+
+    <RelativeLayout
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_below="@+id/header"
+        android:layout_above="@+id/footer"
+        android:background="@drawable/round_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="8dp"
+            android:id="@+id/icon_img"
+            android:src="@drawable/icon1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+
+        <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="17sp"
+            android:maxLines="3"
+            android:ellipsize="end"
+            android:id="@+id/text_header"
+            android:layout_marginTop="12dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_toRightOf="@+id/icon_img"
+            android:text="@string/home_view_header"/>
+
+
+
+        <ScrollView
+            android:fillViewport="true"
+            android:layout_below="@+id/text_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_below="@+id/time_duration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+                    android:id="@+id/longdescrip"
+                    android:layout_toRightOf="@+id/icon_img"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginLeft="28dp"
+                    android:textSize="16sp"
+                    android:scrollbars="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/time_duration"
+                    android:text="@string/home_view_detail"/>
+
+                <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+                    android:layout_below="@+id/link_header"
+                    android:id="@+id/link_content"
+                    android:layout_marginTop="4dp"
+                    android:scrollbars="vertical"
+                    android:layout_marginLeft="28dp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginRight="16dp"
+                    android:textColor="@color/deep_purple"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </RelativeLayout>
+
+
+
+
+    <!--
+       *******************Footer Layot**************************
+    -->
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/footer"
+        android:layout_gravity="bottom"
+        android:weightSum="5"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:background="@drawable/bar2"
+        android:layout_width="match_parent"
+        android:layout_height="70dp">
+
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@drawable/home"
+            android:onClick="HomeClick"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:onClick="BrowseClick"
+            android:src="@drawable/browse"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@drawable/track"
+            android:onClick="TrackClick"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:onClick="SettingsClick"
+            android:src="@drawable/setting"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:onClick="ResourceClick"
+            android:src="@drawable/resources"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+
+
+    </LinearLayout>
+
+</RelativeLayout>

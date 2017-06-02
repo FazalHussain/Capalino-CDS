@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="#2b3f04"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/logindialog"
+        android:layout_centerInParent="true"
+        android:background="@drawable/round_dialog"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content">
+
+        <com.MWBE.Connects.NY.CustomViews.CustomTextView
+            android:gravity="center_horizontal"
+            android:padding="8dp"
+            android:background="@drawable/textview_round"
+            android:layout_width="match_parent"
+            android:textSize="20sp"
+            android:textColor="#FFFFFF"
+            android:text="@string/heading_text_activation_dialog"
+            android:layout_height="@dimen/activity_login" />
+
+
+        <LinearLayout
+            android:padding="10dp"
+            android:background="@color/white"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+            android:background="@color/white"
+            android:id="@+id/paragraph_dialog"
+            android:gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/activation_submited_message"/>
+
+        <com.MWBE.Connects.NY.CustomViews.CustomButton
+            android:id="@+id/continue_btn"
+            android:textColor="@color/white"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="15dp"
+            android:text="@string/continue_btn_name"
+            android:onClick="ActivateClick"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/button_round"
+            android:layout_width="140dp"
+            android:layout_height="45dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</RelativeLayout>

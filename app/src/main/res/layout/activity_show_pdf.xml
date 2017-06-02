@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context="com.MWBE.Connects.NY.Activities.ShowPDFActivity">
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:src="@drawable/logo2"
+        android:id="@+id/logo2"
+        android:layout_marginLeft="16dp"
+        />
+
+    <ImageView
+        android:id="@+id/logo"
+        android:src="@drawable/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="16dp"
+        />
+   <!-- <ImageView
+        android:id="@+id/logo"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp" />
+-->
+
+    <!--
+    *************Main Content********************
+    -->
+
+    <WebView
+        android:layout_below="@+id/logo"
+        android:id="@+id/pdfview"
+        android:layout_above="@+id/footer"
+        android:onClick="WebViewClick"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></WebView>
+
+
+    <LinearLayout
+        android:layout_below="@+id/logo"
+        android:id="@+id/layout_header"
+        android:background="@color/text_color"
+        android:layout_width="match_parent"
+        android:padding="5dp"
+        android:onClick="layoutClick"
+        android:layout_height="60dp">
+
+    <LinearLayout
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content">
+
+        <com.MWBE.Connects.NY.CustomViews.CustomButton
+            android:id="@+id/donebtn"
+            android:onClick="DoneClick"
+            android:visibility="gone"
+            android:textColor="@color/white"
+            android:background="@drawable/button_round"
+            android:text="Done"
+            android:layout_marginTop="4dp"
+            android:layout_width="80dp"
+            android:layout_height="40dp" />
+
+    </LinearLayout>
+
+
+
+
+</LinearLayout>
+
+
+    <!--
+       *******************Footer Layot**************************
+    -->
+
+
+</RelativeLayout>

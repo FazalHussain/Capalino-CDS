@@ -1,0 +1,246 @@
+<resources>
+    <string name="app_name">MWBE Connect NY</string>
+    <string name="heading_text">LOGIN</string>
+    <string name="email">Email Address</string>
+    <string name="password">Password</string>
+    <string name="address">Address</string>
+    <string name="city">City</string>
+    <string name="state">State</string>
+    <string name="zip">Zip Code</string>
+    <string name="buisnessname">Business Name</string>
+    <string name="buisnessaddress">Business Address</string>
+    <string name="buisnessweb">Business Website</string>
+    <string name="login_btn_name">LOGIN</string>
+    <string name="register_btn_name">Register a new account</string>
+    <string name="forgot_password_text">Forgot Password?</string>
+    <string name="header_text">Capalino+Company is an award-winning lobbying + stregic consulting firm, recently ranked #1 in NYC, that specialize in helping companies,
+     not-for-profits and institutions succeed in New York City.</string>
+    <string name="name">First Name</string>
+    <string name="full_name">Full Name</string>
+    <string name="lastname">Last Name</string>
+    <string name="activate_btn_name">ACTIVATE</string>
+    <string name="back_btn_name">BACK</string>
+    <string name="next_btn_name">NEXT</string>
+    <string name="caution">Your password should be a minimum of 8 letters, and should contain at least one upper case letter, one number and one special character.</string>
+    <string name="company_name">Company Name</string>
+    <string name="retype_pass">Repeat Password</string>
+    <string name="heading_text_activation_dialog">ALERT</string>
+    <string name="activation_message">Thank you for registering</string>
+    <string name="activation_code">Activation Code</string>
+    <string name="submit_btn_name">SUBMIT</string>
+    <string name="activation_submited_message">This Agreement and an operating rules \n for a Capalino website established by \n Capalino constitute
+    the entire agreement \n of the parties with respect to the subject matter hereof, and supersede all previous written or oral agreement
+    between the parties with respect to such subject matter. This Agreement shall be construed in accordance with the laws of the state of New York,
+     without regard to its conflict of law rules</string>
+    <string name="continue_btn_name">CONTINUE</string>
+    <string name="home">HOME</string>
+    <string name="terms">TERMS AND CONDITIONS</string>
+    <string name="desc">DESCRIPTION</string>
+    <string name="switch_textview">Capalino RFP/Bid Matching</string>
+    <string name="keyword_search">Keyword Search</string>
+    <string name="search_hint">Search here</string>
+    <string name="agency">Agencies and Companies</string>
+    <string name="agency_hint">DOE</string>
+    <string name="procurement">ProcurementType</string>
+    <string name="procurement_hint">Construction</string>
+    <string name="contract">Contract Value</string>
+    <string name="contractvalue">Less than 50,000$</string>
+    <string name="browse_btn_name">Browse</string>
+    <string name="reflisting_header">RFP/BID LISTINGS</string>
+    <string name="track_btn_name">TRACK</string>
+    <string name="advice_btn_name">ADVICE</string>
+    <string name="browserfp">BROWSE RFP/BIDS</string>
+    <string name="footer_brows_text1">Capalino RFP/Bid Matching is a premium feature of the app. You are using a 14 days trial version. Kindly upgrade to keep using this feature.</string>
+
+    <string name="advice_header">ADVICE REQUEST</string>
+    <string name="phno">Phone Number</string>
+    <string name="call_time">Best Time to Call</string>
+    <string name="comments">Comments</string>
+    <string name="comment">Hello, I need some help here.</string>
+    <string name="send_btn_name">SEND</string>
+    <string name="agency_title">AGENCY</string>
+    <string name="procurement_type_title">CAPABILITY TYPE</string>
+    <string name="contract_value_title">CONTRACT VALUE</string>
+    <string name="settings">SETTINGS</string>
+    <string name="pref">PROCUREMENT PREFERENCES</string>
+    <string name="pref_tv">Update Procurement Preferences</string>
+    <string name="pref_tv_header">Procurement Preferences</string>
+    <string name="change_password">Change Password</string>
+    <string name="manage_subscriptions">Manage Subscription</string>
+    <string name="new_pass">New Password</string>
+    <string name="confirm_pass">Confirm Password</string>
+    <string name="update_btn_txt">UPDATE</string>
+
+    <string name="message_head">One of our experts will be able to assist you with your RFP questions.</string>
+
+    <string name="GEOGRAPHIC_COVERAGE">Geographic Coverage</string>
+    <string name="target_contact">Target Contract Value</string>
+    <string name="certification">Certifications</string>
+    <string name="capablities">Industry and Capabilities</string>
+    <string name="updateprofile">Update Profile</string>
+
+    <string name="GEOGRAPHIC_COVERAGE_title">GEOGRAPHIC COVERAGE</string>
+
+    <string name="target_contact_title">TARGET CONTRACT VALUE</string>
+
+    <string name="certification_title">CERTIFICATIONS</string>
+
+    <string name="update_capablities">UPDATE CAPABILITY</string>
+    <string name="capablity_title">INDUSTRY AND CAPABILITIES</string>
+    <string name="construction_hint">Construction</string>
+    <string name="goods_hint">Goods</string>
+    <string name="services_hint">Standard Services</string>
+    <string name="professional_services">Professional Services</string>
+    <string name="others">Other Professional Services</string>
+    <string name="humanservices">Human Services</string>
+
+    <string name="capablities_search_activity">CAPABILITIES SEARCH</string>
+
+    <string name="resource_title">RESOURCES</string>
+
+    <!--Facebook AppId-->
+    <string name="facebook_app_id">1207647982632127</string> <!--Client App ID -->
+    <!--<string name="facebook_app_id">841118815993409</string> Developer App id -->
+
+    <string name="home_view_header">What is the Impact of Union Workers on Building Affordable Housing Under Mayor de Blasios Housing Program</string>
+
+    <string name="home_view_detail">The following report was released by the NYC Independent Budget Office</string>
+
+    <string name="myrefs">MY RFPs</string>
+
+    <string name="text_track_list">Do I need to file a Broker Certificate</string>
+
+    <string name="Advertising">Advertising, Graphic Arts and Marketing</string>
+
+    <string name="Construction">Construction (Horizontal and Vertical)</string>
+
+    <string name="Architectural">Architectural, Engineering and Surveying</string>
+
+    <string name="VConstruction">Vertical Construction</string>
+
+    <string name="Environmental">Environmental</string>
+
+    <string name="Construction_related">Construction Related Services</string>
+
+    <string name="Maintenance">Facilities Maintenance and Building Ops</string>
+
+    <string name="solidwaste">Solid Waste Removal</string>
+
+    <string name="security">Safety and Security</string>
+
+    <string name="it">Information Technology (IT)</string>
+
+    <string name="setup">SETUP</string>
+
+    <string name="step1">Step 1: Provide General Information</string>
+
+    <string name="step2">Step 2: Specify Geographic Coverage</string>
+
+    <string name="step3">Step 3: Indicate Target Value</string>
+
+    <string name="step4">Step 4: Select Certification</string>
+
+    <string name="step5">Step 5: Select Capabilities</string>
+
+    <string name="step1_info">Please keep your contact information updated to ensure that you are always able to communicate with us.</string>
+
+    <string name="step2_info">Select all counties throughout New York State that your business serves.  If you only work in New York City, then please select “NY-All NYC”.</string>
+
+    <string name="step3_info">Select the target value of contracts that you are seeking for your business.  You can select more than one contract value.</string>
+
+    <string name="step4_info">Select all New York City and New York State certifications that currently apply to your business. You can select more than one certification. For more information on each certification, tap the “?” button at the top right of the settings screen.</string>
+
+    <string name="step5_info">Under your business’ industry, please select all goods and/or services that you provide. You can select more than one industry.</string>
+
+    <string name="desclaimer">If you do not find your industry, then leave this blank. You may add it as Other Industry in settings.</string>
+
+    <string name="aggrement">This agreement and any operating rules for Capalino’s website established by Capalino constitute the entire agreement of the parties with respect to the subject matter hereof, and supersede all previous written or oral agreements between the parties with respect to such subject matter. This agreement shall be construed in accordance with the laws of the State of New York, without regard to its conflict of laws rules.</string>
+
+    <string-array name="capabilities_array">
+        <item>Select Capability</item>
+        <item>Advertising, Graphic Arts and Marketing</item>
+        <item>Architectural, Engineering and Surveying</item>
+        <item>Construction (Horizontal and Vertical)</item>
+        <item>Environmental</item>
+        <item>Solid Waste Removal</item>
+        <item>Facilities Maintenance and Building Ops</item>
+        <item>Safety and Security</item>
+        <item>Information Technology (IT)</item>
+        <item>Human Services</item>
+        <item>Other Professional Services</item>
+    </string-array>
+
+    <string-array name="countries_array">
+        <item>Select State</item>
+        <item>Alabama</item>
+        <item>Alaska</item>
+        <item>Arizona</item>
+        <item>Arkansas</item>
+        <item>California</item>
+        <item>Colorado</item>
+        <item>Connecticut</item>
+        <item>Delaware</item>
+        <item>District Of Columbia</item>
+        <item>Florida</item>
+        <item>Georgia</item>
+        <item>Hawaii</item>
+        <item>Idaho</item>
+        <item>Illinois</item>
+        <item>Indiana</item>
+        <item>Iowa</item>
+        <item>Kansas</item>
+        <item>Kentucky</item>
+        <item>Louisiana</item>
+        <item>Maine</item>
+        <item>Maryland</item>
+        <item>Massachusetts</item>
+        <item>Michigan</item>
+        <item>Minnesota</item>
+        <item>Mississippi</item>
+        <item>Missouri</item>
+        <item>Montana</item>
+        <item>Nebraska</item>
+        <item>Nevada</item>
+        <item>New Hampshire</item>
+        <item>New Jersey</item>
+        <item>New Mexico</item>
+        <item>New York</item>
+        <item>North Carolina</item>
+        <item>North Dakota</item>
+        <item>Ohio</item>
+        <item>Oklahoma</item>
+        <item>Oregon</item>
+        <item>Pennsylvania</item>
+        <item>Rhode Island</item>
+        <item>South Carolina</item>
+        <item>South Dakota</item>
+        <item>Tennessee</item>
+        <item>Texas</item>
+        <item>Utah</item>
+        <item>Vermont</item>
+        <item>Virginia</item>
+        <item>Washington</item>
+        <item>West Virginia</item>
+        <item>Wisconsin</item>
+        <item>Wyoming</item>
+    </string-array>
+
+
+    <string name="htmlsource"><![CDATA[<p>Please see below for your current login credentials: </p><br/><br/> Username:]]></string>
+
+
+    <!-- Subscription Activity String Resource-->
+
+    <string name="subscription_header">You are currently using trial version which will expire on: </string>
+    <string name="quarter_expiry">will expire on </string>
+    <string name="annual_expiry">will expire on </string>
+
+    <string name="annual_discount">(Get 10% discount on annual subscription)</string>
+    <string name="Pay">Pay</string>
+
+    <string name="Promocode_btn">Apply Promo Code</string>
+
+    <string name="promocode_discount">(Get 10% discount on annual subscription)</string>
+
+
+</resources>

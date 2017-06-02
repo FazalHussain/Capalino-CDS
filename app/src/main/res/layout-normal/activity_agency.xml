@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context="com.MWBE.Connects.NY.Activities.AgencyActivity">
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:src="@drawable/logo2"
+        android:id="@+id/logo2"
+        android:layout_marginLeft="16dp"
+        />
+
+    <ImageView
+        android:id="@+id/logo"
+        android:src="@drawable/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="16dp"
+        />
+   <!-- <ImageView
+        android:id="@+id/logo"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp" />-->
+
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_below="@+id/logo"
+        android:background="@color/text_color"
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+
+        <ImageView
+            android:src="@drawable/back"
+            android:onClick="BackClick"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:paddingRight="16dp"
+            android:paddingLeft="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp" />
+
+        <com.MWBE.Connects.NY.CustomViews.CustomTextView
+            android:textColor="@color/white"
+            android:layout_centerInParent="true"
+            android:text="@string/agency"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+    <!--
+    *************Main Content********************
+    -->
+
+    <ListView
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_below="@+id/header"
+        android:overScrollMode="never"
+        android:listSelector="@android:color/transparent"
+        android:id="@+id/list_agency_lv"
+        android:layout_above="@+id/footer"
+        android:background="@drawable/round_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </ListView>
+
+
+
+
+    <!--
+       *******************Footer Layot**************************
+    -->
+    <LinearLayout
+        android:id="@+id/footer"
+        android:layout_gravity="bottom"
+        android:weightSum="5"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:background="@drawable/bar2"
+        android:layout_width="match_parent"
+        android:layout_height="70dp">
+
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@drawable/home"
+            android:onClick="HomeClick"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@drawable/browse"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@drawable/track"
+            android:onClick="TrackClick"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@drawable/setting"
+            android:onClick="SettingsClick"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@drawable/resources"
+            android:onClick="ResourceClick"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+
+
+    </LinearLayout>
+
+</RelativeLayout>

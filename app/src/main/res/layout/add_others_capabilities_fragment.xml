@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusableInTouchMode="false"
+    android:background="@color/white"
+    android:isScrollContainer="false"
+    tools:context="com.MWBE.Connects.NY.Activities.CapablitiesActivity">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:src="@drawable/logo2"
+        android:id="@+id/logo2"
+        android:layout_marginLeft="16dp"
+        />
+
+    <ImageView
+        android:id="@+id/logo"
+        android:src="@drawable/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="16dp"
+        />
+    <!--<ImageView
+        android:id="@+id/logo"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp" />-->
+
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_below="@+id/logo"
+        android:background="@color/text_color"
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+
+        <ImageView
+            android:src="@drawable/back"
+            android:id="@+id/back"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:paddingRight="16dp"
+            android:paddingLeft="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp" />
+
+        <com.MWBE.Connects.NY.CustomViews.CustomTextView
+            android:textColor="@color/white"
+            android:layout_centerInParent="true"
+            android:text="ADD CAPABILITY"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+    <!--
+    *************Main Content********************
+    -->
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_above="@+id/footer"
+        android:padding="16dp"
+        android:layout_below="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Spinner
+            android:singleLine="true"
+            android:id="@+id/capabilities_spinner"
+            android:inputType="text"
+            style="@style/App_EditTextStyle"
+            android:textColor="@color/editext_color"
+            android:background="@drawable/round"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.MWBE.Connects.NY.CustomViews.CustomEditText_Book
+            android:padding="8dp"
+            android:layout_marginTop="16dp"
+            android:id="@+id/otherstext"
+            android:singleLine="false"
+            android:gravity="top"
+            android:maxLines="4"
+            android:scrollbars="vertical"
+            android:hint="Add Title"
+            style="@style/App_EditTextStyle"
+            android:background="@drawable/round"
+            android:textColor="@color/editext_color"
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+
+        <com.MWBE.Connects.NY.CustomViews.CustomButton
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/white"
+            android:id="@+id/addcapabilities"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="5dp"
+            android:text="Add Capability"
+            android:onClick="AddOthersClick"
+            android:background="@drawable/button_round"
+            android:layout_width="180dp"
+            android:layout_height="45dp" />
+
+    </LinearLayout>
+
+
+
+
+    <!--
+       *******************Footer Layot**************************
+    -->
+
+
+</RelativeLayout>

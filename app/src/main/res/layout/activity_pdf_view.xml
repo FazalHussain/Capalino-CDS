@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/pdf_bg"
+    tools:context="com.MWBE.Connects.NY.Activities.PdfViewActivity">
+
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_below="@+id/logo"
+        android:background="@color/text_color"
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+
+        <com.MWBE.Connects.NY.CustomViews.CustomTextView
+            android:textColor="@color/white"
+            android:layout_centerInParent="true"
+            android:text="@string/terms"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+    </RelativeLayout>
+    <!--
+    *************Main Content********************
+    -->
+
+    <WebView
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="10dp"
+        android:layout_below="@+id/header"
+        android:overScrollMode="never"
+        android:listSelector="@android:color/transparent"
+        android:id="@+id/pdfview_wv"
+        android:layout_above="@+id/agreeText"
+        android:background="@drawable/round_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </WebView>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/footer"
+        android:id="@+id/agreeText"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="10dp">
+
+        <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+            android:gravity="center_horizontal"
+            android:text="By choosing I AGREE below you agree to \nCapaliono+Company's Terms and Conditions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:id="@+id/footer"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.MWBE.Connects.NY.CustomViews.CustomButton
+            android:textColor="@color/white"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="18dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="8dp"
+            android:text="CANCEL"
+            android:onClick="BackClick"
+            android:background="@drawable/button_round"
+            android:layout_width="145dp"
+            android:layout_height="45dp" />
+
+        <com.MWBE.Connects.NY.CustomViews.CustomButton
+            android:textColor="@color/white"
+            android:layout_marginLeft="18dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="8dp"
+            android:text="I AGREE"
+            android:onClick="AgreeClick"
+            android:background="@drawable/button_round"
+            android:layout_width="145dp"
+            android:layout_height="45dp" />
+
+    </LinearLayout>
+
+
+
+
+    <!--
+       *******************Footer Layot**************************
+    -->
+
+
+</RelativeLayout>

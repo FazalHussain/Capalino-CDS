@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:padding="16dp"
+    android:descendantFocusability="blocksDescendants"
+    android:layout_height="160dp">
+
+    <ImageView
+        android:paddingRight="4dp"
+        android:paddingLeft="16dp"
+        android:paddingBottom="8dp"
+        android:id="@+id/delete"
+        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/close"/>
+
+    <RatingBar
+        android:id="@+id/rating_bar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:isIndicator="false"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        android:numStars="3"
+        android:rating="1.5"
+        style="@style/RatingBar_Capalino"/>
+
+    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
+        android:id="@+id/title_header"
+        android:text="TITLE:"
+        android:textStyle="bold"
+        android:textSize="17sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+        android:id="@+id/title_content"
+        android:layout_below="@+id/title_header"
+        android:textSize="16sp"
+        android:text="Goods and Services"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
+        android:layout_below="@+id/title_content"
+        android:id="@+id/Agency_header"
+        android:text="AGENCY NAME:"
+        android:textStyle="bold"
+        android:layout_marginTop="4dp"
+        android:textSize="17sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+        android:id="@+id/agency_content"
+        android:layout_below="@+id/Agency_header"
+        android:textSize="16sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="Health and Hospitals Corporation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
+        android:id="@+id/publicationDate_header"
+        android:layout_below="@+id/agency_content"
+        android:layout_marginTop="4dp"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        android:text="PROPOSAL DEADLINE:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+        android:id="@+id/trackdate_content"
+        android:layout_below="@+id/publicationDate_header"
+        android:text="21/06/2016 10:00 AM"
+        android:textSize="16sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+
+    <ImageView
+        android:id="@+id/arrow"
+        android:paddingLeft="15dp"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:layout_alignParentBottom="true"
+        android:id="@+id/calender"
+        android:clickable="true"
+        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/calendar"/>
+
+
+
+
+
+
+
+
+</RelativeLayout>

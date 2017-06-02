@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/blur_bckgrnd"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.MWBE.Connects.NY.Activities.RegisterActivity">
+
+
+    <RelativeLayout
+        android:paddingBottom="12dp"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_marginTop="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"  >
+
+    <LinearLayout
+
+        android:orientation="vertical"
+        android:id="@+id/registerdialog"
+        android:background="@drawable/round"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+       <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+           android:paddingTop="4dp"
+           android:paddingBottom="4dp"
+           android:paddingRight="8dp"
+           android:paddingLeft="8dp"
+           android:layout_marginLeft="12dp"
+           android:text="@string/header_text"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content" />
+
+
+
+        <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+            android:paddingTop="0dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingBottom="4dp"
+            android:textSize="17sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/name"/>
+
+        <com.MWBE.Connects.NY.CustomViews.CustomEditText_Book
+            android:padding="8dp"
+            android:id="@+id/name"
+            android:textColor="@color/editext_color"
+            android:singleLine="true"
+            style="@style/App_EditTextStyle"
+            android:inputType="textCapSentences"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/round"
+            android:layout_width="match_parent"
+            android:layout_height="40dp" />
+
+        <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+            android:paddingTop="4dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:textSize="17sp"
+            android:paddingBottom="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lastname"/>
+
+        <com.MWBE.Connects.NY.CustomViews.CustomEditText_Book
+            android:padding="8dp"
+            android:id="@+id/lastname"
+            android:singleLine="true"
+            android:textColor="@color/editext_color"
+            android:inputType="textCapSentences"
+            style="@style/App_EditTextStyle"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/round"
+            android:layout_width="match_parent"
+            android:layout_height="40dp" />
+
+        <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+            android:paddingTop="4dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingBottom="4dp"
+            android:textSize="17sp"
+            android:id="@+id/emaillbl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/email"/>
+
+        <com.MWBE.Connects.NY.CustomViews.CustomEditText_Book
+            android:padding="8dp"
+            android:id="@+id/email"
+            android:inputType="textEmailAddress"
+            android:singleLine="true"
+            style="@style/App_EditTextStyle"
+            android:textColor="@color/editext_color"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/round"
+            android:layout_width="match_parent"
+            android:layout_height="40dp" />
+
+        <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+            android:paddingTop="4dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingBottom="4dp"
+            android:textSize="17sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/company_name"/>
+
+        <com.MWBE.Connects.NY.CustomViews.CustomEditText_Book
+            android:padding="8dp"
+            android:singleLine="true"
+            android:id="@+id/company_name"
+            android:inputType="textCapSentences"
+            android:layout_marginLeft="20dp"
+            style="@style/App_EditTextStyle"
+            android:layout_marginRight="20dp"
+            android:textColor="@color/editext_color"
+            android:background="@drawable/round"
+            android:layout_width="match_parent"
+            android:layout_height="40dp" />
+
+
+        <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:padding="4dp"
+            android:gravity="center"
+            android:text="Your password should be a minimum of 8 letters, and should contain at least one upper case letter, one number and one special character."
+            android:id="@+id/passhint"
+            android:textSize="14sp"
+            android:layout_marginLeft="20dp"
+            style="@style/App_EditTextStyle"
+            android:layout_marginRight="20dp"
+            android:textColor="@color/editext_color"
+            android:background="@color/yellowish"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
+        <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+            android:paddingTop="4dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingBottom="4dp"
+            android:textSize="17sp"
+            android:id="@+id/passwordlbl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/password"/>
+
+
+            <com.MWBE.Connects.NY.CustomViews.CustomEditText_Book
+
+                android:padding="8dp"
+                android:id="@+id/password"
+                android:singleLine="true"
+                style="@style/App_EditTextStyle"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:textColor="@color/editext_color"
+                android:inputType="textPassword"
+                android:background="@drawable/round"
+                android:layout_width="match_parent"
+                android:layout_height="40dp" />
+
+
+        <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+            android:paddingTop="4dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingBottom="4dp"
+            android:textSize="17sp"
+            android:id="@+id/repasswordlbl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/retype_pass"/>
+
+        <com.MWBE.Connects.NY.CustomViews.CustomEditText_Book
+            android:padding="8dp"
+            android:singleLine="true"
+            android:id="@+id/repassword"
+            android:inputType="textPassword"
+            android:layout_marginLeft="20dp"
+            style="@style/App_EditTextStyle"
+            android:textColor="@color/editext_color"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/round"
+            android:layout_width="match_parent"
+            android:layout_height="40dp" />
+
+
+
+
+        <LinearLayout
+            android:padding="10dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.MWBE.Connects.NY.CustomViews.CustomButton
+                android:textColor="@color/white"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="@string/back_btn_name"
+                android:onClick="BackClick"
+                android:background="@drawable/button_round"
+                android:layout_width="140dp"
+                android:layout_height="45dp" />
+
+            <com.MWBE.Connects.NY.CustomViews.CustomButton
+                android:textColor="@color/white"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="@string/next_btn_name"
+                android:onClick="ActivateClick"
+                android:background="@drawable/button_round"
+                android:layout_width="140dp"
+                android:layout_height="45dp" />
+
+
+
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
+
+</RelativeLayout>
+
+</RelativeLayout>

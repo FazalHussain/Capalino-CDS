@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:id="@+id/main"
+    android:isScrollContainer="false"
+    tools:context="com.MWBE.Connects.NY.Activities.SettingsMain">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:src="@drawable/logo2"
+        android:id="@+id/logo2"
+        android:layout_marginLeft="16dp"
+        />
+
+    <ImageView
+        android:id="@+id/logo"
+        android:src="@drawable/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="16dp"
+        />
+   <!-- <ImageView
+        android:id="@+id/logo"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp" />-->
+
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_below="@+id/logo"
+        android:background="@color/text_color"
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+
+        <com.MWBE.Connects.NY.CustomViews.CustomTextView
+            android:textColor="@color/white"
+            android:layout_centerInParent="true"
+            android:text="@string/settings"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+    <!--
+    *************Main Content********************
+    -->
+
+    <RelativeLayout
+        android:id="@+id/settings"
+        android:isScrollContainer="false"
+        android:paddingTop="0dp"
+        android:paddingBottom="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_above="@+id/footer"
+        android:layout_below="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_marginTop="16dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.MWBE.Connects.NY.CustomViews.CustomEditText_Book
+                    android:padding="8dp"
+                    android:id="@+id/updateprofile"
+                    style="@style/App_EditTextStyle"
+                    android:textColor="@color/editext_color"
+                    android:drawableRight="@drawable/arrow"
+                    android:background="@drawable/round"
+                    android:hint="@string/updateprofile"
+                    android:onClick="UpdateProfileClick"
+                    android:focusable="false"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:focusableInTouchMode="false"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp" />
+
+
+
+                <com.MWBE.Connects.NY.CustomViews.CustomEditText_Book
+                    android:layout_marginTop="16dp"
+                    android:padding="8dp"
+                    android:id="@+id/geographic_coverage"
+                    android:focusableInTouchMode="false"
+                    android:focusable="false"
+                    style="@style/App_EditTextStyle"
+                    android:textColor="@color/editext_color"
+                    android:drawableRight="@drawable/arrow"
+                    android:onClick="SettingsClick"
+                    android:hint="@string/pref_tv"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:background="@drawable/round"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp" />
+
+                <com.MWBE.Connects.NY.CustomViews.CustomEditText_Book
+                    android:layout_marginTop="16dp"
+                    android:padding="8dp"
+                    android:id="@+id/changepassword"
+                    style="@style/App_EditTextStyle"
+                    android:textColor="@color/editext_color"
+                    android:drawableRight="@drawable/arrow"
+                    android:background="@drawable/round"
+                    android:onClick="ChangePasswordClick"
+                    android:hint="@string/change_password"
+                    android:focusable="false"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:focusableInTouchMode="false"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp" />
+
+                <com.MWBE.Connects.NY.CustomViews.CustomEditText_Book
+                    android:padding="8dp"
+                    android:layout_marginTop="16dp"
+                    android:id="@+id/managesubscriptions"
+                    style="@style/App_EditTextStyle"
+                    android:textColor="@color/editext_color"
+                    android:drawableRight="@drawable/arrow"
+                    android:background="@drawable/round"
+                    android:focusable="false"
+                    android:hint="@string/manage_subscriptions"
+                    android:onClick="ManageSubscriptionClick"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:focusableInTouchMode="false"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp" />
+                <!--<CustomButton
+                    android:textColor="@color/white"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="10dp"
+                    android:onClick="UpdateClick"
+                    android:text="@string/update_btn_txt"
+                    android:background="@drawable/button_round"
+                    android:layout_width="140dp"
+                    android:layout_height="45dp" />-->
+
+            </LinearLayout>
+
+
+
+    </RelativeLayout>
+
+    <!--
+       *******************Footer Layot**************************
+    -->
+    <LinearLayout
+        android:id="@+id/footer"
+        android:weightSum="5"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:background="@drawable/bar4"
+        android:layout_width="match_parent"
+        android:layout_height="70dp">
+
+        <ImageView
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:src="@drawable/home"
+            android:onClick="HomeClick"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+
+        <ImageView
+            android:id="@+id/browsebtn"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@drawable/browse"
+            android:onClick="BrowseClick"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+
+        <ImageView
+            android:id="@+id/trackbtn"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@drawable/track"
+            android:onClick="TrackClick"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@drawable/setting"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@drawable/resources"
+            android:onClick="ResourceClick"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>

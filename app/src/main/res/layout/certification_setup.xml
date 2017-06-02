@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:src="@drawable/logo2"
+        android:id="@+id/logo2"
+        android:layout_marginLeft="16dp"
+        />
+
+    <ImageView
+        android:id="@+id/logo"
+        android:src="@drawable/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="16dp"
+        />
+    <!--<ImageView
+        android:id="@+id/logo"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp" />-->
+
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_below="@+id/logo"
+        android:background="@color/text_color"
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+
+        <com.MWBE.Connects.NY.CustomViews.CustomTextView
+            android:textColor="@color/white"
+            android:layout_centerInParent="true"
+            android:id="@+id/headertext"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:text="@string/setup"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/question"
+            android:padding="4dp"
+            android:src="@drawable/questionicon"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+    <!--
+    *************Main Content********************
+    -->
+
+    <LinearLayout
+        android:layout_above="@+id/footer"
+        android:layout_below="@+id/header"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="4dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/step4"/>
+
+        <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+            android:layout_width="match_parent"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginRight="20dp"
+            android:layout_height="wrap_content"
+            android:text="@string/step4_info"/>
+
+        <ListView
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            android:overScrollMode="never"
+            android:listSelector="@android:color/transparent"
+            android:layout_below="@+id/header"
+            android:id="@+id/list_certification"
+            android:layout_above="@+id/footer"
+            android:background="@drawable/round_list"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="0dp"/>
+
+        <LinearLayout
+            android:gravity="center_horizontal"
+            android:layout_weight="0"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.MWBE.Connects.NY.CustomViews.CustomButton
+                android:textColor="@color/white"
+                android:text="@string/back_btn_name"
+                android:layout_marginRight="8dp"
+                android:id="@+id/back"
+                android:background="@drawable/button_round"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"/>
+
+            <com.MWBE.Connects.NY.CustomViews.CustomButton
+                android:textColor="@color/white"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="8dp"
+                android:id="@+id/next"
+                android:text="@string/next_btn_name"
+                android:background="@drawable/button_round"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"/>
+
+        </LinearLayout>
+
+
+
+
+
+
+    </LinearLayout>
+
+
+    <!--
+       *******************Footer Layot**************************
+    -->
+
+
+</RelativeLayout>

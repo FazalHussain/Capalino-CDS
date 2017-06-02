@@ -1,0 +1,33 @@
+<RadioGroup
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="20dp"
+    android:orientation="vertical"
+    android:id="@+id/radioGroup"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <RadioButton
+        android:id="@+id/rd_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="New York City" />
+
+    <RadioButton
+        android:id="@+id/rd_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rd_1"
+        android:text="New York State" />
+
+    <com.MWBE.Connects.NY.CustomViews.CustomButton
+        android:layout_marginTop="16dp"
+        android:id="@+id/okbtn"
+        android:background="@drawable/button_round"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rd_2"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true"
+        android:text="OK" />
+</RadioGroup>

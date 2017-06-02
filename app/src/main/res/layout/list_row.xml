@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:paddingTop="5dp"
+    android:paddingBottom="8dp"
+    android:paddingLeft="8dp"
+    android:paddingRight="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:layout_marginTop="10dp"
+        android:id="@+id/icon_img"
+        android:src="@drawable/icon1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+
+    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
+        android:id="@+id/text"
+        android:paddingTop="4dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="20dp"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:textSize="17sp"
+        android:textColor="@color/black"
+        android:layout_toRightOf="@+id/icon_img"
+        android:text="What is the Impact of Union Workers on Building Affordable Housing..."
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:layout_centerInParent="true"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+        android:layout_below="@+id/text"
+        android:id="@+id/time_duration"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="20dp"
+        android:paddingTop="4dp"
+        android:textSize="15sp"
+        android:layout_toRightOf="@+id/icon_img"
+        android:text="5 DAYS AGO"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+    <RelativeLayout
+        android:id="@+id/swipe_layout"
+        android:visibility="gone"
+        android:paddingRight="8dp"
+        android:paddingLeft="8dp"
+        android:layout_centerInParent="true"
+        android:layout_alignParentRight="true"
+        android:background="@color/orange"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp">
+
+        <ImageView
+            android:id="@+id/delete"
+            android:paddingRight="4dp"
+            android:paddingLeft="4dp"
+            android:paddingBottom="12dp"
+            android:paddingTop="12dp"
+            android:src="@drawable/delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:layout_centerVertical="true"
+            android:id="@+id/line_seprator1"
+            android:layout_toRightOf="@+id/delete"
+            android:src="@drawable/line"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:paddingLeft="4dp"
+            android:paddingBottom="12dp"
+            android:paddingTop="12dp"
+            android:id="@+id/message"
+            android:layout_toRightOf="@+id/line_seprator1"
+            android:src="@drawable/message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="4dp"
+            android:layout_toRightOf="@+id/message"
+            android:layout_centerVertical="true"
+            android:src="@drawable/line"
+            android:id="@+id/line_seprator2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:paddingLeft="4dp"
+            android:paddingBottom="12dp"
+            android:paddingTop="12dp"
+            android:layout_toRightOf="@+id/line_seprator2"
+            android:id="@+id/twitter"
+            android:src="@drawable/twitter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:paddingLeft="8dp"
+            android:paddingRight="4dp"
+            android:id="@+id/line_seprator3"
+            android:src="@drawable/line"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/twitter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:paddingRight="4dp"
+            android:paddingLeft="4dp"
+            android:src="@drawable/linkdin"
+            android:paddingBottom="12dp"
+            android:paddingTop="12dp"
+            android:layout_toRightOf="@+id/line_seprator3"
+            android:id="@+id/linkdin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:layout_marginLeft="4dp"
+            android:id="@+id/line_seprator4"
+            android:layout_toRightOf="@+id/linkdin"
+            android:layout_centerVertical="true"
+            android:src="@drawable/line"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:paddingRight="4dp"
+            android:paddingLeft="8dp"
+            android:layout_toRightOf="@+id/line_seprator4"
+            android:src="@drawable/fb"
+            android:id="@+id/fb"
+            android:paddingBottom="12dp"
+            android:paddingTop="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+
+    </RelativeLayout>
+
+
+
+
+
+</RelativeLayout>

@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:id="@+id/spinner"
+    android:isScrollContainer="false"
+    tools:context="com.MWBE.Connects.NY.Activities.CapablitiesActivity">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/logo2"
+        android:id="@+id/logo2"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="2dp"
+        />
+
+    <ImageView
+        android:id="@+id/logo"
+        android:src="@drawable/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="16dp"/>
+
+    <!--<ImageView
+        android:id="@+id/logo"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp" />-->
+
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_below="@+id/logo"
+        android:background="@color/text_color"
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+
+        <ImageView
+            android:src="@drawable/back"
+            android:onClick="BackClick"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:paddingRight="16dp"
+            android:paddingLeft="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp" />
+
+        <com.MWBE.Connects.NY.CustomViews.CustomTextView
+            android:textColor="@color/white"
+            android:layout_centerInParent="true"
+            android:text="@string/capablity_title"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+    <!--
+    *************Main Content********************
+    -->
+
+    <RelativeLayout
+
+        android:layout_above="@+id/footer"
+        android:padding="16dp"
+        android:layout_below="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ScrollView
+            android:fillViewport="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_below="@+id/switchbtn"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+                    android:layout_width="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:textSize="17sp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/Advertising"/>
+
+                <com.MWBE.Connects.NY.CustomViews.CustomEditText_Book
+                    android:padding="8dp"
+                    android:layout_marginBottom="4dp"
+                    android:id="@+id/Advertising_"
+                    android:singleLine="true"
+                    android:focusable="false"
+                    style="@style/App_EditTextStyle"
+                    android:textColor="@color/editext_color"
+                    android:onClick="AdvertisingClick"
+                    android:drawableRight="@drawable/arrow"
+                    android:focusableInTouchMode="false"
+                    android:background="@drawable/round"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp" />
+
+                <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="17sp"
+                    android:text="@string/Architectural"/>
+
+                <com.MWBE.Connects.NY.CustomViews.CustomEditText_Book
+                    android:padding="8dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="4dp"
+                    android:id="@+id/Architectural"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    style="@style/App_EditTextStyle"
+                    android:drawableRight="@drawable/arrow"
+                    android:onClick="ArchitecturalClick"
+                    android:textColor="@color/editext_color"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:background="@drawable/round"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp" />
+
+                <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="17sp"
+                    android:text="@string/Construction"/>
+
+                <com.MWBE.Connects.NY.CustomViews.CustomEditText_Book
+                    android:padding="8dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="4dp"
+                    android:id="@+id/hconstruction"
+                    style="@style/App_EditTextStyle"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:drawablePadding="8dp"
+                    android:drawableRight="@drawable/arrow"
+                    android:onClick="HConstructionClick"
+                    android:textColor="@color/editext_color"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:background="@drawable/round"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp" />
+
+                <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="17sp"
+                    android:text="@string/Environmental"/>
+
+                <com.MWBE.Connects.NY.CustomViews.CustomEditText_Book
+                    android:padding="8dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="4dp"
+                    android:id="@+id/Enviornmental"
+                    android:drawableRight="@drawable/arrow"
+                    android:background="@drawable/round"
+                    style="@style/App_EditTextStyle"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:focusable="false"
+                    android:onClick="EnvoirnmentalClick"
+                    android:textColor="@color/editext_color"
+                    android:focusableInTouchMode="false"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp" />
+
+                <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="17sp"
+                    android:text="@string/Maintenance"/>
+
+                <com.MWBE.Connects.NY.CustomViews.CustomEditText_Book
+                    android:padding="8dp"
+                    android:layout_marginTop="2dp"
+                    android:id="@+id/Maintainance"
+                    style="@style/App_EditTextStyle"
+                    android:drawableRight="@drawable/arrow"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:background="@drawable/round"
+                    android:focusable="false"
+                    android:onClick="FacilitiesClick"
+                    android:textColor="@color/editext_color"
+                    android:focusableInTouchMode="false"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp" />
+
+                <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="17sp"
+                    android:text="@string/humanservices"/>
+
+                <com.MWBE.Connects.NY.CustomViews.CustomEditText_Book
+                    android:padding="8dp"
+                    android:layout_marginTop="2dp"
+                    android:id="@+id/humanservices"
+                    style="@style/App_EditTextStyle"
+                    android:drawableRight="@drawable/arrow"
+                    android:background="@drawable/round"
+                    android:focusable="false"
+                    android:onClick="HumanServiceClick"
+                    android:textColor="@color/editext_color"
+                    android:focusableInTouchMode="false"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp" />
+
+                <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="17sp"
+                    android:text="@string/it"/>
+
+                <com.MWBE.Connects.NY.CustomViews.CustomEditText_Book
+                    android:padding="8dp"
+                    android:layout_marginTop="2dp"
+                    android:id="@+id/Information_technology"
+                    style="@style/App_EditTextStyle"
+                    android:drawableRight="@drawable/arrow"
+                    android:background="@drawable/round"
+                    android:focusable="false"
+                    android:onClick="ITClick"
+                    android:textColor="@color/editext_color"
+                    android:focusableInTouchMode="false"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp" />
+
+                <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="17sp"
+                    android:text="@string/security"/>
+
+                <com.MWBE.Connects.NY.CustomViews.CustomEditText_Book
+                    android:padding="8dp"
+                    android:layout_marginTop="2dp"
+                    android:id="@+id/security"
+                    style="@style/App_EditTextStyle"
+                    android:drawableRight="@drawable/arrow"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:background="@drawable/round"
+                    android:focusable="false"
+                    android:onClick="SecurityClick"
+                    android:textColor="@color/editext_color"
+                    android:focusableInTouchMode="false"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp" />
+
+                <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="17sp"
+                    android:text="@string/solidwaste"/>
+
+                <com.MWBE.Connects.NY.CustomViews.CustomEditText_Book
+                    android:padding="8dp"
+                    android:layout_marginTop="2dp"
+                    android:id="@+id/General_maintenance"
+                    style="@style/App_EditTextStyle"
+                    android:drawableRight="@drawable/arrow"
+                    android:background="@drawable/round"
+                    android:focusable="false"
+                    android:onClick="GeneralMaintainanceClick"
+                    android:textColor="@color/editext_color"
+                    android:focusableInTouchMode="false"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp" />
+
+                <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="17sp"
+                    android:text="@string/others"/>
+
+                <com.MWBE.Connects.NY.CustomViews.CustomEditText_Book
+                    android:padding="8dp"
+                    android:layout_marginTop="2dp"
+                    android:id="@+id/others"
+                    style="@style/App_EditTextStyle"
+                    android:drawableRight="@drawable/arrow"
+                    android:background="@drawable/round"
+                    android:focusable="false"
+                    android:onClick="OthersClick"
+                    android:textColor="@color/editext_color"
+                    android:focusableInTouchMode="false"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp" />
+
+                <com.MWBE.Connects.NY.CustomViews.CustomButton
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@color/white"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="5dp"
+                    android:text="Add Other"
+                    android:onClick="AddOthersClick"
+                    android:background="@drawable/button_round"
+                    android:layout_width="180dp"
+                    android:layout_height="45dp" />
+
+            </LinearLayout>
+        </ScrollView>
+
+    </RelativeLayout>
+
+
+
+
+    <!--
+       *******************Footer Layot**************************
+    -->
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/footer"
+        android:weightSum="5"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:background="@drawable/bar4"
+        android:layout_width="match_parent"
+        android:layout_height="70dp">
+
+        <ImageView
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:src="@drawable/home"
+            android:onClick="HomeClick"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@drawable/browse"
+            android:onClick="BrowseClick"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@drawable/track"
+            android:onClick="TrackClick"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@drawable/setting"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@drawable/resources"
+            android:onClick="ResourceClick"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+</RelativeLayout>

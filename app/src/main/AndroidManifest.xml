@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.MWBE.Connects.NY">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="com.MWBE.Connects.NY.permission.C2D_MESSAGE" />
+
+    <permission
+        android:name="com.MWBE.Connects.NY.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
+
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECEIVE" />
+
+
+
+    <application
+        tools:node="replace"
+        android:allowBackup="true"
+        android:icon="@mipmap/icon"
+        android:label="MWBE Connect NY"
+        android:supportsRtl="true"
+        android:name=".Activities.ApplicationClass"
+        android:theme="@style/CapalinoTheme">
+
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.LoginActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <receiver android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+                <category android:name="com.MWBE.Connects.NY"/>
+            </intent-filter>
+
+        </receiver>
+
+        <service android:name=".GCM.GCMPushRecieverService" android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+            </intent-filter>
+
+        </service>
+
+        <service android:name=".GCM.GcmRegistrationIntentService" android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID"/>
+            </intent-filter>
+        </service>
+
+        <service android:name=".CapalinoServices.DailyMethodService"
+            android:exported="false"/>
+
+
+       <!-- <service android:name="com.MWBE.Connects.NY.FirebaseMessagingService"
+            android:enabled="true"
+            android:exported="true">
+            <action android:name="android.intent.action.RESPOND_VIA_MESSAGE"/>
+
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name="com.MWBE.Connects.NY.FirebaseInstanceIDService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>-->
+
+
+        <!-- Branch URI scheme -->
+        <intent-filter>
+            <data android:scheme="capalino" android:host="open" />
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+        </intent-filter>
+
+        <!-- Branch init -->
+        <meta-data android:name="io.branch.sdk.BranchKey" android:value="key_live_hmsqqNJWjJAaM8m3vyiWojggyxoTqwIV" />
+        <meta-data android:name="io.branch.sdk.BranchKey.test" android:value="key_test_gmvqxGJ7mTrnHWi0CuDlLdckEDpPDrV9" />
+
+        <!-- Branch testing (TestMode "true" to simulate fresh installs on dev environment) -->
+        <meta-data android:name="io.branch.sdk.TestMode" android:value="false" />
+
+        <!-- Branch install referrer tracking -->
+        <receiver android:name="io.branch.referral.InstallListener" android:exported="true">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
+            </intent-filter>
+        </receiver>
+
+
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.RegisterActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.ActivationActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.HomeActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.BrowseActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustPan"/>
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.REFListingActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.AdviceActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.AgencyActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.ProcurementTypeActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.ContractValueActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.SettingsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.GeographicCoverageActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.TargetContractActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.CertificationActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.CapablitiesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.CapablitiesSearchActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.ResourceActivity"
+            android:screenOrientation="portrait" />
+
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+
+        <provider
+            android:name="com.facebook.FacebookContentProvider"
+            android:authorities="com.facebook.app.FacebookContentProvider841118815993409"
+            android:exported="true" />
+
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.HomeItem_ViewActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.TrackActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.ShowPDFActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.TrackList"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.Splash"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.UpdateProfileActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.MessagingFragments"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!--
+             ATTENTION: This was auto-generated to add Google Play services to your project for
+             App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
+        -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.SetupActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.ProcurementDetailsActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+
+        <service android:name="com.MWBE.Connects.NY.CapalinoServices.TrackingService" />
+        <service android:name="com.MWBE.Connects.NY.CapalinoServices.CapabilitiesService" />
+
+        <service
+            android:name="net.authorize.sampleapplication.services.AnetIntentService"
+            android:exported="false" >
+        </service>
+        <activity
+            android:theme="@style/AppTheme"
+            android:name="net.authorize.sampleapplication.NavigationActivity"
+            android:label="@string/title_activity_navigation"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:theme="@style/AppTheme"
+            android:name="net.authorize.sampleapplication.TransactionResultActivity"
+            android:label="@string/title_activity_transaction_result"
+            android:screenOrientation="portrait" >
+        </activity>
+
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.ForgotPasswordActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.SettingsMain"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.MWBE.Connects.NY.Activities.PdfViewActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/PdfTheme" />
+        <activity android:name="com.MWBE.Connects.NY.Activities.SubscribtionActivity"
+            android:screenOrientation="portrait"></activity>
+
+        <activity android:name="com.facebook.FacebookActivity"
+            android:screenOrientation="portrait"></activity>
+
+        <activity
+            android:theme="@style/AppTheme"
+            android:name="net.authorize.sampleapplication.LoginActivity"
+            android:screenOrientation="portrait" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="51e4e2011f1c76f4f453ff7ff73413af1902e7b4"
+            />
+
+    </application>
+
+</manifest>
