@@ -1,6 +1,7 @@
 package net.authorize.sampleapplication.fragments;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,8 +14,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import net.authorize.sampleapplication.LoginActivity;
 import net.authorize.sampleapplication.NavigationActivity;
+import net.authorize.sampleapplication.TransactionResultActivity;
 import net.authorize.sampleapplication.models.StaticData;
 import net.authorize.sampleapplication.services.AnetIntentService;
 import net.authorize.sampleapplication.models.CreditCardObject;
@@ -87,9 +91,9 @@ public class TransactionFragment extends android.support.v4.app.Fragment
 
         if(StaticData.isannual.equalsIgnoreCase("true")){
 
-            totalAmountEditText.setText("600");
+            totalAmountEditText.setText("99");
         }else {
-            totalAmountEditText.setText("225");
+            totalAmountEditText.setText("9.99");
         }
 
         try{
@@ -100,7 +104,7 @@ public class TransactionFragment extends android.support.v4.app.Fragment
                         float totalammount =  Float.valueOf(totalAmountEditText.getText().toString()) - discount;
                         String result = String.format("%.02f",totalammount);
                         totalAmountEditText.setText(String.valueOf(result));
-                    }else {
+                    }else if(StaticData.PromoType.equalsIgnoreCase("$")) {
                         float totalammount =  Float.valueOf(totalAmountEditText.getText().toString()) - Float.valueOf(StaticData.discount);
                         String result = String.format("%.02f",totalammount);
                         totalAmountEditText.setText(String.valueOf(result));
@@ -143,6 +147,7 @@ public class TransactionFragment extends android.support.v4.app.Fragment
             }
         });
     }
+
 
 
     /**

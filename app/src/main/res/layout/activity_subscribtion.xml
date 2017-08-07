@@ -95,7 +95,7 @@
                 <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Quarterly Subscription"
+                    android:text="Monthly Subscription"
                     android:textSize="16sp"
                     android:layout_marginBottom="4dp"/>
 
@@ -105,7 +105,7 @@
                     style="@style/App_EditTextStyle"
                     android:textColor="@color/editext_color"
                     android:background="@drawable/round"
-                    android:hint="$225"
+                    android:hint="$9.99"
                     android:cursorVisible="false"
                     android:onClick="QuarterSubscriptionClick"
                     android:focusable="false"
@@ -120,11 +120,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="4dp"
+                    android:visibility="gone"
                     android:text=""
                     android:layout_marginBottom="4dp"/>
 
                 <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
                     android:id="@+id/note"
+                    android:visibility="invisible"
                     android:layout_gravity="center_horizontal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -149,7 +151,7 @@
                     style="@style/App_EditTextStyle"
                     android:textColor="@color/editext_color"
                     android:onClick="AnnualSubscriptionClick"
-                    android:hint="$600"
+                    android:hint="$99"
                     android:singleLine="true"
                     android:ellipsize="end"
                     android:background="@drawable/round"
@@ -162,6 +164,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="4dp"
                     android:text=""
+                    android:visibility="gone"
                     android:layout_marginBottom="4dp"/>
 
 

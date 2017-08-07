@@ -194,6 +194,7 @@ public class HomeActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        initalize_facebook();
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastreciever,
                 new IntentFilter(GcmRegistrationIntentService.registration_success));
 

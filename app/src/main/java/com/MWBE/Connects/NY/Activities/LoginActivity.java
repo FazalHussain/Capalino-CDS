@@ -449,6 +449,7 @@ public class LoginActivity extends Activity {
     @Override
     public void onStart() {
         super.onStart();
+        Branch.getAutoInstance(this);
         Branch branch = Branch.getInstance();
 
         branch.initSession(new Branch.BranchUniversalReferralInitListener() {
@@ -458,20 +459,14 @@ public class LoginActivity extends Activity {
                     // params are the deep linked params associated with the link that the user clicked -> was re-directed to this app
                     // params will be empty if no data found
                     // ... insert custom logic here ...
-
-                    try{
-                        //Log.i("MyApp", branchUniversalObject.getShortUrl(getApplicationContext(),linkProperties));
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-
-
-
+                    Log.i("MyApp", "Success");
                 } else {
                     Log.i("MyApp", error.getMessage());
                 }
             }
         }, this.getIntent().getData(), this);
+
+
     }
 
     @Override

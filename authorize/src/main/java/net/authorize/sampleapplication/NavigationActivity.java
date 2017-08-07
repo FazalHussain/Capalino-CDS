@@ -1,5 +1,6 @@
 package net.authorize.sampleapplication;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -50,7 +51,7 @@ import java.util.Date;
 public class NavigationActivity extends AnetBaseActivity implements
         LogoutRetainedFragment.OnFragmentInteractionListener,
         TransactionRetainedFragment.OnFragmentInteractionListener,
-        HistoryRetainedFragment.OnHistoryTransactionListener {
+        HistoryRetainedFragment.OnHistoryTransactionListener{
 
     public static final String TRANSACTION_FRAGMENT_TAG = "TRANSACTION_FRAGMENT";
     public static final String HISTORY_FRAGMENT_TAG = "HISTORY_FRAGMENT";
@@ -71,10 +72,12 @@ public class NavigationActivity extends AnetBaseActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
-        setupViews();
-        commitFragment();
-        setupToolbar();
-        setupNavigationDrawer();
+
+            setupViews();
+            commitFragment();
+            setupToolbar();
+            setupNavigationDrawer();
+
     }
 
 
@@ -90,6 +93,7 @@ public class NavigationActivity extends AnetBaseActivity implements
         }
         return super.onOptionsItemSelected(item);
     }*/
+
 
 
     @Override
@@ -559,6 +563,7 @@ public class NavigationActivity extends AnetBaseActivity implements
                                 public void run() {
                                     dismissIndeterminateProgressDialog();
                                     Intent intent = new Intent(NavigationActivity.this, TransactionResultActivity.class);
+                                    if(transactionResult!=null)
                                     intent.putExtra(TransactionResultActivity.TRANSACTION_RESULT, transactionResult);
                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -684,4 +689,6 @@ public class NavigationActivity extends AnetBaseActivity implements
             displaySessionExpiredDialog();
         }
     }
+
+
 }

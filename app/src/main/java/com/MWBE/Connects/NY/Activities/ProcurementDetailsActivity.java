@@ -1,9 +1,12 @@
 package com.MWBE.Connects.NY.Activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AlertDialog;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
@@ -26,6 +29,13 @@ public class ProcurementDetailsActivity extends FragmentActivity {
     private String deadline;
     private String starteddate;
     private String agencyurl;
+    private String refrenceUrl1;
+    private String refrenceUrl2;
+    private String refrenceUrl3;
+    private TextView refrenceUrl1_tv;
+    private TextView refrenceUrl2_tv;
+    private TextView refrenceUrl3_tv;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,7 +135,12 @@ public class ProcurementDetailsActivity extends FragmentActivity {
             ((ImageView)findViewById(R.id.messaging)).setVisibility(View.GONE);
         }
 
+        refrenceUrl1_tv = (TextView) findViewById(R.id.ref1_link);
+        refrenceUrl2_tv = (TextView) findViewById(R.id.ref2_link);
+        refrenceUrl3_tv = (TextView) findViewById(R.id.ref3_link);
+
        getData();
+
     }
 
     private void getData() {
@@ -143,14 +158,79 @@ public class ProcurementDetailsActivity extends FragmentActivity {
                     agencyurl = cursor.getString(11);
                     starteddate = cursor.getString(17);
                     deadline = cursor.getString(8);
+                    refrenceUrl1 = cursor.getString(12);
+                    refrenceUrl2= cursor.getString(13);
+                    refrenceUrl3 = cursor.getString(14);
+                    if(refrenceUrl1!=null && !refrenceUrl1.equalsIgnoreCase("NA")){
+                        refrenceUrl1_tv.setVisibility(View.VISIBLE);
+                    }
+
+                    if(refrenceUrl2!=null && !refrenceUrl2.equalsIgnoreCase("NA")){
+                        refrenceUrl2_tv.setVisibility(View.VISIBLE);
+                    }
+
+                    if(refrenceUrl3!=null && !refrenceUrl3.equalsIgnoreCase("NA")){
+                        refrenceUrl3_tv.setVisibility(View.VISIBLE);
+                    }
+
+                    ReferenceCick();
 
                     ((TextView)findViewById(R.id.longdescrip)).setText(longdesc);
+
                 }
             }
             }catch (Exception e){
                 e.printStackTrace();
             }
     }
+
+    private void ReferenceCick() {
+
+        ((TextView)findViewById(R.id.link_content)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(agencyurl!=null)
+                NavigateWeb(agencyurl);
+            }
+        });
+
+        refrenceUrl1_tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavigateWeb(refrenceUrl1);
+            }
+        });
+
+        refrenceUrl2_tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavigateWeb(refrenceUrl2);
+            }
+        });
+
+        refrenceUrl3_tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavigateWeb(refrenceUrl3);
+            }
+        });
+    }
+
+    private void NavigateWeb(String refrenceUrl1) {
+        Uri webpage = null;
+        if(refrenceUrl1.contains(".pdf")) {
+            webpage = Uri.parse("https://docs.google.com/viewer?url=" + refrenceUrl1);
+        }else {
+            webpage = Uri.parse(refrenceUrl1);
+        }
+        Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
+    }
+
+
+
 
     public void HomeClick(View view){
 

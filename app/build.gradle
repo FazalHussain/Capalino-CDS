@@ -24,8 +24,8 @@ android {
         applicationId "com.MWBE.Connects.NY"
         minSdkVersion 15
         targetSdkVersion 24
-        versionCode 3
-        versionName "1.0.1"
+        versionCode 4
+        versionName "2.0"
         multiDexEnabled true
     }
     buildTypes {
@@ -48,6 +48,13 @@ android {
             res.srcDirs = ['src/main/res', 'src/main/res/layout-normal']
             assets.srcDirs = ['src/main/assets', 'src/main/assets/']
         }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
     }
 }
 

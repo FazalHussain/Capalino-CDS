@@ -2,12 +2,17 @@ package net.authorize.sampleapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.SyncStateContract;
 import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.facebook.appevents.AppEventsLogger;
+
+import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.Currency;
 
 /**
  * Displays a receipt for the transaction and allows users to navigate
@@ -22,12 +27,14 @@ public class TransactionResultActivity extends AnetBaseActivity {
     private TextView transactionCardTypeTextView;
     private TextView transactionCardNumberTextView;
     private TextView transactionDateTextView;
+    private AppEventsLogger logger;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transaction_result);
+        logger = AppEventsLogger.newLogger(this);
         setupViews();
         displayResults();
     }
@@ -102,6 +109,7 @@ public class TransactionResultActivity extends AnetBaseActivity {
             transactionDateTextView.setText(calendar.get(Calendar.MONTH) + "/" +
                     calendar.get(Calendar.DATE) + "/" + calendar.get(Calendar.YEAR));
             transactionSuccessfulCard.setVisibility(View.VISIBLE);
+            logger.logPurchase(BigDecimal.valueOf(Double.parseDouble(transactionAmount)), Currency.getInstance("USD"));
         }
     }
 }

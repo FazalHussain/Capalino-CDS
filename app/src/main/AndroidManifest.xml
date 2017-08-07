@@ -95,8 +95,10 @@
 
 
         <!-- Branch URI scheme -->
-        <intent-filter>
-            <data android:scheme="capalino" android:host="open" />
+        <intent-filter
+            android:autoVerify="true" >
+            <data android:scheme="MWBE" android:host="open" />
+            <data android:scheme="https" android:host="cds.test-app.link" />
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
@@ -107,7 +109,7 @@
         <meta-data android:name="io.branch.sdk.BranchKey.test" android:value="key_test_gmvqxGJ7mTrnHWi0CuDlLdckEDpPDrV9" />
 
         <!-- Branch testing (TestMode "true" to simulate fresh installs on dev environment) -->
-        <meta-data android:name="io.branch.sdk.TestMode" android:value="false" />
+        <meta-data android:name="io.branch.sdk.TestMode" android:value="true" />
 
         <!-- Branch install referrer tracking -->
         <receiver android:name="io.branch.referral.InstallListener" android:exported="true">

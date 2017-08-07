@@ -8,8 +8,8 @@ android {
         //applicationId "net.authorize.sampleapplication"
         minSdkVersion 15
         targetSdkVersion 24
-        versionCode 3
-        versionName "1.0.1"
+        versionCode 4
+        versionName "2.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
@@ -33,4 +33,5 @@ dependencies {
     androidTestCompile('com.android.support.test:testing-support-lib:0.1') {
         exclude group: 'junit'  // junit:junit-dep conflicts with junit:unit
     }
+    compile 'com.facebook.android:facebook-android-sdk:4.5.0'
 }

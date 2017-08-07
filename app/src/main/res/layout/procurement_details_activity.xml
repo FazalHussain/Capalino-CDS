@@ -158,12 +158,54 @@
                     android:id="@+id/link_content"
                     android:layout_marginTop="4dp"
                     android:scrollbars="vertical"
+                    android:text="Agency Link"
+                    android:layout_marginLeft="28dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginRight="16dp"
+                    android:textColor="@color/deep_purple"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+                    android:id="@+id/ref1_link"
+                    android:layout_marginTop="4dp"
+                    android:scrollbars="vertical"
+                    android:text="Reference 1"
+                    android:visibility="gone"
                     android:layout_marginLeft="28dp"
                     android:layout_marginBottom="4dp"
                     android:layout_marginRight="16dp"
                     android:textColor="@color/deep_purple"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
+
+                <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+                    android:id="@+id/ref2_link"
+                    android:layout_marginTop="4dp"
+                    android:scrollbars="vertical"
+                    android:visibility="gone"
+                    android:text="Reference 2"
+                    android:layout_marginLeft="28dp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginRight="16dp"
+                    android:textColor="@color/deep_purple"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+                    android:id="@+id/ref3_link"
+                    android:layout_marginTop="4dp"
+                    android:scrollbars="vertical"
+                    android:visibility="gone"
+                    android:text="Reference 3"
+                    android:layout_marginLeft="28dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginRight="16dp"
+                    android:textColor="@color/deep_purple"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+
 
             </LinearLayout>
 

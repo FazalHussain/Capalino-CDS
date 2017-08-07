@@ -1,6 +1,10 @@
 package com.MWBE.Connects.NY.Activities;
 
+import net.authorize.aim.Result;
 import net.authorize.sampleapplication.LoginActivity;
+import net.authorize.sampleapplication.NavigationActivity;
+import net.authorize.sampleapplication.TransactionResultActivity;
+import net.authorize.sampleapplication.models.StaticData;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -17,10 +21,16 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.MWBE.Connects.NY.AppConstants.Utils;
 import com.MWBE.Connects.NY.DataStorage.Data;
 import com.MWBE.Connects.NY.R;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
@@ -51,7 +61,7 @@ public class SubscribtionActivity extends Activity {
     private Context context = this;
     private String PaymentStatus;
     private String ExpirationDate;
-    private boolean isquarter;
+    private boolean isMonthly;
     private boolean isannual;
     private String DiscountPercentage;
     private String PromoType;
@@ -89,10 +99,10 @@ public class SubscribtionActivity extends Activity {
 
     public void PromoCodeClick(View view){
         HideKeyboard();
-        if((isannual || isquarter) ){
-            if(promocode_et.length()>0)
-            getDiscountFromServer(promocode_et.getText().toString());
-            else {
+        if((isannual || isMonthly) ){
+            if(promocode_et.length()>0){
+                getDiscountFromServer(promocode_et.getText().toString());
+            } else {
                 new AlertDialog.Builder(context)
                         .setTitle("Alert!")
                         .setMessage("Please enter a promo code.")
@@ -106,7 +116,7 @@ public class SubscribtionActivity extends Activity {
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
             }
-        }else {
+        } else {
             new AlertDialog.Builder(context)
                     .setTitle("Alert!")
                     .setMessage("Please select payment type to proceed further.")
@@ -197,7 +207,7 @@ public class SubscribtionActivity extends Activity {
         annualdate = cal.getTime();
         expiry = dateformat.format(annualdate);
         isannual = true;
-        isquarter = false;
+        isMonthly = false;
 
         promocode_et.setEnabled(true);
         promocode_et.setFocusable(true);
@@ -220,7 +230,7 @@ public class SubscribtionActivity extends Activity {
         quarterdate = cal.getTime();
         expiry = dateformat.format(quarterdate);
         isannual = false;
-        isquarter = true;
+        isMonthly = true;
 
         promocode_et.setEnabled(true);
         promocode_et.setFocusable(true);
@@ -344,7 +354,7 @@ public class SubscribtionActivity extends Activity {
                                                 .show();
 
                                     }
-                                    else
+                                    else if(PromoType.equalsIgnoreCase("$"))
                                     {
                                         new AlertDialog.Builder(context)
                                                 .setTitle("Alert!")
@@ -358,6 +368,18 @@ public class SubscribtionActivity extends Activity {
                                                 .setCancelable(false)
                                                 .setIcon(android.R.drawable.ic_dialog_alert)
                                                 .show();
+                                    }else {
+                                        if(PromoType!=null){
+
+                                            SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy hh:mm a");
+                                            int month = Integer.parseInt(PromoType);
+                                            Calendar cal = Calendar.getInstance();
+                                            cal.add(Calendar.MONTH, month);
+                                            quarterdate = cal.getTime();
+                                            expiry = dateformat.format(quarterdate);
+
+
+                                        }
                                     }
                                         //((TextView)findViewById(R.id.note_promocode)).setText("$"+DiscountPercentage+" discount has been applied. Please tap PAY to securely make your payment.");
                                    UpdateDiscountTextView(PromoType);
@@ -375,6 +397,7 @@ public class SubscribtionActivity extends Activity {
                 }catch (Exception e){
                     e.printStackTrace();
                 }
+
                 return null;
             }
         }.execute("http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/checkPromo.php?PromoCodeValue="+promocode);
@@ -383,7 +406,7 @@ public class SubscribtionActivity extends Activity {
     private void UpdateDiscountTextView(String promoType) {
         if(promoType!=null && !promoType.equalsIgnoreCase("")){
             try{
-                if(isannual){
+                /*if(isannual){
                     if (promoType.equalsIgnoreCase("%") ){
                         float discount = Float.valueOf(600) * (Float.valueOf(DiscountPercentage))/100;
                         float totalammount =  (Float.valueOf(600) - discount);
@@ -391,7 +414,7 @@ public class SubscribtionActivity extends Activity {
                         ((TextView)findViewById(R.id.note_promocode)).setVisibility(View.VISIBLE);
                         ((TextView)findViewById(R.id.note_promocode)).setText("Discounted Price: $"+String.valueOf(result));
                         //annual_et.setText(String.valueOf(totalammount));
-                    }else {
+                    }else if(promoType.equalsIgnoreCase("$")) {
                         float totalammount =  Float.valueOf(600) - Float.valueOf(DiscountPercentage);
                         String result = String.format("%.02f",totalammount);
                         ((TextView)findViewById(R.id.note_promocode)).setVisibility(View.VISIBLE);
@@ -399,9 +422,9 @@ public class SubscribtionActivity extends Activity {
                         //annual_et.setText(String.valueOf(totalammount));
 
                     }
-                }
+                }*/
 
-                if(isquarter){
+                if(isannual || isMonthly){
                     if (promoType.equalsIgnoreCase("%") ){
                         float discount = Float.valueOf(225) * (Float.valueOf(DiscountPercentage))/100;
                         float totalammount =  (Float.valueOf(225) - discount);
@@ -409,13 +432,29 @@ public class SubscribtionActivity extends Activity {
                         ((TextView)findViewById(R.id.note_promocode)).setVisibility(View.VISIBLE);
                         ((TextView)findViewById(R.id.note_promocode)).setText("Discounted Price: $"+String.valueOf(result));
                         //quarter_et.setText(String.valueOf(totalammount));
-                    }else {
+                    }else if(promoType.equalsIgnoreCase("$")) {
                         float totalammount =  Integer.valueOf(225) - Float.valueOf(DiscountPercentage);
                         String result = String.format("%.02f",totalammount);
                         ((TextView)findViewById(R.id.note_promocode)).setVisibility(View.VISIBLE);
                         ((TextView)findViewById(R.id.note_promocode)).setText("Discounted Price: $"+String.valueOf(result));
                         //quarter_et.setText(String.valueOf(totalammount));
 
+                    }else {
+                        float totalamount = 0.0f;
+                        String result = String.format("%.02f",totalamount);
+                        //((TextView)findViewById(R.id.note_promocode)).setVisibility(View.VISIBLE);
+                        //((TextView)findViewById(R.id.note_promocode)).setText("Discounted Price: "+String.valueOf(result));
+
+                        new AlertDialog.Builder(SubscribtionActivity.this)
+                                .setTitle("Yay!")
+                                .setMessage("You have been given " + PromoType + " month free access. Enjoy all the premium features.")
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        SendData();
+                                    }
+                                })
+                        .show();
                     }
                 }
             }catch (Exception e){
@@ -427,12 +466,15 @@ public class SubscribtionActivity extends Activity {
     }
 
     public void PayClick(View view) {
+        Pay();
 
+    }
 
-        if(isannual || isquarter){
+    private void Pay() {
+        if(isannual || isMonthly){
             Intent i = new Intent(this, LoginActivity.class);
             i.putExtra("isannual",String.valueOf(isannual));
-            i.putExtra("isquarter",String.valueOf(isquarter));
+            i.putExtra("isquarter",String.valueOf(isMonthly));
             i.putExtra("paymentStatus",paymentStatus);
             i.putExtra("Userid",utils.getdata("Userid"));
             i.putExtra("email",utils.getdata("email"));
@@ -445,7 +487,6 @@ public class SubscribtionActivity extends Activity {
             i.putExtra("PromoType",PromoType);
             i.putExtra("PromoCodeID",PromoCodeID);
             i.putExtra("discount",DiscountPercentage);
-
 
             startActivity(i);
 
@@ -463,7 +504,6 @@ public class SubscribtionActivity extends Activity {
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();
         }
-
     }
 
     private void getData() {
@@ -578,6 +618,95 @@ public class SubscribtionActivity extends Activity {
 */
     }
 
+    public void SendData(){
+
+            showPB("Loading...");
+            final SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy hh:mm a");
+            final Date date = new Date();
+            String url = "https://celeritas-solutions.com/cds/capalinoapp/apis/updateCustomerDataApp.php?UserID="+utils.getdata("Userid")
+                    +"&Email="+utils.getdata("email")+"&PaymentStatus="+paymentStatus+"&PaymentDate="+dateformat.format(date)
+                    +"&ExpirationDate="+expiry;
+            url = url.replace(" ","%20");
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    if (response.equalsIgnoreCase("Record Updated.")) {
+                        if(PromoCodeID!=null && !PromoCodeID.equalsIgnoreCase(""))
+                            SendPromoCodeData(StaticData.PromoCodeID,StaticData.Userid,StaticData.TotalAmount,dateformat.format(date));
+                        else{
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                }
+                            });
+
+                        }
+
+
+                    } else {
+                        //hidePB();
+
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    error.printStackTrace();
+
+                    //Toast.makeText(getApplicationContext(), "", Toast.LENGTH_LONG).show();
+                }
+            });
+
+            Volley.newRequestQueue(SubscribtionActivity.this).add(stringRequest);
+
+    }
+
+    private void SendPromoCodeData(String promoCodeID, String userid, String totalAmount, String format) {
+        new android.os.AsyncTask<String,Void,String>(){
+            String res;
+            @Override
+            protected String doInBackground(String... params) {
+                params[0] = params[0].replace(" ","%20");
+                StringRequest stringRequest = new StringRequest(Request.Method.POST, params[0], new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        response = response.replace("\r","");
+                        response = response.replace("\n","");
+                        if (response.equalsIgnoreCase("Record Added. ")) {
+                            hidePB();
+                            res= response;
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    finish();
+                                }
+                            });
+                        } else {
+                            //hidePB();
+
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+
+                        //Toast.makeText(getApplicationContext(), "", Toast.LENGTH_LONG).show();
+                    }
+                });
+
+                Volley.newRequestQueue(SubscribtionActivity.this).add(stringRequest);
+
+                return res;
+            }
+
+
+        }.execute("http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/addUserPromoCode.php?PromoCodeID="+promoCodeID+"&UserID="+userid+"&Amount="+totalAmount+"&AddedDateTime="+format);
+    }
+
+
+
     //Footer Click Listener
     public void HomeClick(View view) {
         Intent i = new Intent(this, HomeActivity.class);
@@ -619,6 +748,7 @@ public class SubscribtionActivity extends Activity {
             public void run() {
                 pb = new ProgressDialog(SubscribtionActivity.this);
                 pb.setMessage(message);
+                pb.setCancelable(false);
                 pb.show();
             }
         });
