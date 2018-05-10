@@ -31,6 +31,7 @@ import com.android.volley.toolbox.Volley;
 
 import net.authorize.mobile.Result;
 import net.authorize.sampleapplication.fragments.LoginActivityRetainedFragment;
+import net.authorize.sampleapplication.models.ContractorModel;
 import net.authorize.sampleapplication.models.StaticData;
 import net.authorize.sampleapplication.services.AnetIntentService;
 
@@ -70,6 +71,7 @@ public class LoginActivity extends AnetBaseActivity implements
         setupViews();
         //attemptLogin();
         setupErrorMessages();
+
     }
 
     private void getPassword() {

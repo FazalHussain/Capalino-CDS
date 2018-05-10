@@ -16,8 +16,10 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.MWBE.Connects.NY.CapalinoServices.ConnectivityReceiver;
+import com.MWBE.Connects.NY.DataStorage.Data;
 import com.MWBE.Connects.NY.Database.DataBaseHelper;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -31,28 +33,51 @@ import com.MWBE.Connects.NY.CustomViews.CustomCheckBox;
 import com.MWBE.Connects.NY.CustomViews.CustomEditText_Book;
 import com.MWBE.Connects.NY.R;
 
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.PurchaseEvent;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsConstants;
+import com.facebook.appevents.AppEventsLogger;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
+
+import net.authorize.sampleapplication.IContractor;
+import net.authorize.sampleapplication.SubscriptionCheckListener;
+import net.authorize.sampleapplication.models.ContractorModel;
+import net.authorize.sampleapplication.models.StaticData;
 
 import io.branch.indexing.BranchUniversalObject;
 import io.branch.referral.Branch;
 import io.branch.referral.BranchError;
 import io.branch.referral.util.LinkProperties;
 import io.fabric.sdk.android.Fabric;
+
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Security;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Currency;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
-public class LoginActivity extends Activity {
+public class LoginActivity extends Activity implements IContractor, SubscriptionCheckListener {
 
     // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
     private static final String TWITTER_KEY = "1GNLnpbRbAtycdP5ZM3Lv0BMw";
@@ -73,19 +98,21 @@ public class LoginActivity extends Activity {
     private boolean present;
     private String pass="";
     private String statuscode;
+    public FirebaseAnalytics mFirebaseAnalytics;
+    AppEventsLogger logger;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //FirebaseApp.initializeApp(context, FirebaseOptions.fromResource(context));
-
-       /* if (!FirebaseApp.getApps(this).isEmpty()) {
-            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        }*/
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        ContractorModel.getInstance().setContractor(this);
+        ContractorModel.getInstance().setSubscription(this);
 
 
-        //TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         //Fabric.with(this, new Twitter(authConfig));
+        Fabric.with(this, new Crashlytics());
         //generateHashkey();
         setContentView(R.layout.activity_login_capalino);
         init();
@@ -94,12 +121,32 @@ public class LoginActivity extends Activity {
 
     }
 
+    public  void trackfirebase() {
+        try{
+            String itemID = gen7DigitNumber();
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.ITEM_ID, itemID);
+            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "App Installs");
+            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.APP_OPEN, bundle);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
 
+
+    public static String gen7DigitNumber()
+    {
+        Random rng = new Random();
+        int val = rng.nextInt(10000000);
+        return String.format("%07d", val);
+    }
 
 
     private void init() {
         //deleteDatabase("CapalinoDataBase.sqlite");
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        logger = AppEventsLogger.newLogger(LoginActivity.this);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         View mainview = findViewById(R.id.logindialog);
         mainview.getBackground().setAlpha(200);
@@ -114,15 +161,27 @@ public class LoginActivity extends Activity {
             password_et.requestFocus();
         }
 
+        rememberme.setChecked(true);
+
         if(utils.getdata("ischecked").equalsIgnoreCase("true")) {
-            startActivity(new Intent(LoginActivity.this, Splash.class));
-            finish();
-        } else if (utils.getdata("logout").equalsIgnoreCase("logout") || utils.getdata("logout") != null) {
-            utils.savedata("email", email_et.getText().toString());
-            utils.savedata("pass", password_et.getText().toString());
-            utils.savedata("ischecked", "false");
-            remember_check();
+            if (utils.getdata("logout").equalsIgnoreCase("logout") && utils.getdata("logout") != null) {
+                if (utils.getdata("remeberme").equalsIgnoreCase("true")){
+                    rememberme.setChecked(true);
+                    email_et.setText(utils.getdata("email"));
+                }else{
+                    rememberme.setChecked(false);
+                }
+
+            }else{
+                startActivity(new Intent(LoginActivity.this, Splash.class));
+                finish();
+            }
+
         }
+
+        remember_check();
+
+        utils.savedata("ischecked", "true");
 
     }
 
@@ -153,22 +212,18 @@ public class LoginActivity extends Activity {
             @Override
             public void onClick(View v) {
                 if (rememberme.isChecked()) {
-                    utils.savedata("email", email_et.getText().toString());
-                    utils.savedata("pass", password_et.getText().toString());
-                    utils.savedata("ischecked", "true");
-                    System.out.println("Checked");
+                    utils.savedata("remeberme", "true");
                 } else {
-                    utils.savedata("email", "");
-                    utils.savedata("pass", "");
-                    utils.savedata("ischecked", "");
+                    utils.savedata("remeberme", "");
                 }
             }
         });
     }
 
     public void RegisterClick(View view) {
-        startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
-        //startActivity(new Intent(LoginActivity.this, BrowseActivity.class));
+        //startActivity(new Intent(LoginActivity.this, SetupActivity.class));
+        Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
+        startActivity(i);
     }
 
     public void LoginClick(View view) {
@@ -304,10 +359,8 @@ public class LoginActivity extends Activity {
                             if (jsonobj.getString("UserID") != null) {
                                 activationcode = jsonobj.getString("UserID");
                                 utils.savedata("Userid",activationcode);
-                                //Intent j = new Intent(LoginActivity.this, CapabilitiesService.class);
-                                //j.putExtra("Userid", utils.getdata("Userid"));
-                                //startService(j);
                                 utils.savedata("email",jsonobj.getString("UserEmailAddress"));
+                                utils.savedata("BusinessName",jsonobj.getString("BusinessName"));
                                 utils.savedata("fname",jsonobj.getString("UserFirstName"));
                                 utils.savedata("lname",jsonobj.getString("UserLastName"));
                                 return activationcode;
@@ -327,17 +380,18 @@ public class LoginActivity extends Activity {
                 protected void onPostExecute(String s) {
                     if(s!=null)
                     if (!s.equalsIgnoreCase("0")) {
+                        AddLastLogin();
                         isactivated = true;
                         hidePB();
                         utils.savedata("pass",password_et.getText().toString());
                         if (isactivated) {
                             //deleteDatabase("CapalinoDataBase.sqlite");
 
-                            if (!email_et.getText().toString().equalsIgnoreCase("") && rememberme.isChecked()) {
+                            /*if (!email_et.getText().toString().equalsIgnoreCase("") && rememberme.isChecked()) {
                                 utils.savedata("email", email_et.getText().toString());
                                 utils.savedata("pass", password_et.getText().toString());
                                 utils.savedata("ischecked", "false1");
-                            }
+                            }*/
 
                             Intent i = new Intent(LoginActivity.this, HomeActivity
                                     .class);
@@ -352,6 +406,7 @@ public class LoginActivity extends Activity {
                                 Intent j = new Intent(LoginActivity.this,SetupActivity.class);
                                 startActivity(j);
                             }else {
+                                utils.savedata("logout", "");
                                 i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -385,6 +440,44 @@ public class LoginActivity extends Activity {
         }
     }
 
+    private void AddLastLogin() {
+
+        final SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy hh:mm a");
+        String url = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/" +
+                "addLoginReportCapalino.php";
+
+        new AsyncTask<String, Void, String>(){
+
+
+            @Override
+            protected String doInBackground(String... params) {
+                try {
+                    HttpClient httpclient = new DefaultHttpClient();
+                    HttpPost httppost1 = new HttpPost(params[0]);
+                    List<NameValuePair> param = new ArrayList<>();
+                    String email = utils.getdata("email");
+                    //LastLoginTime
+                    String date = dateformat.format(new Date());
+                    param.add(new BasicNameValuePair("UserEmailAddress", email));
+                    param.add(new BasicNameValuePair("LastLoginTime", date));
+
+                    httppost1.setEntity(new UrlEncodedFormEntity(param));
+
+                    ResponseHandler<String> responseHandler1 = new BasicResponseHandler();
+                    final String response1 = httpclient.execute(httppost1,
+                            responseHandler1);
+
+                    Log.d("responsee", response1);
+                    return response1;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+                return null;
+            }
+        }.execute(url);
+    }
 
 
     public void generateHashkey() {
@@ -405,17 +498,6 @@ public class LoginActivity extends Activity {
         } catch (NoSuchAlgorithmException e) {
             Log.d(TAG, e.getMessage(), e);
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        /*if (utils.getdata("ischecked").equalsIgnoreCase("true"))
-            rememberme.setChecked(true);
-        else*/
-            rememberme.setChecked(true);
-        //email_et.setText(utils.getdata("email"));
-        //password_et.setText(utils.getdata("pass"));
     }
 
     void showPB(final String message) {
@@ -472,5 +554,60 @@ public class LoginActivity extends Activity {
     @Override
     public void onNewIntent(Intent intent) {
         this.setIntent(intent);
+    }
+
+    @Override
+    public void sendDataPurchase(String subscribtionType, double price) {
+
+        Bundle params = new Bundle();
+        params.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "Paid");
+        params.putString(FirebaseAnalytics.Param.ITEM_NAME, "Payment Activity");
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.ECOMMERCE_PURCHASE, params);
+
+        String Random = gen7DigitNumber();
+        Answers.getInstance().logPurchase(new PurchaseEvent()
+                .putItemPrice(BigDecimal.valueOf(price))
+                .putCurrency(Currency.getInstance("USD"))
+                .putItemName("Subscribe")
+                .putItemType(subscribtionType)
+                .putItemId("Capalino-" + Random)
+                .putSuccess(true));
+
+        logger.logEvent(AppEventsConstants.EVENT_NAME_PURCHASED);
+        //EVENT_NAME_PURCHASED
+    }
+
+    @Override
+    public void onSubscribe(String message) {
+        if(message.equalsIgnoreCase("Payment Failed")){
+            //send email
+            Log.d("Payment Failed", "Send email");
+            final Thread getData_thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+
+                    String url = "http://hivelet.com/subscriptionLeave.php?toemail=" +
+                            utils.getdata("email");
+                    try{
+                        HttpClient httpclient = new DefaultHttpClient();
+                        //showPB("Loading....");
+                        HttpPost httppost = new HttpPost(url);
+
+                        ResponseHandler<String> responseHandler = new BasicResponseHandler();
+                        final String response = httpclient.execute(httppost,
+                                responseHandler);
+
+                        Log.i("Response", "Response : " + response);
+
+
+                    }catch (Exception e){
+                        hidePB();
+                        e.printStackTrace();
+                    }
+                }
+            });
+            getData_thread.start();
+        }
     }
 }

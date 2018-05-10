@@ -1,9 +1,11 @@
 package com.MWBE.Connects.NY.Activities;
 
 import net.authorize.aim.Result;
+import net.authorize.sampleapplication.IContractor;
 import net.authorize.sampleapplication.LoginActivity;
 import net.authorize.sampleapplication.NavigationActivity;
 import net.authorize.sampleapplication.TransactionResultActivity;
+import net.authorize.sampleapplication.models.ContractorModel;
 import net.authorize.sampleapplication.models.StaticData;
 
 import android.app.Activity;
@@ -28,9 +30,12 @@ import com.MWBE.Connects.NY.DataStorage.Data;
 import com.MWBE.Connects.NY.R;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.PurchaseEvent;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
@@ -41,14 +46,17 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Currency;
 import java.util.Date;
+import java.util.Random;
 
 import io.fabric.sdk.android.services.concurrency.AsyncTask;
 
-public class SubscribtionActivity extends Activity {
+public class SubscribtionActivity extends Activity implements IContractor {
 
     private EditText quarter_et;
     private EditText annual_et;
@@ -133,8 +141,13 @@ public class SubscribtionActivity extends Activity {
     }
 
     public void BackClick(View view){
+        if (isannual || isMonthly){
+            ContractorModel.getInstance().sendDataPayment("Payment Failed");
+        }
         onBackPressed();
     }
+
+
 
     private void getLoginDetails() {
         final Thread getLogin_thread = new Thread(new Runnable() {
@@ -223,10 +236,10 @@ public class SubscribtionActivity extends Activity {
         Drawable img = this.getResources().getDrawable( R.drawable.checked );
         quarter_et.setCompoundDrawablesWithIntrinsicBounds( null, null, img, null);
         annual_et.setCompoundDrawablesWithIntrinsicBounds(0 , 0, 0, 0);
-        paymentStatus = "Quarterly";
+        paymentStatus = "Monthly";
         SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy hh:mm a");
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.MONTH, 3);
+        cal.add(Calendar.MONTH, 1);
         quarterdate = cal.getTime();
         expiry = dateformat.format(quarterdate);
         isannual = false;
@@ -246,9 +259,6 @@ public class SubscribtionActivity extends Activity {
 
         //startActivity(new Intent(this, LoginActivity.class));
     }
-
-
-
 
     public void getDiscountFromServer(String promocode){
         new AsyncTask<String,Void,Void>(){
@@ -425,29 +435,48 @@ public class SubscribtionActivity extends Activity {
                 }*/
 
                 if(isannual || isMonthly){
+                    float total_temp = isannual ? 99f : 9.99f;
                     if (promoType.equalsIgnoreCase("%") ){
-                        float discount = Float.valueOf(225) * (Float.valueOf(DiscountPercentage))/100;
-                        float totalammount =  (Float.valueOf(225) - discount);
+
+                        float discount = total_temp * (Float.valueOf(DiscountPercentage))/100;
+                        float totalammount =  (total_temp - discount);
+
+                        totalammount = totalammount <= 0 ? 0.0f : totalammount;
                         String result = String.format("%.02f",totalammount);
+
                         ((TextView)findViewById(R.id.note_promocode)).setVisibility(View.VISIBLE);
                         ((TextView)findViewById(R.id.note_promocode)).setText("Discounted Price: $"+String.valueOf(result));
+
                         //quarter_et.setText(String.valueOf(totalammount));
+                        final SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy hh:mm a");
+                        final Date date = new Date();
+                        SendPromoCodeData(PromoCodeID,utils.getdata("Userid"),StaticData.TotalAmount,dateformat.format(date));
                     }else if(promoType.equalsIgnoreCase("$")) {
-                        float totalammount =  Integer.valueOf(225) - Float.valueOf(DiscountPercentage);
+
+                        float totalammount =  total_temp - Float.valueOf(DiscountPercentage);
+                        totalammount = totalammount <= 0 ? 0.0f : totalammount;
+
                         String result = String.format("%.02f",totalammount);
                         ((TextView)findViewById(R.id.note_promocode)).setVisibility(View.VISIBLE);
+
                         ((TextView)findViewById(R.id.note_promocode)).setText("Discounted Price: $"+String.valueOf(result));
+
                         //quarter_et.setText(String.valueOf(totalammount));
+                        final SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy hh:mm a");
+                        final Date date = new Date();
+                        SendPromoCodeData(PromoCodeID,utils.getdata("Userid"),StaticData.TotalAmount,dateformat.format(date));
 
                     }else {
                         float totalamount = 0.0f;
                         String result = String.format("%.02f",totalamount);
                         //((TextView)findViewById(R.id.note_promocode)).setVisibility(View.VISIBLE);
                         //((TextView)findViewById(R.id.note_promocode)).setText("Discounted Price: "+String.valueOf(result));
-
+                        String msg = Integer.valueOf(promoType) > 1 ?
+                                "You have been given " + PromoType + " months free access. Enjoy all the premium features." :
+                                "You have been given " + PromoType + " month free access. Enjoy all the premium features.";
                         new AlertDialog.Builder(SubscribtionActivity.this)
                                 .setTitle("Yay!")
-                                .setMessage("You have been given " + PromoType + " month free access. Enjoy all the premium features.")
+                                .setMessage(msg)
                                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -487,6 +516,7 @@ public class SubscribtionActivity extends Activity {
             i.putExtra("PromoType",PromoType);
             i.putExtra("PromoCodeID",PromoCodeID);
             i.putExtra("discount",DiscountPercentage);
+            ContractorModel.getInstance().sendDataPayment("Payment Success!!");
 
             startActivity(i);
 
@@ -512,7 +542,7 @@ public class SubscribtionActivity extends Activity {
             @Override
             public void run() {
                 showPB("Loading...");
-                //String url = "https://celeritas-solutions.com/cds/capalinoapp/apis/getPaymentStatus.php?UserID=" +utils.getdata("Userid");
+
                   String url = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/getPaymentStatus.php?UserID=" +utils.getdata("Userid");
                 try{
                     HttpClient httpclient = new DefaultHttpClient();
@@ -545,7 +575,7 @@ public class SubscribtionActivity extends Activity {
                                 ((TextView)findViewById(R.id.currentversion_title)).setText("You are currently using paid version which will expire on: "+ExpirationDate);
                             }
                             hidePB();
-                            Calendar cal = Calendar.getInstance();
+                            /*Calendar cal = Calendar.getInstance();
                             SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
                             try {
                                 cal.setTime(sdf.parse(ExpirationDate));
@@ -556,8 +586,7 @@ public class SubscribtionActivity extends Activity {
                             }
                             ((TextView)findViewById(R.id.quarter_expiry_date)).setText("will expire on "+sdf.format(cal.getTime()));
                             cal.add(Calendar.MONTH, 9);
-                            ((TextView)findViewById(R.id.annual_expiry_date)).setText("will expire on "+sdf.format(cal.getTime()));
-
+                            ((TextView)findViewById(R.id.annual_expiry_date)).setText("will expire on "+sdf.format(cal.getTime()));*/
                             if(Data.DateExpire){
                                 ((TextView)findViewById(R.id.currentversion_title)).setText("Your trial/paid subscription has expired.");
                             }
@@ -575,47 +604,7 @@ public class SubscribtionActivity extends Activity {
         });
         getData_thread.start();
 
-/*
-        String url = "http://celeritas-solutions.com/cds/capalinoapp/apis/getUserRequests.php?UserID=" +utils.getdata("Userid");
-        new AsyncTask<String, Void, String>() {
-            @Override
-            protected String doInBackground(String... params) {
-                try{
-                    HttpClient httpclient = new DefaultHttpClient();
-                    //showPB("Loading....");
-                    HttpPost httppost = new HttpPost(params[0]);
 
-                    ResponseHandler<String> responseHandler = new BasicResponseHandler();
-                    final String response = httpclient.execute(httppost,
-                            responseHandler);
-
-                    Log.i("Response", "Response : " + response);
-                    String RequestText = null;
-                    JSONArray jsonarray = new JSONArray(response);
-                    for(int i=0;i<jsonarray.length();i++) {
-                        JSONObject jsonobj = jsonarray.getJSONObject(i);
-                        RequestText = jsonobj.getString("RequestText");
-                        list_cmnt.add(new ListData_track_comnt(RequestText, R.drawable.person));
-                    }
-
-                    return RequestText;
-                }catch (Exception e){
-                    e.printStackTrace();
-                    return "";
-                }
-
-            }
-
-            @Override
-            protected void onPostExecute(String s) {
-                super.onPostExecute(s);
-                if(!s.equalsIgnoreCase("")){
-                    CustomListAdapterComment adaptercomment = new CustomListAdapterComment(getActivity(),R.layout.list_track_row,list_cmnt);
-                    lv.setAdapter(adaptercomment);
-                }
-            }
-        }.execute(url,"","");
-*/
     }
 
     public void SendData(){
@@ -623,11 +612,44 @@ public class SubscribtionActivity extends Activity {
             showPB("Loading...");
             final SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy hh:mm a");
             final Date date = new Date();
-            String url = "https://celeritas-solutions.com/cds/capalinoapp/apis/updateCustomerDataApp.php?UserID="+utils.getdata("Userid")
+            String url = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/updateCustomerDataApp.php?UserID="+utils.getdata("Userid")
                     +"&Email="+utils.getdata("email")+"&PaymentStatus="+paymentStatus+"&PaymentDate="+dateformat.format(date)
                     +"&ExpirationDate="+expiry;
             url = url.replace(" ","%20");
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+
+        new AsyncTask<String,Void,String>(){
+
+            @Override
+            protected String doInBackground(String... strings) {
+                try {
+
+                    HttpClient httpclient = new DefaultHttpClient();
+                    //showPB("Loading....");
+                    HttpPost httppost = new HttpPost(strings[0]);
+
+                    ResponseHandler<String> responseHandler = new BasicResponseHandler();
+                    final String response = httpclient.execute(httppost,
+                            responseHandler);
+
+                    Log.i("Response", "Response : " + response);
+                    if(response.equalsIgnoreCase("Record Updated.")){
+                        if(PromoCodeID!=null && !PromoCodeID.equalsIgnoreCase(""))
+                            SendPromoCodeData(PromoCodeID,utils.getdata("Userid"),StaticData.TotalAmount,dateformat.format(date));
+                    }
+
+                } catch (Exception e) {
+                    hidePB();
+                    e.printStackTrace();
+                }
+
+                return null;
+            }
+        }.execute(url);
+
+
+
+
+           /* StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
                     if (response.equalsIgnoreCase("Record Updated.")) {
@@ -653,12 +675,30 @@ public class SubscribtionActivity extends Activity {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     error.printStackTrace();
+                    hidePB();
 
                     //Toast.makeText(getApplicationContext(), "", Toast.LENGTH_LONG).show();
                 }
             });
 
-            Volley.newRequestQueue(SubscribtionActivity.this).add(stringRequest);
+            stringRequest.setRetryPolicy(new RetryPolicy() {
+                @Override
+                public int getCurrentTimeout() {
+                    return 50000;
+                }
+
+                @Override
+                public int getCurrentRetryCount() {
+                    return 50000;
+                }
+
+                @Override
+                public void retry(VolleyError error) throws VolleyError {
+
+                }
+            });
+
+            Volley.newRequestQueue(SubscribtionActivity.this).add(stringRequest);*/
 
     }
 
@@ -668,17 +708,42 @@ public class SubscribtionActivity extends Activity {
             @Override
             protected String doInBackground(String... params) {
                 params[0] = params[0].replace(" ","%20");
-                StringRequest stringRequest = new StringRequest(Request.Method.POST, params[0], new Response.Listener<String>() {
+
+                try {
+                    HttpClient httpclient = new DefaultHttpClient();
+                    //showPB("Loading....");
+                    HttpPost httppost = new HttpPost(params[0]);
+
+                    ResponseHandler<String> responseHandler = new BasicResponseHandler();
+                    final String response = httpclient.execute(httppost,
+                            responseHandler);
+
+                    Log.i("Response", "Response : " + response);
+                    hidePB();
+                    if(response.contains("Record added.")){
+                        if(PromoCodeID!=null && !PromoCodeID.equalsIgnoreCase("")){
+                            finish();
+
+                        }
+                    }
+
+                } catch (Exception e) {
+                    hidePB();
+                    e.printStackTrace();
+                }
+
+                /*StringRequest stringRequest = new StringRequest(Request.Method.POST, params[0], new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         response = response.replace("\r","");
                         response = response.replace("\n","");
                         if (response.equalsIgnoreCase("Record Added. ")) {
-                            hidePB();
+
                             res= response;
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
+                                    hidePB();
                                     finish();
                                 }
                             });
@@ -696,7 +761,7 @@ public class SubscribtionActivity extends Activity {
                     }
                 });
 
-                Volley.newRequestQueue(SubscribtionActivity.this).add(stringRequest);
+                Volley.newRequestQueue(SubscribtionActivity.this).add(stringRequest);*/
 
                 return res;
             }
@@ -746,10 +811,14 @@ public class SubscribtionActivity extends Activity {
 
             @Override
             public void run() {
-                pb = new ProgressDialog(SubscribtionActivity.this);
-                pb.setMessage(message);
-                pb.setCancelable(false);
-                pb.show();
+                try {
+                    pb = new ProgressDialog(SubscribtionActivity.this);
+                    pb.setMessage(message);
+                    pb.setCancelable(false);
+                    pb.show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -774,4 +843,16 @@ public class SubscribtionActivity extends Activity {
     }
 
 
+    @Override
+    public void sendDataPurchase(String subscribtionType, double price) {
+        Random rand = new Random();
+        int random = rand.nextInt(100);
+        Answers.getInstance().logPurchase(new PurchaseEvent()
+                .putItemPrice(BigDecimal.valueOf(price))
+                .putCurrency(Currency.getInstance("USD"))
+                .putItemName("subscribe")
+                .putItemType(subscribtionType)
+                .putItemId("Capalino-Subscribe-" + random)
+                .putSuccess(true));
+    }
 }

@@ -17,15 +17,16 @@ repositories {
 
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "25.0.2"
-
+    signingConfigs {
+    }
+    compileSdkVersion 26
+    buildToolsVersion "27.0.2"
     defaultConfig {
         applicationId "com.MWBE.Connects.NY"
         minSdkVersion 15
-        targetSdkVersion 24
-        versionCode 4
-        versionName "2.0"
+        targetSdkVersion 27
+        versionCode 7
+        versionName "2.0.3"
         multiDexEnabled true
     }
     buildTypes {
@@ -45,16 +46,17 @@ android {
     }
     sourceSets {
         main {
-            res.srcDirs = ['src/main/res', 'src/main/res/layout-normal']
+            res.srcDirs = ['src/main/res', 'src/main/res/layout-normal', 'src/main/res/anim']
             assets.srcDirs = ['src/main/assets', 'src/main/assets/']
         }
     }
-
     lintOptions {
         checkReleaseBuilds false
         // Or, if you prefer, you can continue to check for errors in release builds,
         // but continue the build even when errors are found:
         abortOnError false
+    }
+    productFlavors {
     }
 }
 
@@ -79,5 +81,8 @@ dependencies {
     compile 'com.google.android.gms:play-services-gcm:9.0.0'
     testCompile 'junit:junit:4.12'
     compile 'io.branch.sdk.android:library:2.6.1'
+
+    compile 'com.google.firebase:firebase-core:9.0.0'
+    compile 'com.google.firebase:firebase-config:9.0.0'
 }
 

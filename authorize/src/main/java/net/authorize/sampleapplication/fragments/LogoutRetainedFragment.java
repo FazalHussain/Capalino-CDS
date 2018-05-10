@@ -2,6 +2,7 @@ package net.authorize.sampleapplication.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
@@ -63,7 +64,14 @@ public class LogoutRetainedFragment extends android.support.v4.app.Fragment impl
             Intent intent = new Intent(getActivity(), AnetIntentService.class);
             intent.setAction(AnetIntentService.ACTION_LOGOUT);
             intent.putExtra(AnetResultReceiver.RESULT_RECEIVER_TAG, resultReceiver);
-            getActivity().startService(intent);
+
+            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O) {
+                getActivity().startForegroundService(intent);
+            }else {
+                getActivity().startService(intent);
+            }
+
+
         } catch (Exception e) {
             return false;
         }

@@ -16,7 +16,6 @@
         android:layout_height="match_parent">
 
     <ScrollView
-        android:layout_marginTop="50dp"
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"  >
@@ -117,6 +116,7 @@
             android:paddingRight="20dp"
             android:paddingBottom="4dp"
             android:textSize="17sp"
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/company_name"/>
@@ -124,6 +124,7 @@
         <com.MWBE.Connects.NY.CustomViews.CustomEditText_Book
             android:padding="8dp"
             android:singleLine="true"
+            android:visibility="gone"
             android:id="@+id/company_name"
             android:inputType="textCapSentences"
             android:layout_marginLeft="20dp"

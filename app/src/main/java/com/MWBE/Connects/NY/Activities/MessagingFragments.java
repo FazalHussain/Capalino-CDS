@@ -172,47 +172,7 @@ public class MessagingFragments extends Activity implements TextWatcher {
         });
         getData_thread.start();
 
-/*
-        String url = "http://celeritas-solutions.com/cds/capalinoapp/apis/getUserRequests.php?UserID=" +utils.getdata("Userid");
-        new AsyncTask<String, Void, String>() {
-            @Override
-            protected String doInBackground(String... params) {
-                try{
-                    HttpClient httpclient = new DefaultHttpClient();
-                    //showPB("Loading....");
-                    HttpPost httppost = new HttpPost(params[0]);
 
-                    ResponseHandler<String> responseHandler = new BasicResponseHandler();
-                    final String response = httpclient.execute(httppost,
-                            responseHandler);
-
-                    Log.i("Response", "Response : " + response);
-                    String RequestText = null;
-                    JSONArray jsonarray = new JSONArray(response);
-                    for(int i=0;i<jsonarray.length();i++) {
-                        JSONObject jsonobj = jsonarray.getJSONObject(i);
-                        RequestText = jsonobj.getString("RequestText");
-                        list_cmnt.add(new ListData_track_comnt(RequestText, R.drawable.person));
-                    }
-
-                    return RequestText;
-                }catch (Exception e){
-                    e.printStackTrace();
-                    return "";
-                }
-
-            }
-
-            @Override
-            protected void onPostExecute(String s) {
-                super.onPostExecute(s);
-                if(!s.equalsIgnoreCase("")){
-                    CustomListAdapterComment adaptercomment = new CustomListAdapterComment(getActivity(),R.layout.list_track_row,list_cmnt);
-                    lv.setAdapter(adaptercomment);
-                }
-            }
-        }.execute(url,"","");
-*/
     }
 
     private void SendClick() {
@@ -227,7 +187,7 @@ public class MessagingFragments extends Activity implements TextWatcher {
                         String url = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/addUserRequest.php?RequestText=" + requesttext.getText().toString() +
                                 "&UserID=" + utils.getdata("Userid") + "&RequestAddedDateTime=" + dateformat.format(date)+"&ProcurementID="+ProcurementDetailsActivity.getprocid();
                         url = url.replace(" ", "%20");
-                        url = url.replace("'","\\u0027");
+                        url = url.replace("'","''");
                         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
                             @Override
                             public void onResponse(String response) {

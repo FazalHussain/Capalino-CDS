@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -946,7 +947,11 @@ public class CapablitiesActivity extends FragmentActivity {
 
         Intent j = new Intent(CapablitiesActivity.this, CapabilitiesService.class);
         j.putExtra("Userid", utils.getdata("Userid"));
-        startService(j);
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O) {
+            startForegroundService(j);
+        }else {
+            startService(j);
+        }
 
         if(getIntent().getStringExtra("status1")!=null){
             startActivity(new Intent(this,SettingsActivity.class));
@@ -960,7 +965,7 @@ public class CapablitiesActivity extends FragmentActivity {
         Intent i = new Intent(CapablitiesActivity.this, CapablitiesSearchActivity.class);
         i.putExtra("status", "Advertising");
         utils.savedata("status","Advertising");
-        i.putExtra("header", "Advertising, Graphic Arts...");
+        i.putExtra("header", "Advertising, Graphic Arts and Marketing");
         startActivityForResult(i, Constants.request_advertising);
     }
 
@@ -968,7 +973,7 @@ public class CapablitiesActivity extends FragmentActivity {
         Intent i = new Intent(CapablitiesActivity.this, CapablitiesSearchActivity.class);
         i.putExtra("status", "HVConstruction");
         utils.savedata("status", "HVConstruction");
-        i.putExtra("header", "Construction");
+        i.putExtra("header", "Construction (Horizontal and Vertical)");
         startActivityForResult(i, Constants.request_horizontal_constructions);
     }
 
@@ -976,7 +981,7 @@ public class CapablitiesActivity extends FragmentActivity {
         Intent i = new Intent(CapablitiesActivity.this, CapablitiesSearchActivity.class);
         i.putExtra("status", "Architecture");
         utils.savedata("status", "Architecture");
-        i.putExtra("header", "Architectural, Engineering");
+        i.putExtra("header", "Architectural, Engineering and Surveying");
         startActivityForResult(i, Constants.request_architectural);
     }
 
@@ -992,7 +997,7 @@ public class CapablitiesActivity extends FragmentActivity {
         Intent i = new Intent(CapablitiesActivity.this, CapablitiesSearchActivity.class);
         i.putExtra("status", "Facilities");
         utils.savedata("status", "Facilities");
-        i.putExtra("header", "Facilities Maintenance");
+        i.putExtra("header", "Facilities Maintenance and Building Ops");
         startActivityForResult(i, Constants.request_facilities);
     }
 
@@ -1000,7 +1005,7 @@ public class CapablitiesActivity extends FragmentActivity {
         Intent i = new Intent(CapablitiesActivity.this, CapablitiesSearchActivity.class);
         i.putExtra("status", "GeneralMaintainance");
         utils.savedata("status", "GeneralMaintainance");
-        i.putExtra("header", "General maintenance");
+        i.putExtra("header", "Solid Waste Removal");
         startActivityForResult(i, Constants.request_generalmaintainance);
     }
 
@@ -1202,14 +1207,17 @@ public class CapablitiesActivity extends FragmentActivity {
     public void onBackPressed() {
         Intent j = new Intent(CapablitiesActivity.this, CapabilitiesService.class);
         j.putExtra("Userid", utils.getdata("Userid"));
-        startService(j);
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O) {
+            startForegroundService(j);
+        }else {
+            startService(j);
+        }
+
 
         if(getIntent().getStringExtra("status1")!=null){
             startActivity(new Intent(this,SettingsActivity.class));
         }else
             finish();
-
-
 
     }
 

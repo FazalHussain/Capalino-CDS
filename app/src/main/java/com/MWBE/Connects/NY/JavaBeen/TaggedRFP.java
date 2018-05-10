@@ -7,14 +7,17 @@ public class TaggedRFP {
 
     int PreferenceID,ProcurementID,SettingTypeID,ActualTagID;
     String AddedDateTime,lastupdatedate;
+    String status;
 
-    public TaggedRFP(int preferenceID, int procurementID, int settingTypeID, int actualTagID, String addedDateTime, String lastupdatedate) {
+    public TaggedRFP(int preferenceID, int procurementID, int settingTypeID, int actualTagID, String addedDateTime,
+                     String lastupdatedate, String status) {
         PreferenceID = preferenceID;
         ProcurementID = procurementID;
         SettingTypeID = settingTypeID;
         ActualTagID = actualTagID;
         AddedDateTime = addedDateTime;
         this.lastupdatedate = lastupdatedate;
+        this.status = status;
     }
 
     public int getPreferenceID() {
@@ -63,5 +66,13 @@ public class TaggedRFP {
 
     public void setLastupdatedate(String lastupdatedate) {
         this.lastupdatedate = lastupdatedate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

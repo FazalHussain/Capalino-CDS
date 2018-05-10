@@ -26,6 +26,8 @@ public class ProcMaster {
     String Status;
     String LASTEDITEDUSERNAME;
     String PDFPath;
+    String RecordUpdatedDate;
+    String Action;
 
     public ProcMaster(int procurementID, String procurementEPIN, String procurementSource, String procurementAgencyID,
                       String procurementTypeIDP, String procurementTitle, String procurementShortDescription,
@@ -33,7 +35,7 @@ public class ProcMaster {
                       String procurementQuestionDeadline, String procurementAgencyURL, String procurementDocument1URL,
                       String procurementDocument2URL, String procurementDocument3URL, String procurementDocument4URL,
                       String procurementDocument5URL, String procurementAddedDate, String procurementContractValueID,
-                      String status, String LASTEDITEDUSERNAME, String PDFPath) {
+                      String status, String LASTEDITEDUSERNAME, String PDFPath, String RecordUpdatedDate, String Action) {
         ProcurementID = procurementID;
         ProcurementEPIN = procurementEPIN;
         ProcurementSource = procurementSource;
@@ -56,6 +58,8 @@ public class ProcMaster {
         Status = status;
         this.LASTEDITEDUSERNAME = LASTEDITEDUSERNAME;
         this.PDFPath = PDFPath;
+        this.RecordUpdatedDate = RecordUpdatedDate;
+        this.Action = Action;
     }
 
     public int getProcurementID() {
@@ -232,5 +236,13 @@ public class ProcMaster {
 
     public void setPDFPath(String PDFPath) {
         this.PDFPath = PDFPath;
+    }
+
+    public String getRecordUpdatedDate() {
+        return RecordUpdatedDate;
+    }
+
+    public String getAction() {
+        return Action;
     }
 }

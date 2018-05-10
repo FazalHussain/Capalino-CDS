@@ -3,10 +3,14 @@ package com.MWBE.Connects.NY.JavaBeen;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.TextView;
 
 import com.MWBE.Connects.NY.CustomViews.CustomButton;
+import com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold;
 import com.MWBE.Connects.NY.CustomViews.CustomTextView_Book;
 import com.MWBE.Connects.NY.R;
+
+import org.w3c.dom.Text;
 
 /**
  * Created by Fazal on 5/13/2016.
@@ -16,6 +20,7 @@ public class ViewHolder_RfpList {
     public CustomTextView_Book Agency;
     public CustomTextView_Book public_date;
     public CustomTextView_Book due_date;
+    public TextView match_tagged;
     public RatingBar ratingbar;
     public CustomButton track;
     public CustomButton advice;
@@ -26,6 +31,7 @@ public class ViewHolder_RfpList {
         Agency = (CustomTextView_Book) view.findViewById(R.id.agency_content);
         public_date = (CustomTextView_Book) view.findViewById(R.id.publicationdate_content);
         due_date = (CustomTextView_Book) view.findViewById(R.id.duedate_content);
+        match_tagged = (TextView) view.findViewById(R.id.match_badge);
         ratingbar = (RatingBar) view.findViewById(R.id.rating_bar);
         track = (CustomButton) view.findViewById(R.id.trackbtn);
         advice = (CustomButton) view.findViewById(R.id.advicebtn);

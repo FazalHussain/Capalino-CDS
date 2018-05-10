@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.MWBE.Connects.NY.Activities.HomeActivity;
+import com.MWBE.Connects.NY.Activities.PdfViewActivity;
 import com.MWBE.Connects.NY.DataStorage.Data;
 import com.MWBE.Connects.NY.Database.DataBaseHelper;
 import com.MWBE.Connects.NY.JavaBeen.CapabilitiesMaster;
@@ -45,6 +46,8 @@ import com.MWBE.Connects.NY.AppConstants.Utils;
 import com.MWBE.Connects.NY.JavaBeen.ListData_Agency;
 import com.MWBE.Connects.NY.JavaBeen.UpdateData;
 import com.MWBE.Connects.NY.R;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
@@ -63,6 +66,8 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
  * Created by Fazal on 7/28/2016.
@@ -125,6 +130,7 @@ public class CapablitiesSetup extends Fragment {
 
     private void init(View rootview) {
        // getDataFromServer();
+
         utils = new Utils(getActivity());
         lv = (ListView) rootview.findViewById(R.id.list_certification);
         submitbtn = (Button) rootview.findViewById(R.id.submit);
@@ -785,11 +791,23 @@ public class CapablitiesSetup extends Fragment {
                     UpdateGeographicPref(1111);
                     Data.AllNYC = false;
                 }
+
                 UpdateGeographicPref();
                 UpdateTargetContractPref();
                 UpdateCertificationPref();
                 SendData();
-                UpdateCapalbilities1(100);
+                if (isallchecked(list_check)){
+                    UpdateCapalbilities1(100);
+                }else {
+                    UpdateStatus();
+                    HidePB();
+                    Intent j = new Intent(getActivity(), HomeActivity.class);
+                    j.putExtra("islogin", "yes");
+                    j.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    j.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(j);
+                }
+
                 Storage.list_check.clear();
                 Storage.list_check_target_contract.clear();
                 Storage.list_check_capab.clear();
@@ -798,6 +816,21 @@ public class CapablitiesSetup extends Fragment {
             }
         });
     }
+
+
+
+    private boolean isallchecked(ArrayList<Boolean> list_check) {
+
+        for (int i=0; i<list_check.size(); i++){
+            if (list_check.get(i)){
+                return true;
+            }
+        }
+
+        return false;
+
+    }
+
 
     private void updatedata() {
         showPB("Please wait, your profile is being updated...");
@@ -871,23 +904,7 @@ public class CapablitiesSetup extends Fragment {
                 StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                       /* if (response.equalsIgnoreCase("Records Added.")) {
-                          //UpdateTargetContractPref();
 
-                        } else {
-                            hidePB();
-                            new AlertDialog.Builder(getActivity())
-                                    .setTitle("Alert!")
-                                    .setMessage("Profile not updated, please try again.")
-                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-
-                                        }
-                                    })
-                                    .setIcon(android.R.drawable.ic_dialog_alert)
-                                    .show();
-                        }*/
                     }
                 }, new Response.ErrorListener() {
                     @Override
@@ -1129,7 +1146,7 @@ public class CapablitiesSetup extends Fragment {
             if(!toggleOpen)
             if(!isallcheck){
                 if (!havedata) {
-                    hidePB();
+                    HidePB();
                     Intent j = new Intent(getActivity(), HomeActivity.class);
                     j.putExtra("islogin", "yes");
                     j.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -1209,13 +1226,13 @@ public class CapablitiesSetup extends Fragment {
                             }
                         }
                     }catch (Exception e){
-                        hidePB();
+                        HidePB();
                         Log.d("error",e.getMessage().toString());
                         e.printStackTrace();
                     }
 
                     if (!havedata) {
-                        hidePB();
+                        HidePB();
                         Intent j = new Intent(getActivity(), HomeActivity.class);
                         j.putExtra("islogin", "yes");
                         j.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -1499,43 +1516,13 @@ public class CapablitiesSetup extends Fragment {
                 if (response.equalsIgnoreCase("Record Added.")) {
                     Log.d("Trial","Trial Success");
 
-                } else {
-                    //hidePB();
-                   /* getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            new android.support.v7.app.AlertDialog.Builder(context)
-                                    .setTitle("Alert!")
-                                    .setMessage("No Record Added, Please Try Again.")
-                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-
-                                        }
-                                    })
-                                    .setIcon(android.R.drawable.ic_dialog_alert)
-                                    .show();
-                        }
-                    });*/
-
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                /*new AlertDialog.Builder(context)
-                        .setTitle("Alert!")
-                        .setMessage("No Record Added, Please Try Again.")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
 
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();*/
-                //Toast.makeText(getApplicationContext(), "", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -1551,7 +1538,6 @@ public class CapablitiesSetup extends Fragment {
                 @Override
                 public void onResponse(String response) {
                     if (response.equalsIgnoreCase("Success")) {
-
                             AlertDialog dialog = new AlertDialog.Builder(getActivity())
                                     .setTitle("Alert!")
                                     .setMessage("Congratulations! You are now ready to use the MWBE Connect NY.")
@@ -1695,5 +1681,13 @@ public class CapablitiesSetup extends Fragment {
     void HidePB(){
         if (pb != null && pb.isShowing())
             pb.dismiss();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (pb != null && pb.isShowing())
+            pb.dismiss();
+
     }
 }

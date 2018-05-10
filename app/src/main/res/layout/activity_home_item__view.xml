@@ -163,6 +163,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:visibility="gone"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -305,6 +306,7 @@
                 android:layout_height="wrap_content">
 
                 <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+                    android:layout_toLeftOf="@+id/calender"
                     android:layout_below="@+id/link_header"
                     android:id="@+id/link_content"
                     android:scrollbars="vertical"

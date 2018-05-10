@@ -2,10 +2,12 @@ package com.MWBE.Connects.NY.Database;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.MWBE.Connects.NY.Database.DatabaseBeen.TrackingData;
@@ -24,6 +26,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by anas on 3/8/2016.
@@ -34,13 +37,15 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     // Data Base Name.
     public static final String DATABASE_NAME = "CapalinoDataBase.sqlite";
     // Data Base Version.
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     // Table Names of Data Base.
 
     public Context context;
     public static SQLiteDatabase sqliteDataBase;
     private String query;
     private ProgressDialog pb;
+
+    ArrayList<ListData_RFP> list_geog =new ArrayList<>();
 
     /**
      * Constructor
@@ -369,77 +374,181 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public Cursor getDataFromProcurementMaster(int settingtypeid){
         Data.star = 0;
         try {
-            openDataBase();
+            if(!DataBaseHelper.sqliteDataBase.isOpen()) {
+                openDataBase();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        if(Data.isOpen){
-            query = "select Distinct PM.ProcurementTitle,PM.ProcurementAgencyID,PM.ProcurementAddedDate,PM.ProcurementProposalDeadline,PM.ProcurementID from ProcurementMaster PM JOIN ProcurementRFPPreferences RFP ON " +
-                    "PM.ProcurementID=RFP.ProcurementID where RFP.SettingTypeID="+settingtypeid;
-        }
+           /* query = "select Distinct PM.ProcurementTitle,PM.ProcurementAgencyID,PM.ProcurementAddedDate,PM.ProcurementProposalDeadline,PM.ProcurementID from ProcurementMaster PM JOIN ProcurementRFPPreferences RFP ON " +
+                    "PM.ProcurementID=RFP.ProcurementID where RFP.SettingTypeID="+settingtypeid;*/
+
+            query = "select Distinct PM.ProcurementTitle,PM.ProcurementAgencyID,PM.ProcurementProposalDeadline," +
+                    "PM.ProcurementAddedDate,PM.ProcurementID,PM.ProcurementLongDescription,PM.PDFPath," +
+                    "PM.ProcurementAgencyURL from ProcurementMaster PM JOIN ProcurementRFPPreferences RFP " +
+                    "ON PM.ProcurementID=RFP.ProcurementID where RFP.SettingTypeID=" + settingtypeid;
 
         Cursor cursor = sqliteDataBase.rawQuery(query, null);
-
-        if(cursor.getCount()>0) {
-            Data.star = 1;
+        try {
+            if (cursor.getCount() > 0) {
+                Data.star = 1;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
         //cursor.close();
-        sqliteDataBase.close();
         return cursor;
     }
 
-    public ArrayList<ListData_RFP> getDataFromProcurementMasterStar2(int Actualid,int ProcurementID) {
-        ArrayList<ListData_RFP> Geographic_list = new ArrayList<>();
+    public Cursor getDataFromProcurementMasterByProcurementID(int ProcurementID){
+        Data.star = 0;
         try {
-            openDataBase();
+            if(!DataBaseHelper.sqliteDataBase.isOpen()) {
+                openDataBase();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        if(Data.star==1){
-            query = "select Distinct PM.ProcurementTitle,PM.ProcurementAgencyID,PM.ProcurementProposalDeadline,PM.ProcurementAddedDate,PM.ProcurementID from ProcurementMaster PM " +
-                    "JOIN ProcurementRFPPreferences RFP ON PM.ProcurementID=RFP.ProcurementID where " +
-                    "RFP.SettingTypeID=1 AND RFP.ActualTagID='"+Actualid+"' AND PM.ProcurementID='"+ProcurementID+"'";
+           /* query = "select Distinct PM.ProcurementTitle,PM.ProcurementAgencyID,PM.ProcurementAddedDate,PM.ProcurementProposalDeadline,PM.ProcurementID from ProcurementMaster PM JOIN ProcurementRFPPreferences RFP ON " +
+                    "PM.ProcurementID=RFP.ProcurementID where RFP.SettingTypeID="+settingtypeid;*/
+
+            query = "select Distinct PM.ProcurementTitle,PM.ProcurementAgencyID,PM.ProcurementProposalDeadline," +
+                    "PM.ProcurementAddedDate,PM.ProcurementID,PM.ProcurementLongDescription,PM.PDFPath," +
+                    "PM.ProcurementAgencyURL from ProcurementMaster PM JOIN ProcurementRFPPreferences RFP " +
+                    "ON PM.ProcurementID=RFP.ProcurementID where RFP.ProcurementID = " +
+                    ProcurementID;
+
+
+        Cursor cursor = sqliteDataBase.rawQuery(query, null);
+        try {
+
+        }catch (Exception e){
+            e.printStackTrace();
         }
+
+        //cursor.close();
+        return cursor;
+    }
+
+
+    public Cursor getDataFromProcurementMasterStar2(final int Actualid, int settingTypeID) {
+        final ArrayList<ListData_RFP> Geographic_list = new ArrayList<>();
+        final ArrayList<ListData_RFP> geographiclist = new ArrayList<ListData_RFP>();// unique
+        /*try {
+            openDataBase();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }*/
+        query = "select Distinct PM.ProcurementTitle,PM.ProcurementAgencyID,PM.ProcurementProposalDeadline," +
+                "PM.ProcurementAddedDate,PM.ProcurementID,PM.ProcurementLongDescription,PM.PDFPath," +
+                "PM.ProcurementAgencyURL from ProcurementMaster PM JOIN ProcurementRFPPreferences RFP " +
+                "ON PM.ProcurementID=RFP.ProcurementID where RFP.SettingTypeID=" + settingTypeID +
+                " AND RFP.ActualTagID=" + Actualid;
+
 
         Cursor cursorstar2 = sqliteDataBase.rawQuery(query, null);
-        if(cursorstar2.getCount()>0){
-            while (cursorstar2.moveToNext()){
-                Geographic_list.add(new ListData_RFP(cursorstar2.getString(4),"Capalino+Company Match", Data.star, cursorstar2.getString(0), cursorstar2.getString(1),
-                        cursorstar2.getString(2), cursorstar2.getString(3)));
-            }
-        }
+        try {
+            if (cursorstar2.getCount() > 0) {
+                return cursorstar2;
 
-        //cursorstar2.close();
-        sqliteDataBase.close();
-        return Geographic_list;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        //Log.d("2starquery","Success size"+ cursorstar2.getCount());
+        return null;
+
     }
 
-    public ArrayList<ListData_RFP> getDataFromProcurementMasterStar3(int Actualid,int ProcurementID) {
-        ArrayList<ListData_RFP> Targetlist = new ArrayList<>();
-        try {
+    public Cursor getDataFromProcurementMasterStar2ByProcurementID(final int Actualid, int settingTypeID) {
+        final ArrayList<ListData_RFP> Geographic_list = new ArrayList<>();
+        final ArrayList<ListData_RFP> geographiclist = new ArrayList<ListData_RFP>();// unique
+        /*try {
             openDataBase();
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-            query = "select Distinct(PM.ProcurementTitle),PM.ProcurementAgencyID,PM.ProcurementProposalDeadline,PM.ProcurementAddedDate,PM.ProcurementID from ProcurementMaster PM " +
-                    "JOIN ProcurementRFPPreferences RFP ON PM.ProcurementID=RFP.ProcurementID where " +
-                    "RFP.SettingTypeID=2 AND RFP.ActualTagID='"+Actualid+"' AND PM.ProcurementID='"+ProcurementID+"'";
+        }*/
+        query = "select Distinct PM.ProcurementTitle,PM.ProcurementAgencyID,PM.ProcurementProposalDeadline," +
+                "PM.ProcurementAddedDate,PM.ProcurementID,PM.ProcurementLongDescription,PM.PDFPath," +
+                "PM.ProcurementAgencyURL from ProcurementMaster PM JOIN ProcurementRFPPreferences RFP " +
+                "ON PM.ProcurementID=RFP.ProcurementID where RFP.SettingTypeID=" + settingTypeID +
+                " AND RFP.ActualTagID=" + Actualid;
 
-        Cursor cursorstar3 = sqliteDataBase.rawQuery(query, null);
 
-        if(cursorstar3.getCount()>0){
-            while (cursorstar3.moveToNext()){
-                Targetlist.add(new ListData_RFP(cursorstar3.getString(4),"Capalino+Company Match", Data.star, cursorstar3.getString(0), cursorstar3.getString(1),
-                        cursorstar3.getString(2), cursorstar3.getString(3)));
+        Cursor cursorstar2 = sqliteDataBase.rawQuery(query, null);
+        try {
+            if (cursorstar2.getCount() > 0) {
+                return cursorstar2;
+
             }
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        //cursorstar3.close();
-        sqliteDataBase.close();
+        //Log.d("2starquery","Success size"+ cursorstar2.getCount());
+        return null;
 
-
-        return Targetlist;
     }
+
+    public Cursor getDataFromProcurementMasterStar3(final int Actualid, int settingTypeID) {
+        final ArrayList<ListData_RFP> Geographic_list = new ArrayList<>();
+        final ArrayList<ListData_RFP> geographiclist = new ArrayList<ListData_RFP>();// unique
+        /*try {
+            openDataBase();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }*/
+        query = "select Distinct PM.ProcurementTitle,PM.ProcurementAgencyID,PM.ProcurementProposalDeadline," +
+                "PM.ProcurementAddedDate,PM.ProcurementID,PM.ProcurementLongDescription,PM.PDFPath," +
+                "PM.ProcurementAgencyURL from ProcurementMaster PM JOIN ProcurementRFPPreferences RFP " +
+                "ON PM.ProcurementID=RFP.ProcurementID where RFP.SettingTypeID=" + settingTypeID +
+                " AND RFP.ActualTagID=" + Actualid;
+
+
+        Cursor cursorstar2 = sqliteDataBase.rawQuery(query, null);
+        try {
+            if (cursorstar2.getCount() > 0) {
+                return cursorstar2;
+
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return null;
+
+    }
+
+    public Cursor getDataFromProcurementMasterStar2_(final int Actualid, int ProcurementID) {
+        final ArrayList<ListData_RFP> Geographic_list = new ArrayList<>();
+        final ArrayList<ListData_RFP> geographiclist = new ArrayList<ListData_RFP>();// unique
+        /*try {
+            openDataBase();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }*/
+        query = "select Distinct(PM.ProcurementTitle),PM.ProcurementAgencyID,PM.ProcurementProposalDeadline,PM.ProcurementAddedDate,PM.ProcurementID from ProcurementMaster PM " +
+                "JOIN ProcurementRFPPreferences RFP ON PM.ProcurementID=RFP.ProcurementID where " +
+                "RFP.SettingTypeID=1 AND RFP.ActualTagID="+ Actualid +" AND PM.ProcurementID='"+ProcurementID+"'";
+
+
+        Cursor cursorstar2_ = sqliteDataBase.rawQuery(query, null);
+        Log.d("cursor_", cursorstar2_.getCount()+"");
+        try {
+            if (cursorstar2_.getCount() > 0) {
+                return cursorstar2_;
+
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        //sqliteDataBase.close();
+        //Log.d("2starquery_","Success size"+ cursorstar2_.getCount());
+        return null;
+
+    }
+
+
 
     //insert Data
     public boolean InsertUserProcurmentTracking(TrackingData been){
@@ -460,17 +569,58 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             query = "insert into ProcurementMaster (ProcurementID,ProcurementEPIN,ProcurementSource,ProcurementAgencyID,ProcurementTypeID,ProcurementTitle," +
                     "ProcurementShortDescription, ProcurementLongDescription,ProcurementProposalDeadline, ProcurementPreConferenceDate, " +
                     "ProcurementQuestionDeadline,ProcurementAgencyURL, ProcurementDocument1URL, ProcurementDocument2URL, ProcurementDocument3URL, " +
-                    "ProcurementDocument4URL, ProcurementDocument5URL,ProcurementAddedDate, ProcurementContractValueID, PDFPath) " +
+                    "ProcurementDocument4URL, ProcurementDocument5URL,ProcurementAddedDate, ProcurementContractValueID, PDFPath, RecordUpdatedDate, Action) " +
                     "Values('"+been.getProcurementID()+"','"+been.getProcurementEPIN()+"','"+been.getProcurementSource()+"'," +
                     "'"+been.getProcurementAgencyID()+"','"+been.getProcurementTypeIDP()+"','"+been.getProcurementTitle()+"','"+been.getProcurementShortDescription()+"'," +
                     "'"+been.getProcurementLongDescription()+"','"+been.getProcurementProposalDeadline()+"','"+been.getProcurementPreConferenceDate()+"'," +
                     "'"+been.getProcurementQuestionDeadline()+"','"+been.getProcurementAgencyURL()+"','"+been.getProcurementDocument1URL()+"','"+been.getProcurementDocument2URL()+"'," +
                     "'"+been.getProcurementDocument3URL()+"','"+been.getProcurementDocument4URL()+"','"+been.getProcurementDocument5URL()+"','"+been.getProcurementAddedDate()+"'," +
-                    "'"+been.getProcurementContractValueID()+"','"+been.getPDFPath()+"')";
+                    "'"+been.getProcurementContractValueID()+"','"+been.getPDFPath()+"','"+been.getRecordUpdatedDate()+"','"+been.getAction()+"')";
             sqliteDataBase.execSQL(query);
             return true;
         }catch (Exception e){
             e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean UpdateProcurementMaster(ProcMaster been){
+        try {
+
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("ProcurementID",been.getProcurementID());
+            contentValues.put("ProcurementEPIN",been.getProcurementEPIN());
+            contentValues.put("ProcurementSource",been.getProcurementSource());
+            contentValues.put("ProcurementAgencyID",been.getProcurementAgencyID());
+            contentValues.put("ProcurementTypeID",been.getProcurementTypeIDP());
+            contentValues.put("ProcurementTitle",been.getProcurementTitle());
+            contentValues.put("ProcurementShortDescription",been.getProcurementShortDescription());
+            contentValues.put("ProcurementLongDescription",been.getProcurementLongDescription());
+            contentValues.put("ProcurementProposalDeadline", been.getProcurementProposalDeadline());
+            contentValues.put("ProcurementPreConferenceDate",been.getProcurementPreConferenceDate());
+
+            contentValues.put("ProcurementQuestionDeadline",been.getProcurementQuestionDeadline());
+            contentValues.put("ProcurementAgencyURL",been.getProcurementAgencyURL());
+            contentValues.put("ProcurementDocument1URL",been.getProcurementDocument1URL());
+            contentValues.put("ProcurementDocument2URL",been.getProcurementDocument2URL());
+            contentValues.put("ProcurementDocument3URL",been.getProcurementDocument3URL());
+            contentValues.put("ProcurementDocument4URL",been.getProcurementDocument4URL());
+            contentValues.put("ProcurementDocument5URL",been.getProcurementDocument5URL());
+            contentValues.put("ProcurementAddedDate",been.getProcurementAddedDate());
+            contentValues.put("ProcurementContractValueID", been.getProcurementContractValueID());
+            contentValues.put("PDFPath",been.getPDFPath());
+            contentValues.put("RecordUpdatedDate",been.getRecordUpdatedDate());
+            contentValues.put("Action",been.getAction());
+
+            String where = "ProcurementID=?";
+            String[] whereArgs = new String[] {String.valueOf(been.getProcurementID())};
+
+            sqliteDataBase.update("ProcurementMaster", contentValues, where, whereArgs);
+
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            Log.d("err",e.getMessage());
             return false;
         }
     }
@@ -502,18 +652,58 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     public boolean InsertContentMaster(ContentMasterUpdatedModel been){
         try {
-           String query = "insert or ignore into ContentMasterUpdated (ContentTitle,ContentDescription,EventStartDateTime," +
-                    "EventEndDateTime,EventLocation,EventCost,ReferenceURL,ContentPostedDate," +
-                    "LASTUPDATE,ContentType)" +
-                    "Values('"+been.getContentTitle()+"','"+been.getContentDescription()+"','"+been.getEventStartDateTime()+"'," +
-                    "'"+been.getEventEndDateTime()+"','"+been.getEventLocation()+"','"+been.getEventCost()+"'," +
-                    "'"+been.getReferenceURL()+"','"+been.getContentPostedDate()+"','"+been.getLASTUPDATE()+"'," +
-                    "'"+been.getContentType()+"')";
+
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("ContentID",been.getContentID());
+            contentValues.put("ContentTitle",been.getContentTitle());
+            contentValues.put("ContentDescription",been.getContentDescription());
+            contentValues.put("EventStartDateTime",been.getEventStartDateTime());
+            contentValues.put("EventEndDateTime",been.getEventEndDateTime());
+            contentValues.put("EventLocation",been.getEventLocation());
+            contentValues.put("EventCost",been.getEventCost());
+            contentValues.put("ReferenceURL",been.getReferenceURL());
+            contentValues.put("ContentPostedDate",been.getContentPostedDate());
+            contentValues.put("LASTUPDATE",been.getLASTUPDATE());
+            contentValues.put("ContentType", been.getContentType());
+            contentValues.put("ContentStatus",been.getContentStatus());
+            contentValues.put("Action",been.getAction());
+
+            sqliteDataBase.insert("ContentMasterUpdated", null, contentValues);
+
 
             Log.d("Title",been.getContentTitle());
 
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            Log.d("err",e.getMessage());
+            return false;
+        }
+    }
 
-            sqliteDataBase.execSQL(query);
+    public boolean UpdateContentMaster(ContentMasterUpdatedModel been){
+        try {
+
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("ContentTitle",been.getContentTitle());
+            contentValues.put("ContentDescription",been.getContentDescription());
+            contentValues.put("EventStartDateTime",been.getEventStartDateTime());
+            contentValues.put("EventEndDateTime",been.getEventEndDateTime());
+            contentValues.put("EventCost",been.getEventCost());
+            contentValues.put("ReferenceURL",been.getReferenceURL());
+            contentValues.put("ContentPostedDate",been.getContentPostedDate());
+            contentValues.put("LASTUPDATE",been.getLASTUPDATE());
+            contentValues.put("ContentType", been.getContentType());
+            contentValues.put("ContentStatus",been.getContentStatus());
+            contentValues.put("Action",been.getAction());
+
+            String where = "ContentID=?";
+            String[] whereArgs = new String[] {String.valueOf(been.getContentID())};
+
+            sqliteDataBase.update("ContentMasterUpdated", contentValues, where, whereArgs);
+
+            Log.d("update",been.getContentTitle());
+
             return true;
         }catch (Exception e){
             e.printStackTrace();
@@ -525,9 +715,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public boolean InsertinRFPPrefence(TaggedRFP been){
         try {
             query = "insert or ignore into ProcurementRFPPreferences (PreferenceID,ProcurementID,SettingTypeID,ActualTagID," +
-                    "AddedDateTime,LastUpdateDate)" +
+                    "AddedDateTime,LastUpdateDate, Status)" +
                     "Values('"+been.getPreferenceID()+"','"+been.getProcurementID()+"','"+been.getSettingTypeID()+"'," +
-                    "'"+been.getActualTagID()+"','"+been.getAddedDateTime()+"','"+been.getLastupdatedate()+"')";
+                    "'"+been.getActualTagID()+"','"+been.getAddedDateTime()+"'," +
+                    "'"+been.getLastupdatedate()+"','"+been.getStatus()+"')";
 
             sqliteDataBase.execSQL(query);
             return true;
@@ -551,12 +742,21 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public int deleteContentMasterRecord(int ContentID){
+        String where = "ContentID=?";
+        String[] whereArgs = new String[] {String.valueOf(ContentID)};
+        int deleted = sqliteDataBase.delete("ContentMasterUpdated", where, whereArgs);
+        return deleted;
 
+    }
 
+    public void deleteRFPPrefrence(int prefernceID){
+        String where = "PreferenceID=?";
+        String[] whereArgs = new String[] {String.valueOf(prefernceID)};
 
-    public void deleteRecord(int contentID){
-        sqliteDataBase.execSQL("delete from ContentMasterUpdated where ContentID= "+contentID);
-        sqliteDataBase.close();
+        sqliteDataBase.delete("ProcurementRFPPreferences", where, whereArgs);
+
+        //been.setLoaded(true);
     }
 
     public void deleteRecord(String title){
@@ -589,5 +789,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 e.printStackTrace();
             }
         }
+    }
+
+    public ArrayList<ListData_RFP> getList_geog() {
+        return list_geog;
     }
 }

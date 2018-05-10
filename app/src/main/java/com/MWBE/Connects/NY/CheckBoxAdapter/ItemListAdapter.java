@@ -30,6 +30,7 @@ public class ItemListAdapter extends ArrayAdapter<ListData_Agency> {
 	private final Utils utils;
 	private int pos;
 	private ArrayList<Boolean> list_check;
+	private List<ListData_Agency> list;
 
 
 	/**
@@ -37,23 +38,20 @@ public class ItemListAdapter extends ArrayAdapter<ListData_Agency> {
 	 */
 	public ItemListAdapter(Context context, List<ListData_Agency> items,ArrayList<Boolean> list_check) {
 		super(context, 0, items);
-		li = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
 		utils = new Utils(context);
 		this.list_check = list_check;
+		list = items;
 	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		// The item we want to get the view for
-		// --
-		final ListData_Agency item = getItem(position);
 
-
-		// Re-use the view if possible
-		// --
 		ViewHolder holder;
 		if (convertView == null) {
-			convertView = li.inflate(R.layout.list_row_agency1, null);
+			Context context = parent.getContext();
+			LayoutInflater inflater = LayoutInflater.from(context);
+			convertView = inflater.inflate(R.layout.list_row_agency1, null);
 			holder = new ViewHolder(convertView);
 			convertView.setTag(R.id.holder, holder);
 		} else {
@@ -61,16 +59,19 @@ public class ItemListAdapter extends ArrayAdapter<ListData_Agency> {
 		}
 
 		// Set some view properties
-		holder.title.setText(item.getTitle());
 		// Restore the checked state properly
 		final ListView lv = (ListView) parent;
-		String status = utils.getdata("status");
-		switch (status){
+		ListData_Agency item = getItem(position);
+		holder.title.setText(item.getTitle());
+		holder.layout.setChecked(lv.isItemChecked(position));
+		return convertView;
+		//String status = utils.getdata("status");
+		/*switch (status){
 			case "Advertising": {
 				if (Data.ActualID_list_advertising.size() > 0) {
-					for (int i = 0; i < Data.ActualID_list_advertising_db.size(); i++) {
+					for (int i = 0; i < list.size(); i++) {
 						for (int j = 0; j < Data.ActualID_list_advertising.size(); j++) {
-							if (Data.ActualID_list_advertising_db.get(i).toString().equalsIgnoreCase(Data.ActualID_list_advertising.get(j).toString())) {
+							if (list.get(i).getTagID() == Data.ActualID_list_advertising.get(j)) {
 								lv.setItemChecked(i, true);
 							}
 
@@ -261,32 +262,12 @@ public class ItemListAdapter extends ArrayAdapter<ListData_Agency> {
 			}
 
 
-		}
-
-		holder.layout.setChecked(lv.isItemChecked(position));
+		}*/
 
 
 
 
-
-		return convertView;
 	}
-
-	@Override
-	public long getItemId(int position) {
-		return 0;
-	}
-
-	public int getPos() {
-		return pos;
-	}
-
-	@Override
-	public boolean hasStableIds() {
-		return true;
-	}
-
-	private LayoutInflater li;
 
 	private static class ViewHolder {
 		public ViewHolder(View root) {

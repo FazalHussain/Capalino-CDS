@@ -1,15 +1,23 @@
 package com.MWBE.Connects.NY.JavaBeen;
 
+import com.MWBE.Connects.NY.Database.isContentLoaded;
+
 /**
  * Created by Fazal on 9/6/2016.
  */
 public class ContentMasterUpdatedModel {
+    int ContentID;
+
     String ContentTitle,ContentDescription,EventStartDateTime,EventEndDateTime,EventLocation,
             EventCost,ReferenceURL,ContentPostedDate,LASTUPDATE,ContentType;
 
-    public ContentMasterUpdatedModel(String contentTitle, String contentDescription, String eventStartDateTime,
-                                     String eventEndDateTime, String eventLocation, String eventCost, String referenceURL,
-                                     String contentPostedDate, String LASTUPDATE, String contentType) {
+    String ContentStatus;
+    String Action;
+
+    public ContentMasterUpdatedModel(int ContentID,String contentTitle, String contentDescription, String eventStartDateTime, String eventEndDateTime,
+                                     String eventLocation, String eventCost, String referenceURL, String contentPostedDate,
+                                     String LASTUPDATE, String contentType, String contentStatus, String action) {
+        this.ContentID = ContentID;
         ContentTitle = contentTitle;
         ContentDescription = contentDescription;
         EventStartDateTime = eventStartDateTime;
@@ -20,6 +28,16 @@ public class ContentMasterUpdatedModel {
         ContentPostedDate = contentPostedDate;
         this.LASTUPDATE = LASTUPDATE;
         ContentType = contentType;
+        ContentStatus = contentStatus;
+        Action = action;
+    }
+
+    public int getContentID() {
+        return ContentID;
+    }
+
+    public void setContentID(int contentID) {
+        ContentID = contentID;
     }
 
     public String getContentTitle() {
@@ -100,5 +118,21 @@ public class ContentMasterUpdatedModel {
 
     public void setContentType(String contentType) {
         ContentType = contentType;
+    }
+
+    public String getContentStatus() {
+        return ContentStatus;
+    }
+
+    public void setContentStatus(String contentStatus) {
+        ContentStatus = contentStatus;
+    }
+
+    public String getAction() {
+        return Action;
+    }
+
+    public void setAction(String action) {
+        Action = action;
     }
 }

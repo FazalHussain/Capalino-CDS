@@ -12,9 +12,10 @@ import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -25,7 +26,6 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -33,61 +33,69 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.MWBE.Connects.NY.CapalinoServices.CapabilitiesService;
+import com.MWBE.Connects.NY.BuildConfig;
 import com.MWBE.Connects.NY.AppConstants.Constants;
+import com.MWBE.Connects.NY.CapalinoServices.CapabilitiesService;
 import com.MWBE.Connects.NY.CapalinoServices.DailyMethodService;
-import com.MWBE.Connects.NY.CapalinoServices.TrackingService;
-import com.MWBE.Connects.NY.GCM.GCMPushRecieverService;
-import com.MWBE.Connects.NY.GCM.GCMTokenRefreshListener;
+import com.MWBE.Connects.NY.Database.DatabaseBeen.ProcMaster;
 import com.MWBE.Connects.NY.GCM.GcmRegistrationIntentService;
-import com.MWBE.Connects.NY.Manifest;
 import com.MWBE.Connects.NY.Storage.Storage;
 import com.MWBE.Connects.NY.AppConstants.Utils;
 import com.MWBE.Connects.NY.DataStorage.Data;
 import com.MWBE.Connects.NY.Database.DataBaseHelper;
-import com.MWBE.Connects.NY.Database.DatabaseBeen.ProcMaster;
 import com.MWBE.Connects.NY.JavaBeen.ContentMasterUpdatedModel;
 import com.MWBE.Connects.NY.JavaBeen.ListData;
-import com.MWBE.Connects.NY.JavaBeen.TaggedRFP;
 import com.MWBE.Connects.NY.JavaBeen.ViewHolder;
 import com.MWBE.Connects.NY.R;
+import com.MWBE.Connects.NY.UpdateHelper;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
 import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
+import com.twitter.sdk.android.core.models.User;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.URL;
 import java.net.URLEncoder;
-import java.sql.Connection;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import io.fabric.sdk.android.Fabric;
 
-public class HomeActivity extends Activity {
+public class HomeActivity extends Activity implements
+        UpdateHelper.onUpdateCheckListener {
 
     private ListView lv;
     private ArrayList<ListData> list_data;
@@ -118,12 +126,16 @@ public class HomeActivity extends Activity {
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
             android.Manifest.permission.READ_CALENDAR,
-            android.Manifest.permission.WRITE_CALENDAR
+            android.Manifest.permission.WRITE_CALENDAR,
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            android.Manifest.permission.READ_EXTERNAL_STORAGE
     };
 
 
     private BroadcastReceiver broadcastreciever;
     private View view;
+    private SimpleDateFormat dateformat;
+    private String lastUpdate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,16 +143,30 @@ public class HomeActivity extends Activity {
 
         try{
 
+            final FirebaseRemoteConfig firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+            FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
+                    .setDeveloperModeEnabled(BuildConfig.DEBUG)
+                    .build();
+            firebaseRemoteConfig.setConfigSettings(configSettings);
 
-           /* FirebaseApp.initializeApp(context, FirebaseOptions.fromResource(context));
-            FirebaseMessaging.getInstance().subscribeToTopic("global");
-            Log.d("subs", "Subscribed to global topic");
-            FirebaseInstanceId.getInstance().getToken();*/
+            HashMap<String, Object> map = new HashMap<>();
+            map.put(UpdateHelper.KEY_UPDATE_ENABLE, false);
+            map.put(UpdateHelper.KEY_UPDATE_VERSION, 1.0);
+            map.put(UpdateHelper.KEY_UPDATE_APP_URL, "app url");
+
+            firebaseRemoteConfig.setDefaults(map);
+
+            firebaseRemoteConfig.fetch(5).addOnSuccessListener(this, new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    firebaseRemoteConfig.activateFetched();
+                    UpdateHelper.with(HomeActivity.this)
+                            .onUpdateCheck(HomeActivity.this)
+                            .check();
+                }
+            });
 
 
-            //FirebaseApp.initializeApp(context, FirebaseOptions.fromResource(context));
-            /*FirebaseMessaging.getInstance().subscribeToTopic("global");
-            FirebaseInstanceId.getInstance().getToken();*/
 
             broadcastreciever = new BroadcastReceiver() {
                 @Override
@@ -157,8 +183,14 @@ public class HomeActivity extends Activity {
                     Log.d("GooglePlayError","Googel Play Service is not avaiable in this device!!!");
                 }
             }else {
-                Intent intent = new Intent(this, GcmRegistrationIntentService.class);
-                startService(intent);
+                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O) {
+                    Intent intent = new Intent(this, GcmRegistrationIntentService.class);
+                    startForegroundService(intent);
+                }else {
+                    Intent intent = new Intent(this, GcmRegistrationIntentService.class);
+                    startService(intent);
+                }
+
             }
 
         }catch (IllegalStateException e){
@@ -168,12 +200,28 @@ public class HomeActivity extends Activity {
         verifyCalenderPermissions(HomeActivity.this);
         initalize_facebook();
         initalize_twitter();
-
         init();
-        DailyRunMethod();
-        //startService(new Intent(this, DailyMethodService.class));
+
     }
 
+    private void welcomeBack() {
+        try{
+
+            new AlertDialog.Builder(this)
+                    .setTitle("Welcome back!")
+                    .setMessage("Every week we add hundreds of new RFPs from the " +
+                            "City, State, and private companies to MWBE Connect NY. Please visit " +
+                            "the homepage to see new events and announcements.")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            utils.savedata("last_used_date", dateformat.format(new Date()));
+                        }
+                    }).show();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
 
     public static void verifyCalenderPermissions(Activity activity) {
@@ -206,6 +254,7 @@ public class HomeActivity extends Activity {
     protected void onPause() {
         super.onPause();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastreciever);
+        hidePB();
     }
 
     private void initalize_twitter() {
@@ -220,22 +269,30 @@ public class HomeActivity extends Activity {
 
     private void initalize_facebook() {
         FacebookSdk.sdkInitialize(getApplicationContext());
-        AppEventsLogger.activateApp(this);
+        //AppEventsLogger.activateApp(this);
     }
 
     public void logoutClick(View view) {
+
         new AlertDialog.Builder(context)
                 .setTitle("Alert!")
                 .setMessage("Are you sure you want to logout?")
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        AddLastLogout();
+                        Logout();
+                        utils.savedata("Updateddate", "");
+                        utils.savedata("UpdateddateProc", "");
+                        utils.savedata("RFPUpdatedDate", "");
                         stopService(new Intent(HomeActivity.this, CapabilitiesService.class));
-                        utils.savedata("email", "");
+                        if (!utils.getdata("remeberme").equalsIgnoreCase("true")){
+                            utils.savedata("email", "");
+                        }
                         utils.savedata("fname", "");
                         utils.savedata("lname", "");
                         utils.savedata("pass", "");
-                        utils.savedata("ischecked", "");
+                        //utils.savedata("ischecked", "");
                         utils.savedata("logout" , "logout");
                         Storage.updateData = null;
                         Storage.count1=0;
@@ -258,8 +315,12 @@ public class HomeActivity extends Activity {
                         Data.ActualID_list_it.clear();
                         Data.ActualID_list_humanservice.clear();
                         Data.ActualID_list_others.clear();
-                        finish();
-                        startActivity(new Intent(HomeActivity.this, LoginActivity.class));
+                        Intent i = new Intent(HomeActivity.this,
+                                LoginActivity.class);
+                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(i);
+
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -273,17 +334,86 @@ public class HomeActivity extends Activity {
 
     }
 
+    private void AddLastLogout() {
+
+        final SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy hh:mm a");
+        String url = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/" +
+                "addLoginReportCapalino.php";
+
+        new AsyncTask<String, Void, String>(){
+
+
+            @Override
+            protected String doInBackground(String... params) {
+                try {
+                    HttpClient httpclient = new DefaultHttpClient();
+                    HttpPost httppost1 = new HttpPost(params[0]);
+                    //LastLoginTime
+
+                    List<NameValuePair> param = new ArrayList<>();
+                    String email = utils.getdata("email");
+                    String UserID = utils.getdata("Userid");
+                    //LastLogoutTime
+                    String date = dateformat.format(new Date());
+                    param.add(new BasicNameValuePair("UserEmailAddress", email));
+                    param.add(new BasicNameValuePair("LastLogoutTime", date));
+                    param.add(new BasicNameValuePair("UserID", UserID));
+
+                    httppost1.setEntity(new UrlEncodedFormEntity(param));
+
+                    ResponseHandler<String> responseHandler1 = new BasicResponseHandler();
+                    final String response1 = httpclient.execute(httppost1,
+                            responseHandler1);
+
+                    Log.d("responsee", response1);
+                    return response1;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+                return null;
+            }
+        }.execute(url);
+    }
+
+    private void Logout() {
+
+        String url = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/" +
+                "deleteUserFromMaintainUpdates.php?UserID="+utils.getdata("Userid");
+
+        new AsyncTask<String, Void, String>(){
+
+
+            @Override
+            protected String doInBackground(String... params) {
+                try {
+                    HttpClient httpclient = new DefaultHttpClient();
+                    HttpPost httppost1 = new HttpPost(params[0]);
+
+                    ResponseHandler<String> responseHandler1 = new BasicResponseHandler();
+                    final String response1 = httpclient.execute(httppost1,
+                            responseHandler1);
+
+                    Log.d("responsee", response1);
+                    return response1;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+                return null;
+            }
+        }.execute(url);
+    }
+
 
     private void init() {
         //deleteDatabase("CapalinoDataBase.sqlite");
         utils = new Utils(HomeActivity.this);
-        pb = new ProgressDialog(HomeActivity.this);
         getPaymentStatus();
         //getTagedRFP();
-        /*Intent j = new Intent(HomeActivity.this, CapabilitiesService.class);
-        j.putExtra("Userid", utils.getdata("Userid"));
-        startService(j);*/
-        //LastUpdateDate();
+
         Data.ActualID_list_advertising.clear();
         Data.ActualID_list_architectural.clear();
         Data.ActualID_list_construction.clear();
@@ -294,37 +424,86 @@ public class HomeActivity extends Activity {
         Data.ActualID_list_it.clear();
         Data.ActualID_list_humanservice.clear();
         Data.ActualID_list_others.clear();
+
         if(utils.getdata("ischecked").equalsIgnoreCase("false1"))
         utils.savedata("ischecked","true");
         lv = (ListView) findViewById(R.id.list_lv);
         if (getIntent().getStringExtra("islogin") != null) {
-            AlertDialog dialog = new AlertDialog.Builder(context)
-                    .setTitle("Alert!")
-                    .setMessage(getString(R.string.aggrement))
-                    .setPositiveButton("I Accept", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
+           try{
+               AlertDialog dialog = new AlertDialog.Builder(context)
+                       .setTitle("Alert!")
+                       .setMessage(getString(R.string.aggrement))
+                       .setPositiveButton("I Accept", new DialogInterface.OnClickListener() {
+                           @Override
+                           public void onClick(DialogInterface dialog, int which) {
 
-                        }
-                    })
-                    .setCancelable(false)
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
+                           }
+                       })
+                       .setCancelable(false)
+                       .setIcon(android.R.drawable.ic_dialog_alert)
+                       .show();
 
-            TextView textView = (TextView) dialog.findViewById(android.R.id.message);
-            Typeface face = Typeface.createFromAsset(getAssets(), "gotham_book.otf");
-            textView.setTypeface(face);
+               TextView textView = (TextView) dialog.findViewById(android.R.id.message);
+               Typeface face = Typeface.createFromAsset(getAssets(), "gotham_book.otf");
+               textView.setTypeface(face);
+           }catch (Exception e){
+               e.printStackTrace();
+           }
+
+
 
 
         }
 
-        Intent i = new Intent(this, TrackingService.class);
-        i.putExtra("Userid", utils.getdata("Userid"));
-        startService(i);
+        /*if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O) {
+            Intent i = new Intent(this, TrackingService.class);
+            i.putExtra("Userid", utils.getdata("Userid"));
+            startForegroundService(i);
+        }else {
+            Intent i = new Intent(this, TrackingService.class);
+            i.putExtra("Userid", utils.getdata("Userid"));
+            startService(i);
+        }*/
+
+
 
         list_data = new ArrayList<ListData>();
+
         populateList();
-        setuplistinit();
+        if(utils.getdata("UpdateddateProc") == null || utils.getdata("UpdateddateProc").equalsIgnoreCase("")){
+            DailyRunMethod("FreshDb");
+        }else {
+            DailyRunMethod(utils.getdata("UpdateddateProc"));
+        }
+
+        try {
+            if (utils.getdata("last_used_date") != null && !utils.getdata("last_used_date").equalsIgnoreCase("")) {
+                String today_date = dateformat.format(new Date());
+                Date date1_current = dateformat.parse(today_date);
+                String last_used = utils.getdata("last_used_date");
+                Date last_used_date = dateformat.parse(last_used);
+
+                long diff = getDifferenceDays(last_used_date, date1_current);
+                Log.d("datediff", diff + "days");
+                //If someone has not used app in a long time, when they return there should be a
+                // "Welcome Back" message that they see first
+                if(diff >= 5){
+                    welcomeBack();
+                }
+
+            }
+
+            utils.savedata("last_used_date", dateformat.format(new Date()));
+            Log.d("datediff", "days saved");
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static long getDifferenceDays(Date d1, Date d2) {
+        long diff = d2.getTime() - d1.getTime();
+        return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
     }
 
     private void getPaymentStatus() {
@@ -333,7 +512,7 @@ public class HomeActivity extends Activity {
             @Override
             public void run() {
 
-                final SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy hh:mm a");
+                dateformat = new SimpleDateFormat("dd-MMM-yyyy hh:mm a");
                 final Date date = new Date();
 
                 String url = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/getPaymentStatus.php?UserID=" +utils.getdata("Userid");
@@ -377,8 +556,10 @@ public class HomeActivity extends Activity {
                     if(PaymentStatus!=null)
                     if(PaymentStatus.equalsIgnoreCase("trial")){
                         Data.istrial = true;
+                        utils.savedata("paymentStatus","trail");
                     }else {
                         Data.istrial = false;
+                        utils.savedata("paymentStatus","paid");
                     }
 
                 }catch (Exception e){
@@ -389,127 +570,6 @@ public class HomeActivity extends Activity {
         });
         getData_thread.start();
 
-/*
-        String url = "http://celeritas-solutions.com/cds/capalinoapp/apis/getUserRequests.php?UserID=" +utils.getdata("Userid");
-        new AsyncTask<String, Void, String>() {
-            @Override
-            protected String doInBackground(String... params) {
-                try{
-                    HttpClient httpclient = new DefaultHttpClient();
-                    //showPB("Loading....");
-                    HttpPost httppost = new HttpPost(params[0]);
-
-                    ResponseHandler<String> responseHandler = new BasicResponseHandler();
-                    final String response = httpclient.execute(httppost,
-                            responseHandler);
-
-                    Log.i("Response", "Response : " + response);
-                    String RequestText = null;
-                    JSONArray jsonarray = new JSONArray(response);
-                    for(int i=0;i<jsonarray.length();i++) {
-                        JSONObject jsonobj = jsonarray.getJSONObject(i);
-                        RequestText = jsonobj.getString("RequestText");
-                        list_cmnt.add(new ListData_track_comnt(RequestText, R.drawable.person));
-                    }
-
-                    return RequestText;
-                }catch (Exception e){
-                    e.printStackTrace();
-                    return "";
-                }
-
-            }
-
-            @Override
-            protected void onPostExecute(String s) {
-                super.onPostExecute(s);
-                if(!s.equalsIgnoreCase("")){
-                    CustomListAdapterComment adaptercomment = new CustomListAdapterComment(getActivity(),R.layout.list_track_row,list_cmnt);
-                    lv.setAdapter(adaptercomment);
-                }
-            }
-        }.execute(url,"","");
-*/
-    }
-
-    private void getTagedRFP() {
-        Thread thread_update_rfp = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    DataBaseHelper dataBaseHelper = new DataBaseHelper(HomeActivity.this);
-                    dataBaseHelper.createDataBase();
-                    dataBaseHelper.openDataBase();
-
-                    Cursor cursor = dataBaseHelper.DBRecord("Select LastUpdateDate from ProcurementRFPPreferences");
-                    if(cursor.getCount()>0){
-                        while (cursor.moveToNext()){
-                            lastupdatedate = cursor.getString(0);
-                        }
-                    }
-
-                    //Log.d("lastupdatedate",lastupdatedate);
-
-                    HttpClient httpclient = new DefaultHttpClient();
-
-                    SimpleDateFormat format = new SimpleDateFormat("dd-MMM-yyyy hh:mm a");
-                    String link = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/getTaggedRFPUpdatedForStore.php?lastUpdateSql=" +lastupdatedate
-                            +"&CurrentDate="+format.format(new Date());
-                    Log.d("link",link);
-                    link = link.replace(" ","%20");
-                    HttpPost httppost = new HttpPost(link);
-
-                    ResponseHandler<String> responseHandler = new BasicResponseHandler();
-
-                    String response = httpclient.execute(httppost,
-                            responseHandler);
-
-
-                    Log.i("Response", "Response : " + response);
-                    if(!response.trim().equalsIgnoreCase("Both are Equal")) {
-                        showPB("Loading....");
-                        dataBaseHelper.delete("ProcurementRFPPreferences");
-                        JSONArray jsonarray = new JSONArray(response);
-                        for (int i = 0; i < jsonarray.length(); i++) {
-                            jsonobj = jsonarray.getJSONObject(i);
-                            String PreferenceID = jsonobj.getString("PreferenceID");
-                            String ProcurementID = jsonobj.getString("ProcurementID");
-                            String SettingTypeID = jsonobj.getString("SettingTypeID");
-                            String ActualTagID = jsonobj.getString("ActualTagID");
-                            String AddedDateTime = jsonobj.getString("AddedDateTime");
-                            String lastupdate = jsonobj.getString("LASTUPDATE");
-
-                            //list_data.add(new ListData(image, contentShortDescription, ContentRelevantDateTime));
-                            TaggedRFP been = new TaggedRFP(Integer.valueOf(PreferenceID), Integer.valueOf(ProcurementID), Integer.valueOf(SettingTypeID),
-                                    Integer.valueOf(ActualTagID), AddedDateTime, lastupdate);
-                            isinserted = dataBaseHelper.InsertinRFPPrefence(been);
-
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-
-                                    if (isinserted) {
-                                        //Toast.makeText(HomeActivity.this, "Hello", Toast.LENGTH_LONG).show();
-                                        Log.d("RFPUpdated", "Added");
-                                    }
-                                }
-                            });
-                        }
-                        hidePB();
-                    }else {
-                        hidePB();
-                    }
-
-                    Intent i = new Intent(HomeActivity.this, BrowseActivity.class);
-                    i.putExtra("notif_status","RFP");
-                    startActivity(i);
-                } catch (Exception e) {
-                    hidePB();
-                    e.printStackTrace();
-                }
-            }
-        });
-        thread_update_rfp.start();
 
     }
 
@@ -520,8 +580,11 @@ public class HomeActivity extends Activity {
             @Override
             public void run() {
                 try{
-                    pb.setMessage(message);
-                    pb.setCancelable(false);
+                    if(pb == null) {
+                        pb = new ProgressDialog(context);
+                        pb.setMessage(message);
+                        pb.setCancelable(false);
+                    }
                     pb.show();
                 }catch (Exception e){
                     e.printStackTrace();
@@ -548,7 +611,14 @@ public class HomeActivity extends Activity {
 
     }
 
-    private void LastUpdateDate(final String date) {
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        hidePB();
+    }
+
+
+    private void LastUpdateDate(final String date_updated) {
         try {
 
             Thread thread_update = new Thread(new Runnable() {
@@ -561,7 +631,10 @@ public class HomeActivity extends Activity {
                         HttpClient httpclient = new DefaultHttpClient();
                         //showPB("Loading....");
 
-                        String link = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/isNewContentUpdated.php?lastUpdateSql=" +date;
+                        //String link = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/isNewContentUpdated.php?lastUpdateSql=" +date;
+                        //utils.getdata("Userid")
+                        String link = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/isNewContentUpdated_j.php?ContentLastUpdateDate=" + date_updated +
+                                "&UserID=" + utils.getdata("Userid") + "&TableName=ContentMaster_J";
                         link = link.replace(" ","%20");
                         link = link.replace("\n","");
                         HttpPost httppost = new HttpPost(link);
@@ -573,13 +646,22 @@ public class HomeActivity extends Activity {
 
 
                         Log.i("Response", "Response : " + response);
-                        if (!response.trim().equalsIgnoreCase("Both are Equal")) {
-                            if (lastupdate.equalsIgnoreCase(date)) {
-                                return;
+                        if (!response.equalsIgnoreCase("") && !response.equalsIgnoreCase("No new content available.")) {
+
+
+
+                            JSONObject jsonObject = new JSONObject(response);
+                            String dataStatus = jsonObject.getString("datastatus");
+
+                            if(dataStatus.equalsIgnoreCase("Full")){
+                                showPB("Loading...");
+                                dataBaseHelper.delete("ContentMasterUpdated");
                             }
-                            showPB("Loading...");
-                            dataBaseHelper.delete("ContentMasterUpdated");
-                            JSONArray jsonarray = new JSONArray(response);
+
+                            String results = jsonObject.getString("results");
+                            JSONArray jsonarray = new JSONArray(results);
+                            String lastUpdateFinal = jsonObject.getString("lastupdatedate");
+                            utils.savedata("Updateddate", lastUpdateFinal);
                             for (int i = 0; i < jsonarray.length(); i++) {
                                 ArrayList<String> deletedatalist = utils.getArray();
                                 jsonobj = jsonarray.getJSONObject(i);
@@ -597,55 +679,83 @@ public class HomeActivity extends Activity {
                                     String EventLocation = jsonobj.getString("EventLocation");
                                     String EventCost = jsonobj.getString("EventCost");
 
-                                    /*ContentTitle = ContentTitle.replace("(", "");
-                                    ContentTitle = ContentTitle.replace(")", "");*/
+                                    String ContentStatus = jsonobj.getString("ContentStatus");
+                                    String Action = jsonobj.getString("Action");
+
                                     ContentTitle = ContentTitle.replace("'", "''");
-                                    //ContentTitle = ContentTitle.replace("'", "");
-/*
-                                    ContentDescription = ContentDescription.replace("(", "");
-                                    ContentDescription = ContentDescription.replace(")", "");*/
                                     ContentDescription = ContentDescription.replace("'", "''");
-                                    //ContentDescription = ContentDescription.replace("'", "");
                                     EventLocation = EventLocation.replace("'","''");
-                                    /*ContentLongDescription = ContentLongDescription.replace("(", "");
-                                    ContentLongDescription = ContentLongDescription.replace(")", "");
-                                    ContentLongDescription = ContentLongDescription.replace("'", "");*/
 
-
-
-
-
-                                    //list_data.add(new ListData(image, contentShortDescription, ContentRelevantDateTime));
-                                    if(deletedatalist.size()>0){
-                                        if(!deletedatalist.contains(ContentTitle)){
-                                            ContentMasterUpdatedModel been = new ContentMasterUpdatedModel(ContentTitle, ContentDescription,
+                                    if(dataStatus.equalsIgnoreCase("Full")){
+                                        if(deletedatalist.size()>0){
+                                            if(!deletedatalist.contains(ContentTitle)){
+                                                ContentMasterUpdatedModel been = new ContentMasterUpdatedModel(contentid,ContentTitle, ContentDescription,
+                                                        EventStartDateTime, EventEndDateTime, EventLocation, EventCost,
+                                                        ReferenceURL, ContentPostedDate, lastupdate, contenttype, ContentStatus, Action);
+                                                isinserted = dataBaseHelper.InsertContentMaster(been);
+                                                if (isinserted) {
+                                                    utils.savedata("Updateddate", lastUpdateFinal);
+                                                }
+                                            }
+                                        }else {
+                                            ContentMasterUpdatedModel been = new ContentMasterUpdatedModel(contentid,ContentTitle, ContentDescription,
                                                     EventStartDateTime, EventEndDateTime, EventLocation, EventCost,
-                                                    ReferenceURL, ContentPostedDate, lastupdate, contenttype);
+                                                    ReferenceURL, ContentPostedDate, lastupdate, contenttype, ContentStatus, Action);
                                             isinserted = dataBaseHelper.InsertContentMaster(been);
+                                            if (isinserted) {
+                                                utils.savedata("Updateddate", lastUpdateFinal);
+                                            }
                                         }
                                     }else {
-                                        ContentMasterUpdatedModel been = new ContentMasterUpdatedModel(ContentTitle, ContentDescription,
-                                                EventStartDateTime, EventEndDateTime, EventLocation, EventCost,
-                                                ReferenceURL, ContentPostedDate, lastupdate, contenttype);
-                                        isinserted = dataBaseHelper.InsertContentMaster(been);
+                                        if (Action.equalsIgnoreCase("add")){
+                                            Log.d("add_title", ContentTitle);
+                                            ContentMasterUpdatedModel been = new ContentMasterUpdatedModel(contentid,ContentTitle, ContentDescription,
+                                                    EventStartDateTime, EventEndDateTime, EventLocation, EventCost,
+                                                    ReferenceURL, ContentPostedDate, lastupdate, contenttype, ContentStatus, Action);
+                                            isinserted = dataBaseHelper.InsertContentMaster(been);
+                                            if(isinserted) {
+                                                Log.i("Added" + ContentTitle, "added data");
+                                                utils.savedata("Updateddate", lastUpdateFinal);
+                                            }
+                                        }
+
+                                        if (Action.equalsIgnoreCase("edit")){
+                                            ContentMasterUpdatedModel been = new ContentMasterUpdatedModel(contentid,ContentTitle, ContentDescription,
+                                                    EventStartDateTime, EventEndDateTime, EventLocation, EventCost,
+                                                    ReferenceURL, ContentPostedDate, lastupdate, contenttype, ContentStatus, Action);
+                                            dataBaseHelper.UpdateContentMaster(been);
+                                            utils.savedata("Updateddate", lastUpdateFinal);
+                                        }
+
+                                        if (Action.equalsIgnoreCase("delete")){
+                                            ContentMasterUpdatedModel been = new ContentMasterUpdatedModel(contentid,ContentTitle, ContentDescription,
+                                                    EventStartDateTime, EventEndDateTime, EventLocation, EventCost,
+                                                    ReferenceURL, ContentPostedDate, lastupdate, contenttype, ContentStatus, Action);
+                                            dataBaseHelper.deleteContentMasterRecord(been.getContentID());
+
+
+                                        }
                                     }
+
+
 
                                 //}else {
                                     //return;
                                 //}
                             }
 
+
+
+
                             hidePB();
 
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-
-                                    if (isinserted) {
                                         //Toast.makeText(HomeActivity.this, "Hello", Toast.LENGTH_LONG).show();
                                         populateList();
                                         Log.d("IsItemAdded", "Added");
-                                    }
+
                                 }
                             });
                         }
@@ -704,30 +814,67 @@ public class HomeActivity extends Activity {
             DataBaseHelper dataBaseHelper = new DataBaseHelper(HomeActivity.this);
             dataBaseHelper.createDataBase();
             dataBaseHelper.openDataBase();
-            Cursor cursor = dataBaseHelper.getDataFromDB("", "", "ContentMasterUpdated", false,true,"ContentPostedDate");
+
+            //Cursor cursor = dataBaseHelper.getDataFromDB("", "", "ContentMasterUpdated", false,true,"ContentPostedDate");
+            Cursor cursor = dataBaseHelper.getDataFromQuery("Select * from ContentMasterUpdated where ContentStatus=1");
             list_data.clear();
             if (cursor.getCount() > 0) {
                 while (cursor.moveToNext()) {
                     String contentTitle = cursor.getString(1).replace("\\u0027","'");
                     //String contentDescription = cursor.getString(1).replace("\\u0027","'");
                     setupimageicon(cursor);
-                    list_data.add(new ListData(image, contentTitle, cursor.getString(8)));
+
                     //list_data.add(new ListData(image, cursor.getString(1), cursor.getString(8)));
+                    String[] date_arr = cursor.getString(3).split(" ");
+                    if(image == R.drawable.icon2){
+                        list_data.add(new ListData(image, contentTitle, date_arr[0]));
+                    }else {
+                        list_data.add(new ListData(image, contentTitle, cursor.getString(8)));
+                    }
+
                     date = cursor.getString(9);
+
+                    Log.d("status", contentTitle + cursor.getString(11));
                 }
+
+
+                setuplistinit();
+
+                final DateFormat f = new SimpleDateFormat("dd-MMM-yyyy");
+                Collections.sort(list_data, new Comparator<ListData>() {
+                    @Override
+                    public int compare(ListData o1, ListData o2) {
+                        try {
+                            return f.parse(o2.getTime()).compareTo(f.parse(o1.getTime()));
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+                        return 0;
+                    }
+                });
             }
-            LastUpdateDate(date);
+
+
+
             adapter = new CustomListAdapter(HomeActivity.this, R.layout.activity_home, list_data);
             lv.setAdapter(adapter);
             listclick();
             swipelist(lv);
+
+            if(utils.getdata("Updateddate") == null || utils.getdata("Updateddate").equalsIgnoreCase("")){
+                LastUpdateDate("FreshDb");
+            }else {
+                LastUpdateDate(utils.getdata("Updateddate"));
+            }
+
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void DailyRunMethod(){
+    public void DailyRunMethod(final String date_updated){
        /* Date date2pm = new Date();
         date2pm.setHours(10);
         date2pm.setMinutes(46);
@@ -735,6 +882,20 @@ public class HomeActivity extends Activity {
         Timer timer = new Timer();
 
         timer.schedule(new DailyTimerTask(HomeActivity.this), date2pm, 86400000);*/
+       /* AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent i = new Intent(HomeActivity.this, DailyMethodService.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this, 0, i, 0);
+
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, SystemClock.elapsedRealtime(), 3000, pendingIntent);*/
+        /*Intent i = new Intent(HomeActivity.this, DailyMethodService.class);
+
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O) {
+            startForegroundService(i);
+        }else {
+            startService(i);
+        }*/
+
+
 
         Thread thread_update = new Thread(new Runnable() {
             @Override
@@ -745,12 +906,15 @@ public class HomeActivity extends Activity {
                     DataBaseHelper dataBaseHelper = new DataBaseHelper(context);
                     dataBaseHelper.createDataBase();
                     dataBaseHelper.openDataBase();
+
                     HttpClient httpclient = new DefaultHttpClient();
-                    showPB("Loading....");
+                    //showPB("Loading....");
                     //utils.getdata("Userid");
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MMM-yyyy hh:mm a");
                     Date date = new Date();
-                    String link = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/getProcurementDaily.php?currentDate="+simpleDateFormat.format(date);
+                    String link = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/getProcurementDaily_J.php?UserID="
+                            +utils.getdata("Userid")+"&currentDate="+simpleDateFormat.format(date) +
+                            "&ContentLastUpdateDate=" + date_updated;
                     link = link.replace(" ","%20");
                     HttpPost httppost = new HttpPost(link);
 
@@ -759,76 +923,110 @@ public class HomeActivity extends Activity {
                     final String response = httpclient.execute(httppost,
                             responseHandler);
 
-
                     Log.i("Response", "Response : " + response);
-                    if (!dataBaseHelper.sqliteDataBase.isOpen())
-                        dataBaseHelper.openDataBase();
-                    dataBaseHelper.delete("ProcurementMaster");
-                    JSONArray jsonarray = new JSONArray(response);
-                    for (int i = 0; i < jsonarray.length(); i++) {
-                        JSONObject jsonobj = jsonarray.getJSONObject(i);
 
-                        String ProcurementID = jsonobj.getString("ProcurementID");
-                        String ProcurementEPIN = jsonobj.getString("ProcurementEPIN");
-                        String ProcurementSource = jsonobj.getString("ProcurementSource");
-                        String ProcurementAgencyID = jsonobj.getString("ProcurementAgencyID");
-
-                        /*ProcurementAgencyID = ProcurementAgencyID.replace(")","");
-                        ProcurementAgencyID = ProcurementAgencyID.replace("(","");*/
-                        ProcurementAgencyID = ProcurementAgencyID.replace("'","\\u0027");
-
-                        String ProcurementTypeIDP = jsonobj.getString("ProcurementTypeIDP");
-                        String ProcurementTitle = jsonobj.getString("ProcurementTitle");
-                        //Log.d("ProcurementTitle",ProcurementTitle);
-                        /*
-                        ProcurementTitle = ProcurementTitle.replace(")","");
-                        ProcurementTitle = ProcurementTitle.replace("(","");*/
-                        ProcurementTitle = ProcurementTitle.replace("'","''");
-
-                        String ProcurementShortDescription = jsonobj.getString("ProcurementShortDescription");
-
-                        /*ProcurementShortDescription = ProcurementShortDescription.replace(")","");
-                        ProcurementShortDescription = ProcurementShortDescription.replace("(","");*/
-                        ProcurementShortDescription = ProcurementShortDescription.replace("'","''");
+                    if (!response.equalsIgnoreCase("No new content available.") && !response.equalsIgnoreCase("")) {
 
 
-                        String ProcurementLongDescription = jsonobj.getString("ProcurementLongDescription");
 
-                        /*ProcurementLongDescription = ProcurementLongDescription.replace(")","");
-                        ProcurementLongDescription = ProcurementLongDescription.replace("(","");*/
-                        ProcurementLongDescription = ProcurementLongDescription.replace("'","''");
+                        JSONObject jsonObject = new JSONObject(response);
+                        String dataStatus = jsonObject.getString("datastatus");
 
-                        String ProcurementProposalDeadline = jsonobj.getString("ProcurementProposalDeadline");
-                        String ProcurementPreConferenceDate = jsonobj.getString("ProcurementPreConferenceDate");
-                        String ProcurementQuestionDeadline = jsonobj.getString("ProcurementQuestionDeadline");
-                        String ProcurementAgencyURL = jsonobj.getString("ProcurementAgencyURL");
+                        if (dataStatus.equalsIgnoreCase("Full")) {
+                            showPB("Loading...");
+                            if (!dataBaseHelper.sqliteDataBase.isOpen()) {
+                                dataBaseHelper.openDataBase();
+                            }
+                            dataBaseHelper.delete("ProcurementMaster");
+                        }
 
-                        String ProcurementDocument1URL = jsonobj.getString("ProcurementDocument1URL");
-                        String ProcurementDocument2URL = jsonobj.getString("ProcurementDocument2URL");
-                        String ProcurementDocument3URL = jsonobj.getString("ProcurementDocument3URL");
-                        String ProcurementDocument4URL = jsonobj.getString("ProcurementDocument4URL");
-                        String ProcurementDocument5URL = jsonobj.getString("ProcurementDocument5URL");
-                        String ProcurementAddedDate = jsonobj.getString("ProcurementAddedDate");
+                        String results = jsonObject.getString("results");
+                        JSONArray jsonarray = new JSONArray(results);
 
-                        String ProcurementContractValueID = jsonobj.getString("ProcurementContractValueID");
-                        String Status = jsonobj.getString("Status");
-                        String LASTEDITEDUSERNAME = jsonobj.getString("LASTEDITEDUSERNAME");
-                        String PDFPath = jsonobj.getString("PDFPath");
+                        for (int i = 0; i < jsonarray.length(); i++) {
+                            JSONObject jsonobj = jsonarray.getJSONObject(i);
 
-                        boolean isInserted = dataBaseHelper.InsertProcurementMaster(new ProcMaster(Integer.valueOf(ProcurementID), ProcurementEPIN, ProcurementSource,
-                                ProcurementAgencyID, ProcurementTypeIDP, ProcurementTitle,ProcurementShortDescription,ProcurementLongDescription,ProcurementProposalDeadline,
-                                ProcurementPreConferenceDate,ProcurementQuestionDeadline,ProcurementAgencyURL,ProcurementDocument1URL,ProcurementDocument2URL,ProcurementDocument3URL,
-                                ProcurementDocument4URL,ProcurementDocument5URL,ProcurementAddedDate,ProcurementContractValueID,Status,LASTEDITEDUSERNAME,PDFPath));
-                        //Log.d("InsertProcurementMaster", "Inserted");
+                            String ProcurementID = jsonobj.getString("ProcurementID");
+                            String ProcurementEPIN = jsonobj.getString("ProcurementEPIN");
+                            String ProcurementSource = jsonobj.getString("ProcurementSource");
+                            String ProcurementAgencyID = jsonobj.getString("ProcurementAgencyID");
 
-                        //list_data.add(new ListData(image, contentShortDescription, ContentRelevantDateTime));
 
-                        //isinserted = dataBaseHelper.InsertUserProcurmentTracking(been);
+                            ProcurementAgencyID = ProcurementAgencyID.replace("'", "''");
+
+                            String ProcurementTypeIDP = jsonobj.getString("ProcurementTypeIDP");
+                            String ProcurementTitle = jsonobj.getString("ProcurementTitle");
+                            //Log.d("ProcurementTitle",ProcurementTitle);
+
+                            ProcurementTitle = ProcurementTitle.replace("'", "''");
+
+                            String ProcurementShortDescription = jsonobj.getString("ProcurementShortDescription");
+
+
+                            ProcurementShortDescription = ProcurementShortDescription.replace("'", "''");
+
+
+                            String ProcurementLongDescription = jsonobj.getString("ProcurementLongDescription");
+
+                            ProcurementLongDescription = ProcurementLongDescription.replace("'", "''");
+
+                            String ProcurementProposalDeadline = jsonobj.getString("ProcurementProposalDeadline");
+                            String ProcurementPreConferenceDate = jsonobj.getString("ProcurementPreConferenceDate");
+                            String ProcurementQuestionDeadline = jsonobj.getString("ProcurementQuestionDeadline");
+                            String ProcurementAgencyURL = jsonobj.getString("ProcurementAgencyURL");
+
+                            String ProcurementDocument1URL = jsonobj.getString("ProcurementDocument1URL");
+                            String ProcurementDocument2URL = jsonobj.getString("ProcurementDocument2URL");
+                            String ProcurementDocument3URL = jsonobj.getString("ProcurementDocument3URL");
+                            String ProcurementDocument4URL = jsonobj.getString("ProcurementDocument4URL");
+                            String ProcurementDocument5URL = jsonobj.getString("ProcurementDocument5URL");
+                            String ProcurementAddedDate = jsonobj.getString("ProcurementAddedDate");
+
+                            String ProcurementContractValueID = jsonobj.getString("ProcurementContractValueID");
+                            String Status = jsonobj.getString("Status");
+                            String LASTEDITEDUSERNAME = jsonobj.getString("LASTEDITEDUSERNAME");
+                            String PDFPath = jsonobj.getString("PDFPath");
+                            String RecordUpdatedDate = jsonobj.getString("RecordUpdatedDate");
+                            String Action = jsonobj.getString("Action");
+
+                            if (dataStatus.equalsIgnoreCase("Full")) {
+                                dataBaseHelper.InsertProcurementMaster(new ProcMaster(Integer.valueOf(ProcurementID), ProcurementEPIN, ProcurementSource,
+                                        ProcurementAgencyID, ProcurementTypeIDP, ProcurementTitle, ProcurementShortDescription, ProcurementLongDescription, ProcurementProposalDeadline,
+                                        ProcurementPreConferenceDate, ProcurementQuestionDeadline, ProcurementAgencyURL, ProcurementDocument1URL, ProcurementDocument2URL, ProcurementDocument3URL,
+                                        ProcurementDocument4URL, ProcurementDocument5URL, ProcurementAddedDate, ProcurementContractValueID,
+                                        Status, LASTEDITEDUSERNAME, PDFPath, RecordUpdatedDate ,Action));
+
+                                utils.savedata("UpdateddateProc", "dba");
+                            }else {
+                                if (Action.equalsIgnoreCase("add")){
+                                    dataBaseHelper.InsertProcurementMaster(new ProcMaster(Integer.valueOf(ProcurementID), ProcurementEPIN, ProcurementSource,
+                                            ProcurementAgencyID, ProcurementTypeIDP, ProcurementTitle, ProcurementShortDescription, ProcurementLongDescription, ProcurementProposalDeadline,
+                                            ProcurementPreConferenceDate, ProcurementQuestionDeadline, ProcurementAgencyURL, ProcurementDocument1URL, ProcurementDocument2URL, ProcurementDocument3URL,
+                                            ProcurementDocument4URL, ProcurementDocument5URL, ProcurementAddedDate, ProcurementContractValueID,
+                                            Status, LASTEDITEDUSERNAME, PDFPath, RecordUpdatedDate ,Action));
+                                }
+
+                                if (Action.equalsIgnoreCase("edit")){
+                                    dataBaseHelper.UpdateProcurementMaster(new ProcMaster(Integer.valueOf(ProcurementID), ProcurementEPIN, ProcurementSource,
+                                            ProcurementAgencyID, ProcurementTypeIDP, ProcurementTitle, ProcurementShortDescription, ProcurementLongDescription, ProcurementProposalDeadline,
+                                            ProcurementPreConferenceDate, ProcurementQuestionDeadline, ProcurementAgencyURL, ProcurementDocument1URL, ProcurementDocument2URL, ProcurementDocument3URL,
+                                            ProcurementDocument4URL, ProcurementDocument5URL, ProcurementAddedDate, ProcurementContractValueID,
+                                            Status, LASTEDITEDUSERNAME, PDFPath, RecordUpdatedDate ,Action));
+                                }
+                            }
+
+
+                        }
+
+                        Log.d("et", String.valueOf(System.currentTimeMillis()));
+                        hidePB();
                     }
 
-                    Log.d("et", String.valueOf(System.currentTimeMillis()));
                     hidePB();
+
                     getNotificationData();
+
+
 
 
                 } catch (Exception e) {
@@ -850,6 +1048,31 @@ public class HomeActivity extends Activity {
         }*/
         if(getIntent().getStringExtra("notif_status")!=null){
             Log.d("notif_status",getIntent().getStringExtra("notif_status"));
+
+            if (Data.DateExpire){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new AlertDialog.Builder(HomeActivity.this)
+                                .setTitle("Alert!")
+                                .setMessage("Your subscription or trial period has expired. " +
+                                        "Kindly subscribe to monthly or annual subscription to enjoy using premium features.")
+                                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
+
+                    }
+                });
+
+                return;
+
+            }
+
             if(getIntent().getStringExtra("notif_status").equalsIgnoreCase("Announcement")){
                 String title = getIntent().getStringExtra("notif_title");
                 Intent i = new Intent(HomeActivity.this, HomeItem_ViewActivity.class);
@@ -1020,6 +1243,32 @@ public class HomeActivity extends Activity {
         startActivity(i);
     }
 
+    @Override
+    public void onUpdateCheckListener(final String update_url) {
+        try {
+            new AlertDialog.Builder(this)
+                    .setTitle("New Update Available!")
+                    .setMessage("A new and improved version of MWBE Connect NY is available. " +
+                            "Please click on upgrade to update the app.")
+                    .setPositiveButton("Upgrade", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(update_url));
+                            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(i);
+                        }
+                    })
+                    .setNegativeButton("Close App", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    }).show();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     //Custom List Adapter
     public class CustomListAdapter extends ArrayAdapter<ListData> {
 
@@ -1052,9 +1301,9 @@ public class HomeActivity extends Activity {
                 viewHolder.time.setText(data.getTime());
                 viewHolder.image_icon.setImageResource(data.getImage());
 
-                Log.d("pos", String.valueOf(isvisible.get(position)));
+                //Log.d("pos", String.valueOf(isvisible.get(position)));
 
-                if (isvisible.get(position)) {
+                if (isvisible.size() > 0 && isvisible.get(position)) {
                     view = convertView.findViewById(R.id.swipe_layout);
                     view.setVisibility(View.VISIBLE);
                     onClick(view, position);
@@ -1069,7 +1318,7 @@ public class HomeActivity extends Activity {
 
         @Override
         public int getViewTypeCount() {
-            return getCount();
+            return 1;
         }
 
         @Override
@@ -1221,7 +1470,7 @@ public class HomeActivity extends Activity {
                             Set<String> set = new HashSet<String>();
                             set.addAll(deleteRecordlist);
                             utils.saveArray(set);
-                            databaseHelper.deleteRecord(cursor.getInt(0));
+                            databaseHelper.deleteContentMasterRecord(cursor.getInt(0));
                             adapter.notifyDataSetChanged();
                             lv.setAdapter(adapter);
                         }

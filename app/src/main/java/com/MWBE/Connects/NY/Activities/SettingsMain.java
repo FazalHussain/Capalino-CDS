@@ -1,11 +1,15 @@
 package com.MWBE.Connects.NY.Activities;
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.MWBE.Connects.NY.CapalinoServices.CapabilitiesService;
@@ -27,15 +31,35 @@ public class SettingsMain extends FragmentActivity {
 
     private void init() {
         utils = new Utils(this);
-        Intent j = new Intent(SettingsMain.this, CapabilitiesService.class);
+        Intent j = new Intent(this, CapabilitiesService.class);
         j.putExtra("Userid", utils.getdata("Userid"));
-        startService(j);
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O) {
+            startForegroundService(j);
+        }else {
+            startService(j);
+        }
         if(Data.DateExpire){
             ((ImageView)findViewById(R.id.browsebtn)).setEnabled(false);
             ((ImageView)findViewById(R.id.browsebtn)).setAlpha(0.5f);
             ((ImageView)findViewById(R.id.trackbtn)).setEnabled(false);
             ((ImageView)findViewById(R.id.trackbtn)).setAlpha(0.5f);
         }
+
+        setAppVersion();
+    }
+
+    private void setAppVersion() {
+        PackageInfo pinfo = null;
+        try {
+            pinfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        //int versionNumber = pinfo.versionCode;
+
+        String versionName = pinfo.versionName;
+
+        ((TextView)findViewById(R.id.version_number_tv)).setText("App Version " +versionName);
     }
 
     public void UpdateProfileClick(View view) {

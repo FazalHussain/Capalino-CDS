@@ -35,9 +35,11 @@
         android:layout_below="@+id/logo"
         android:background="@color/text_color"
         android:layout_width="match_parent"
-        android:layout_height="40dp">
+        android:layout_height="wrap_content">
 
         <ImageView
+            android:id="@+id/back"
+            android:layout_centerVertical="true"
             android:src="@drawable/back"
             android:onClick="BackClick"
             android:paddingTop="4dp"
@@ -51,12 +53,28 @@
             android:textColor="@color/white"
             android:layout_centerInParent="true"
             android:id="@+id/headertext"
-            android:singleLine="true"
-            android:ellipsize="end"
+            android:gravity="center"
+            android:textAllCaps="true"
+            android:layout_toRightOf="@+id/back"
+            android:layout_toLeftOf="@+id/back1"
             android:text="@string/capablities_search_activity"
             android:textSize="18sp"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
+        <ImageView
+            android:visibility="invisible"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/back"
+            android:paddingTop="4dp"
+            android:id="@+id/back1"
+            android:paddingBottom="4dp"
+            android:paddingRight="16dp"
+            android:paddingLeft="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp" />
+
+
 
     </RelativeLayout>
     <!--

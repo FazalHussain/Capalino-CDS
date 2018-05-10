@@ -42,7 +42,9 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class GeographicCoverageActivity extends Activity {
 
@@ -252,7 +254,8 @@ public class GeographicCoverageActivity extends Activity {
             dataBaseHelper.createDataBase();
             dataBaseHelper.openDataBase();
 
-            Cursor cursor = dataBaseHelper.getDataFromDB("TagTitle", Data.list_geographic.get(position).getTitle(),"GeopraphyTags",true);
+            Cursor cursor = dataBaseHelper.getDataFromQuery("Select * from GeopraphyTags where " +
+                    "TagTitle = '"+ list.get(position).getTitle() +"'");
             if(cursor.getCount()>0){
                 while (cursor.moveToNext()){
                     TagID = cursor.getString(0);
@@ -364,7 +367,8 @@ public class GeographicCoverageActivity extends Activity {
             tagid_list.add("");
             if (cursor.getCount() > 0) {
                 while (cursor.moveToNext()) {
-                    list.add(new ListData_Agency(cursor.getString(2)));
+                    list.add(new ListData_Agency(cursor.getString(2), cursor.getInt(4) ,
+                            cursor.getInt(0)));
                     tagid_list.add(cursor.getInt(0)+"");
                 }
                 Data.tagidlist_db = tagid_list;
@@ -382,10 +386,10 @@ public class GeographicCoverageActivity extends Activity {
                         ((Button)findViewById(R.id.updatebtn)).setEnabled(true);
 
                         list_check.set(position, !list_check.get(position));
-                        if(!list_check.get(position)){
+                        /*if(!list_check.get(position)){
                             getDataID(position);
                             Data.tagidlist.remove(TagID);
-                        }
+                        }*/
 
                         if(position==0) {
                             if (list_check.get(position)) {
@@ -405,9 +409,27 @@ public class GeographicCoverageActivity extends Activity {
 
                                 Data.list_check = list_check;
 
+                                Set<String> set = new HashSet<String>();
+                                set.addAll(Data.tagidlist);
+                                Data.tagidlist.clear();
+                                Data.tagidlist.addAll(set);
+
 
                                 ItemListAdapterGeographic adapter = new ItemListAdapterGeographic(GeographicCoverageActivity.this,list);
+                                lv.setItemsCanFocus(false);
+                                lv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
                                 lv.setAdapter(adapter);
+
+                                for(int i=0;i<list.size(); i++){
+                                    for(int j=0; j<Data.tagidlist.size(); j++){
+                                        int tagid = Integer.valueOf(Data.tagidlist.get(j));
+                                        if(list.get(i).getTagID() == tagid ){
+                                            lv.setItemChecked(i, true);
+                                        }
+                                    }
+                                }
+
+
 
 
                             } else {
@@ -428,7 +450,18 @@ public class GeographicCoverageActivity extends Activity {
                                 Data.list_check = list_check;
 
                                 ItemListAdapterGeographic adapter = new ItemListAdapterGeographic(GeographicCoverageActivity.this,list);
+                                lv.setItemsCanFocus(false);
+                                lv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
                                 lv.setAdapter(adapter);
+
+                                for(int i=0;i<list.size(); i++){
+                                    for(int j=0; j<Data.tagidlist.size(); j++){
+                                        int tagid = Integer.valueOf(Data.tagidlist.get(j));
+                                        if(list.get(i).getTagID() == tagid ){
+                                            lv.setItemChecked(i, true);
+                                        }
+                                    }
+                                }
                                 //adapter.notifyDataSetChanged();
                             }
 
@@ -551,9 +584,19 @@ public class GeographicCoverageActivity extends Activity {
                 }
 
                 ItemListAdapterGeographic adapter = new ItemListAdapterGeographic(GeographicCoverageActivity.this,list);
-                lv.setAdapter(adapter);
+                lv.setItemsCanFocus(false);
                 lv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-                lv.setItemsCanFocus(true);
+                lv.setAdapter(adapter);
+
+                for(int i=0;i<list.size(); i++){
+                    for(int j=0; j<Data.tagidlist.size(); j++){
+                        int tagid = Integer.valueOf(Data.tagidlist.get(j));
+                        if(list.get(i).getTagID() == tagid ){
+                            lv.setItemChecked(i, true);
+                            list_check.set(i, true);
+                        }
+                    }
+                }
                 hidePB();
 
 

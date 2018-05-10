@@ -89,133 +89,6 @@
     -->
 
 
-
-    <RelativeLayout
-        android:layout_marginTop="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="16dp"
-        android:layout_below="@+id/header"
-        android:layout_above="@+id/footer"
-        android:background="@drawable/round_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <ImageView
-            android:layout_marginTop="16dp"
-            android:layout_marginLeft="8dp"
-            android:id="@+id/icon_img"
-            android:src="@drawable/icon1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-
-
-        <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:textSize="17sp"
-            android:maxLines="3"
-            android:ellipsize="end"
-            android:id="@+id/text_header"
-            android:layout_marginTop="12dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_toRightOf="@+id/icon_img"
-            android:text="@string/home_view_header"/>
-
-
-
-        <ScrollView
-            android:fillViewport="true"
-            android:layout_below="@+id/text_header"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_below="@+id/time_duration"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
-                    android:id="@+id/longdescrip"
-                    android:layout_toRightOf="@+id/icon_img"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginLeft="28dp"
-                    android:textSize="16sp"
-                    android:scrollbars="vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/time_duration"
-                    android:text="@string/home_view_detail"/>
-
-                <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
-                    android:layout_below="@+id/link_header"
-                    android:id="@+id/link_content"
-                    android:layout_marginTop="4dp"
-                    android:scrollbars="vertical"
-                    android:text="Agency Link"
-                    android:layout_marginLeft="28dp"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginRight="16dp"
-                    android:textColor="@color/deep_purple"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
-                <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
-                    android:id="@+id/ref1_link"
-                    android:layout_marginTop="4dp"
-                    android:scrollbars="vertical"
-                    android:text="Reference 1"
-                    android:visibility="gone"
-                    android:layout_marginLeft="28dp"
-                    android:layout_marginBottom="4dp"
-                    android:layout_marginRight="16dp"
-                    android:textColor="@color/deep_purple"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
-                <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
-                    android:id="@+id/ref2_link"
-                    android:layout_marginTop="4dp"
-                    android:scrollbars="vertical"
-                    android:visibility="gone"
-                    android:text="Reference 2"
-                    android:layout_marginLeft="28dp"
-                    android:layout_marginBottom="4dp"
-                    android:layout_marginRight="16dp"
-                    android:textColor="@color/deep_purple"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
-                <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
-                    android:id="@+id/ref3_link"
-                    android:layout_marginTop="4dp"
-                    android:scrollbars="vertical"
-                    android:visibility="gone"
-                    android:text="Reference 3"
-                    android:layout_marginLeft="28dp"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginRight="16dp"
-                    android:textColor="@color/deep_purple"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
-
-
-            </LinearLayout>
-
-        </ScrollView>
-
-    </RelativeLayout>
-
-
-
-
     <!--
        *******************Footer Layot**************************
     -->
@@ -276,5 +149,153 @@
 
 
     </LinearLayout>
+
+    <RelativeLayout
+        android:layout_margin="16dp"
+        android:background="@drawable/round_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/header">
+
+        <com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="17sp"
+            android:id="@+id/text_header"
+            android:layout_marginTop="12dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_toRightOf="@+id/icon_img"
+            android:text="@string/home_view_header"/>
+
+
+        <ScrollView
+            android:fillViewport="true"
+            android:layout_below="@+id/text_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_below="@+id/time_duration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+                    android:id="@+id/longdescrip"
+                    android:layout_toRightOf="@+id/icon_img"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:textSize="16sp"
+                    android:scrollbars="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/time_duration"
+                    android:text="@string/home_view_detail"/>
+
+                <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+                    android:layout_below="@+id/link_header"
+                    android:id="@+id/link_content"
+                    android:layout_marginTop="4dp"
+                    android:scrollbars="vertical"
+                    android:text="Agency Link"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginRight="16dp"
+                    android:textColor="@color/deep_purple"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+
+
+
+                    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+                        android:id="@+id/ref1_link"
+                        android:scrollbars="vertical"
+                        android:text="Reference 1"
+                        android:layout_marginLeft="16dp"
+                        android:layout_centerInParent="true"
+                        android:visibility="gone"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:textColor="@color/deep_purple"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+                        android:id="@+id/ref2_link"
+                        android:layout_toRightOf="@+id/ref1_link"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="4dp"
+                        android:scrollbars="vertical"
+                        android:visibility="gone"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:text="Reference 2"
+                        android:textColor="@color/deep_purple"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+                        android:id="@+id/ref3_link"
+                        android:layout_toRightOf="@+id/ref2_link"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="4dp"
+                        android:scrollbars="vertical"
+                        android:visibility="gone"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:text="Reference 3"
+                        android:textColor="@color/deep_purple"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+                        android:id="@+id/ref4_link"
+                        android:layout_toRightOf="@+id/ref3_link"
+                        android:layout_centerInParent="true"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="4dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:scrollbars="vertical"
+                        android:visibility="gone"
+                        android:text="Reference 4"
+                        android:textColor="@color/deep_purple"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <com.MWBE.Connects.NY.CustomViews.CustomTextView_Book
+                        android:id="@+id/ref5_link"
+                        android:layout_toRightOf="@+id/ref4_link"
+                        android:layout_centerInParent="true"
+                        android:scrollbars="vertical"
+                        android:visibility="gone"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:text="Reference 5"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginLeft="16dp"
+                        android:textColor="@color/deep_purple"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+
+
+                <android.support.v4.widget.Space
+                    android:layout_width="match_parent"
+                    android:layout_height="16dp"/>
+
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </RelativeLayout>
 
 </RelativeLayout>

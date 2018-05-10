@@ -3,6 +3,7 @@ package net.authorize.sampleapplication.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -78,7 +79,12 @@ public class HistoryRetainedFragment extends Fragment implements AnetResultRecei
                         getString(HistoryFragment.TRANSACTION_AMOUNT_TAG));
             }
             intent.putExtra(AnetResultReceiver.RESULT_RECEIVER_TAG, resultReceiver);
-            getActivity().startService(intent);
+            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O) {
+                getActivity().startForegroundService(intent);
+            }else {
+                getActivity().startService(intent);
+            }
+
         } catch (Exception e) {
             return false;
         }

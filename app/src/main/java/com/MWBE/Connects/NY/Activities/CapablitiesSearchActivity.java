@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -108,21 +109,70 @@ public class CapablitiesSearchActivity extends Activity {
                     });
                 }
 
-
-
-
-
-
-
                 SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy hh:mm a");
                 Date date = new Date();
                 final Utils utils = new Utils(CapablitiesSearchActivity.this);
-                for(int i=0;i<list_check.size();i++) {
-                    if (list_check.get(i)) {
+                SparseBooleanArray checked = lv.getCheckedItemPositions();
+                for(int i=0;i<lv.getAdapter().getCount();i++) {
+                    if (checked.get(i)) {
                         //s = UpdateSettingTypeID(list_actualid.get(i));
                         String url = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/addUserPreferences.php?UserID=" + utils.getdata("Userid") +
-                                "&SettingTypeID=" + settingTypeID + "&ActualTagID=" + (settingTypeID + i + 1) + "&AddedDateTime=" + dateformat.format(date);
+                                "&SettingTypeID=" + list.get(i).getSettingTypeID() + "&ActualTagID=" + list.get(i).getTagID() + "&AddedDateTime=" + dateformat.format(date);
                         url = url.replace(" ", "%20");
+
+                        switch (list.get(i).getSettingTypeID()+"") {
+                            case "100": {
+                                Data.ActualID_list_advertising.add(list.get(i).getTagID());
+                                break;
+                            }
+
+                            case "200": {
+                                Data.ActualID_list_architectural.add(list.get(i).getTagID());
+                                break;
+                            }
+
+                            case "300": {
+                                Data.ActualID_list_construction.add(list.get(i).getTagID());
+                                break;
+                            }
+
+                            case "400": {
+                                Data.ActualID_list_envoirnmental.add(list.get(i).getTagID());
+                                break;
+                            }
+
+                            case "500": {
+                                Data.ActualID_list_solidwaste.add(list.get(i).getTagID());
+                                break;
+                            }
+
+                            case "600": {
+                                Data.ActualID_list_facilities.add(list.get(i).getTagID());
+                                break;
+                            }
+
+                            case "700": {
+                                Data.ActualID_list_safety.add(list.get(i).getTagID());
+                                break;
+                            }
+
+                            case "800": {
+                                Data.ActualID_list_it.add(list.get(i).getTagID());
+                                break;
+                            }
+
+                            case "900": {
+                                Data.ActualID_list_humanservice.add(list.get(i).getTagID());
+                                break;
+                            }
+
+                            case "1000": {
+                                Data.ActualID_list_others.add(list.get(i).getTagID());
+                                break;
+                            }
+
+                        }
+
                         //SetupList(list_actualid.get(i));
                         final int finalI = i;
                         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
@@ -139,6 +189,7 @@ public class CapablitiesSearchActivity extends Activity {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
                                                         ClearListByID(settingTypeID);
+
                                                         Intent intentback = new Intent();
                                                             intentback.putExtra("count", count + " selected");
                                                         SendDataBack(intentback);
@@ -188,58 +239,7 @@ public class CapablitiesSearchActivity extends Activity {
                         Volley.newRequestQueue(CapablitiesSearchActivity.this).add(stringRequest);
                     }
 
-                    switch (settingTypeID + "") {
-                        case "100": {
-                            Data.ActualID_list_advertising.add((settingTypeID + i + 1));
-                            break;
-                        }
 
-                        case "200": {
-                            Data.ActualID_list_architectural.add((settingTypeID + i + 1));
-                            break;
-                        }
-
-                        case "300": {
-                            Data.ActualID_list_construction.add((settingTypeID + i + 1));
-                            break;
-                        }
-
-                        case "400": {
-                            Data.ActualID_list_envoirnmental.add((settingTypeID + i + 1));
-                            break;
-                        }
-
-                        case "500": {
-                            Data.ActualID_list_solidwaste.add((settingTypeID + i + 1));
-                            break;
-                        }
-
-                        case "600": {
-                            Data.ActualID_list_facilities.add((settingTypeID + i + 1));
-                            break;
-                        }
-
-                        case "700": {
-                            Data.ActualID_list_safety.add((settingTypeID + i + 1));
-                            break;
-                        }
-
-                        case "800": {
-                            Data.ActualID_list_it.add((settingTypeID + i + 1));
-                            break;
-                        }
-
-                        case "900": {
-                            Data.ActualID_list_humanservice.add((settingTypeID + i + 1));
-                            break;
-                        }
-
-                        case "1000": {
-                            Data.ActualID_list_others.add((settingTypeID + i + 1));
-                            break;
-                        }
-
-                    }
 
                     if (i == list_check.size() - 1) {
                         hidePB();
@@ -453,58 +453,7 @@ public class CapablitiesSearchActivity extends Activity {
             list = new ArrayList<ListData_Agency>();
             list_check = new ArrayList<Boolean>();
 
-            switch (getIntent().getStringExtra("status")) {
-                case "Advertising": {
-                    list_check = Data.list_check_capabilities_adv;
-                    break;
-                }
 
-                case "HVConstruction": {
-                    list_check = Data.list_check_capabilities_cons;
-
-                    break;
-                }
-
-                case "Architecture": {
-                    list_check = Data.list_check_capabilities_arc;
-                    break;
-                }
-
-                case "Envoirnmental": {
-                    list_check = Data.list_check_capabilities_envoirnmental;
-                    break;
-                }
-
-                case "Facilities": {
-                    list_check = Data.list_check_capabilities_facility;
-                    break;
-                }
-
-                case "GeneralMaintainance": {
-                    list_check = Data.list_check_capabilities_solidstate;
-                    break;
-                }
-
-                case "Security": {
-                    list_check = Data.list_check_capabilities_safety;
-                    break;
-                }
-
-                case "IT": {
-                    list_check = Data.list_check_capabilities_it;
-                    break;
-                }
-
-                case "humanservices": {
-                    list_check = Data.list_check_capabilities_hservices;
-                    break;
-                }
-
-                case "Others": {
-                    list_check = Data.list_check_capabilities_others;
-                    break;
-                }
-            }
             setupList();
             positionArray = new ArrayList<>();
             list_check.clear();
@@ -523,8 +472,80 @@ public class CapablitiesSearchActivity extends Activity {
                 positionArray.add(-1);
             }*/
 
-
             lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    updatebtn.setEnabled(true);
+                    updatebtn.getBackground().setAlpha(255);
+                    positionArray.set(position, position);
+                    list_check.set(position, !list_check.get(position));
+
+                    switch (getIntent().getStringExtra("status")) {
+                        case "Advertising": {
+                            RemoveIndex(Data.ActualID_list_advertising,position);
+                            break;
+                        }
+
+                        case "HVConstruction": {
+                            Data.list_check_capabilities_cons = list_check;
+                            RemoveIndex(Data.ActualID_list_construction,position);
+                            break;
+                        }
+
+                        case "Architecture": {
+                            Data.list_check_capabilities_arc = list_check;
+                            RemoveIndex(Data.ActualID_list_architectural,position);
+                            break;
+                        }
+
+                        case "Envoirnmental": {
+                            Data.list_check_capabilities_envoirnmental = list_check;
+                            RemoveIndex(Data.ActualID_list_envoirnmental,position);
+                            break;
+                        }
+
+                        case "Facilities": {
+                            Data.list_check_capabilities_facility = list_check;
+                            RemoveIndex(Data.ActualID_list_facilities,position);
+                            break;
+                        }
+
+                        case "GeneralMaintainance": {
+                            Data.list_check_capabilities_adv = list_check;
+                            RemoveIndex(Data.ActualID_list_solidwaste,position);
+                            break;
+                        }
+
+                        case "Security": {
+                            Data.list_check_capabilities_safety = list_check;
+                            RemoveIndex(Data.ActualID_list_safety,position);
+                            break;
+                        }
+
+                        case "IT": {
+                            Data.list_check_capabilities_it = list_check;
+                            RemoveIndex(Data.ActualID_list_it,position);
+                            break;
+                        }
+
+                        case "humanservices": {
+                            Data.list_check_capabilities_hservices = list_check;
+                            RemoveIndex(Data.ActualID_list_humanservice,position);
+                            break;
+                        }
+
+                        case "Others": {
+                            Data.list_check_capabilities_others = list_check;
+                            RemoveIndex(Data.ActualID_list_others,position);
+                            break;
+                        }
+
+                    }
+
+                }
+            });
+
+            /*lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     try {
@@ -601,7 +622,7 @@ public class CapablitiesSearchActivity extends Activity {
                         e.printStackTrace();
                     }
                 }
-            });
+            });*/
 
             //CustomListAdapter adapter = new CustomListAdapter(CapablitiesSearchActivity.this, R.layout.activity_agency, list);
             //lv.setAdapter(adapter);
@@ -609,9 +630,162 @@ public class CapablitiesSearchActivity extends Activity {
 
 
             ItemListAdapter adapter = new ItemListAdapter(this,list,list_check);
-            lv.setAdapter(adapter);
-            lv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
             lv.setItemsCanFocus(false);
+            lv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+            lv.setAdapter(adapter);
+
+
+            switch (getIntent().getStringExtra("status")) {
+                case "Advertising": {
+                    if (Data.ActualID_list_advertising.size() > 0) {
+                        for (int i = 0; i < list.size(); i++) {
+                            for (int j = 0; j < Data.ActualID_list_advertising.size(); j++) {
+                                if (list.get(i).getTagID() == Data.ActualID_list_advertising.get(j)) {
+                                    lv.setItemChecked(i, true);
+                                }
+
+                            }
+                        }
+                    }
+                    break;
+                }
+
+                case "Architecture": {
+                    if (Data.ActualID_list_architectural.size() > 0) {
+                        for (int i = 0; i < list.size(); i++) {
+                            for (int j = 0; j < Data.ActualID_list_architectural.size(); j++) {
+                                if (list.get(i).getTagID() == Data.ActualID_list_architectural.get(j)) {
+                                    lv.setItemChecked(i, true);
+                                    //Data.list_check_capabilities_cons.set(i, true);
+                                }
+
+                            }
+                        }
+                    }
+                    break;
+                }
+
+                case "HVConstruction": {
+                    if (Data.ActualID_list_construction.size() > 0) {
+                        for (int i = 0; i < list.size(); i++) {
+                            for (int j = 0; j < Data.ActualID_list_construction.size(); j++) {
+                                if (list.get(i).getTagID() == Data.ActualID_list_construction.get(j)) {
+                                    lv.setItemChecked(i, true);
+                                    //Data.list_check_capabilities_cons.set(i, true);
+                                }
+
+                            }
+                        }
+                    }
+                    break;
+                }
+
+                case "Envoirnmental": {
+                    if (Data.ActualID_list_envoirnmental.size() > 0) {
+                        for (int i = 0; i < list.size(); i++) {
+                            for (int j = 0; j < Data.ActualID_list_envoirnmental.size(); j++) {
+                                if (list.get(i).getTagID() == Data.ActualID_list_envoirnmental.get(j)) {
+                                    lv.setItemChecked(i, true);
+                                    //Data.list_check_capabilities_cons.set(i, true);
+                                }
+
+                            }
+                        }
+                    }
+                    break;
+                }
+
+                case "Facilities": {
+                    if (Data.ActualID_list_facilities.size() > 0) {
+                        for (int i = 0; i < list.size(); i++) {
+                            for (int j = 0; j < Data.ActualID_list_facilities.size(); j++) {
+                                if (list.get(i).getTagID() == Data.ActualID_list_facilities.get(j)) {
+                                    lv.setItemChecked(i, true);
+                                    //Data.list_check_capabilities_cons.set(i, true);
+                                }
+
+                            }
+                        }
+                    }
+                    break;
+                }
+
+                case "GeneralMaintainance": {
+                    if (Data.ActualID_list_solidwaste.size() > 0) {
+                        for (int i = 0; i < list.size(); i++) {
+                            for (int j = 0; j < Data.ActualID_list_solidwaste.size(); j++) {
+                                if (list.get(i).getTagID() == Data.ActualID_list_solidwaste.get(j)) {
+                                    lv.setItemChecked(i, true);
+                                    //Data.list_check_capabilities_cons.set(i, true);
+                                }
+
+                            }
+                        }
+                    }
+                    break;
+                }
+
+                case "Security": {
+                    if (Data.ActualID_list_safety.size() > 0) {
+                        for (int i = 0; i < list.size(); i++) {
+                            for (int j = 0; j < Data.ActualID_list_safety.size(); j++) {
+                                if (list.get(i).getTagID() == Data.ActualID_list_safety.get(j)) {
+                                    lv.setItemChecked(i, true);
+                                    //Data.list_check_capabilities_cons.set(i, true);
+                                }
+
+                            }
+                        }
+                    }
+                    break;
+                }
+
+                case "IT": {
+                    if (Data.ActualID_list_it.size() > 0) {
+                        for (int i = 0; i < list.size(); i++) {
+                            for (int j = 0; j < Data.ActualID_list_it.size(); j++) {
+                                if (list.get(i).getTagID() == Data.ActualID_list_it.get(j)) {
+                                    lv.setItemChecked(i, true);
+                                    //Data.list_check_capabilities_cons.set(i, true);
+                                }
+
+                            }
+                        }
+                    }
+                    break;
+                }
+
+                case "humanservices": {
+                    if (Data.ActualID_list_humanservice.size() > 0) {
+                        for (int i = 0; i < list.size(); i++) {
+                            for (int j = 0; j < Data.ActualID_list_humanservice.size(); j++) {
+                                if (list.get(i).getTagID() == Data.ActualID_list_humanservice.get(j)) {
+                                    lv.setItemChecked(i, true);
+                                    //Data.list_check_capabilities_cons.set(i, true);
+                                }
+
+                            }
+                        }
+                    }
+                    break;
+                }
+
+                case "Others": {
+                    if (Data.ActualID_list_others.size() > 0) {
+                        for (int i = 0; i < list.size(); i++) {
+                            for (int j = 0; j < Data.ActualID_list_others.size(); j++) {
+                                if (list.get(i).getTagID() == Data.ActualID_list_others.get(j)) {
+                                    lv.setItemChecked(i, true);
+                                    //Data.list_check_capabilities_cons.set(i, true);
+                                }
+
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -635,9 +809,13 @@ public class CapablitiesSearchActivity extends Activity {
     }
 
     private void RemoveIndex(ArrayList<Integer> list,int position) {
-        if(!list_check.get(position)){
-           getDataID(position);
-            list.remove(TagID);
+        try {
+            if (!list_check.get(position) && list.size() > 0) {
+                getDataID(position);
+                list.remove(TagID);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -649,14 +827,16 @@ public class CapablitiesSearchActivity extends Activity {
 
             switch (getIntent().getStringExtra("status")) {
                 case "Advertising": {
-                    list_check = Data.list_check_capabilities_adv;
-                    Cursor cursor = dataBaseHelper.getDataFromDB("", "", "CapabilitiesMaster", false);
+                    list_check = new ArrayList<>(Data.list_check_capabilities_adv);
+                    Cursor cursor = dataBaseHelper.getDataFromQuery("Select * from " +
+                            "CapabilitiesMaster ORDER BY TagValueTitle");
                     if (cursor.getCount() > 0) {
                         Data.ActualID_list_advertising_db.clear();
                         while (cursor.moveToNext()) {
                             if (cursor.getInt(1) == 100) {
                                 settingTypeID = 100;
-                                list.add(new ListData_Agency(cursor.getString(3)));
+                                list.add(new ListData_Agency(cursor.getString(3), settingTypeID,
+                                        cursor.getInt(2)));
                                 Data.ActualID_list_advertising_db.add(cursor.getInt(2));
                             }
                             list_actualid.add(cursor.getInt(2));
@@ -666,13 +846,15 @@ public class CapablitiesSearchActivity extends Activity {
                 }
 
                 case "HVConstruction": {
-                    Cursor cursor = dataBaseHelper.getDataFromDB("", "", "CapabilitiesMaster", false);
+                    Cursor cursor = dataBaseHelper.getDataFromQuery("Select * from " +
+                            "CapabilitiesMaster ORDER BY TagValueTitle");
                     if (cursor.getCount() > 0) {
                         Data.ActualID_list_construction_db.clear();
                         while (cursor.moveToNext()) {
                             if (cursor.getInt(1) == 300) {
                                 settingTypeID = 300;
-                                list.add(new ListData_Agency(cursor.getString(3)));
+                                list.add(new ListData_Agency(cursor.getString(3), settingTypeID,
+                                        cursor.getInt(2)));
                                 Data.ActualID_list_construction_db.add(cursor.getInt(2));
                             }
                             list_actualid.add(cursor.getInt(2));
@@ -683,13 +865,15 @@ public class CapablitiesSearchActivity extends Activity {
                 }
 
                 case "Architecture": {
-                    Cursor cursor = dataBaseHelper.getDataFromDB("", "", "CapabilitiesMaster", false);
+                    Cursor cursor = dataBaseHelper.getDataFromQuery("Select * from " +
+                            "CapabilitiesMaster ORDER BY TagValueTitle");
                     if (cursor.getCount() > 0) {
                         Data.ActualID_list_architectural_db.clear();
                         while (cursor.moveToNext()) {
                             if (cursor.getInt(1) == 200) {
                                 settingTypeID = 200;
-                                list.add(new ListData_Agency(cursor.getString(3)));
+                                list.add(new ListData_Agency(cursor.getString(3), settingTypeID,
+                                        cursor.getInt(2)));
                                 Data.ActualID_list_architectural_db.add(cursor.getInt(2));
                             }
                             list_actualid.add(cursor.getInt(2));
@@ -699,13 +883,15 @@ public class CapablitiesSearchActivity extends Activity {
                 }
 
                 case "Envoirnmental": {
-                    Cursor cursor = dataBaseHelper.getDataFromDB("", "", "CapabilitiesMaster", false);
+                    Cursor cursor = dataBaseHelper.getDataFromQuery("Select * from " +
+                            "CapabilitiesMaster ORDER BY TagValueTitle");
                     if (cursor.getCount() > 0) {
                         Data.ActualID_list_envoirnmental_db.clear();
                         while (cursor.moveToNext()) {
                             if (cursor.getInt(1) == 400){
                                 settingTypeID = 400;
-                                list.add(new ListData_Agency(cursor.getString(3)));
+                                list.add(new ListData_Agency(cursor.getString(3), settingTypeID,
+                                        cursor.getInt(2)));
                                 Data.ActualID_list_envoirnmental_db.add(cursor.getInt(2));
 
                             }
@@ -716,13 +902,15 @@ public class CapablitiesSearchActivity extends Activity {
                 }
 
                 case "Facilities": {
-                    Cursor cursor = dataBaseHelper.getDataFromDB("", "", "CapabilitiesMaster", false);
+                    Cursor cursor = dataBaseHelper.getDataFromQuery("Select * from " +
+                            "CapabilitiesMaster ORDER BY TagValueTitle");
                     if (cursor.getCount() > 0) {
                         Data.ActualID_list_facilities_db.clear();
                         while (cursor.moveToNext()) {
                             if (cursor.getInt(1) == 600){
                                 settingTypeID = 600;
-                                list.add(new ListData_Agency(cursor.getString(3)));
+                                list.add(new ListData_Agency(cursor.getString(3), settingTypeID,
+                                        cursor.getInt(2)));
                                 Data.ActualID_list_facilities_db.add(cursor.getInt(2));
                             }
 
@@ -733,13 +921,15 @@ public class CapablitiesSearchActivity extends Activity {
                 }
 
                 case "GeneralMaintainance": {
-                    Cursor cursor = dataBaseHelper.getDataFromDB("", "", "CapabilitiesMaster", false);
+                    Cursor cursor = dataBaseHelper.getDataFromQuery("Select * from " +
+                            "CapabilitiesMaster ORDER BY TagValueTitle");
                     if (cursor.getCount() > 0) {
                         Data.ActualID_list_solidwaste_db.clear();
                         while (cursor.moveToNext()) {
                             if (cursor.getInt(1) == 500){
                                 settingTypeID = 500;
-                                list.add(new ListData_Agency(cursor.getString(3)));
+                                list.add(new ListData_Agency(cursor.getString(3), settingTypeID,
+                                        cursor.getInt(2)));
                                 Data.ActualID_list_solidwaste_db.add(cursor.getInt(2));
                             }
                             list_actualid.add(cursor.getInt(2));
@@ -752,13 +942,15 @@ public class CapablitiesSearchActivity extends Activity {
                 }
 
                 case "Security": {
-                    Cursor cursor = dataBaseHelper.getDataFromDB("", "", "CapabilitiesMaster", false);
+                    Cursor cursor = dataBaseHelper.getDataFromQuery("Select * from " +
+                            "CapabilitiesMaster ORDER BY TagValueTitle");
                     if (cursor.getCount() > 0) {
                         Data.ActualID_list_safety_db.clear();
                         while (cursor.moveToNext()) {
                             if (cursor.getInt(1) == 700){
                                 settingTypeID = 700;
-                                list.add(new ListData_Agency(cursor.getString(3)));
+                                list.add(new ListData_Agency(cursor.getString(3), settingTypeID,
+                                        cursor.getInt(2)));
                                 Data.ActualID_list_safety_db.add(cursor.getInt(2));
                             }
 
@@ -769,13 +961,15 @@ public class CapablitiesSearchActivity extends Activity {
                 }
 
                 case "IT": {
-                    Cursor cursor = dataBaseHelper.getDataFromDB("", "", "CapabilitiesMaster", false);
+                    Cursor cursor = dataBaseHelper.getDataFromQuery("Select * from " +
+                            "CapabilitiesMaster ORDER BY TagValueTitle");
                     if (cursor.getCount() > 0) {
                         Data.ActualID_list_it_db.clear();
                         while (cursor.moveToNext()) {
                             if (cursor.getInt(1) == 800){
                                 settingTypeID = 800;
-                                list.add(new ListData_Agency(cursor.getString(3)));
+                                list.add(new ListData_Agency(cursor.getString(3), settingTypeID,
+                                        cursor.getInt(2)));
                                 Data.ActualID_list_it_db.add(cursor.getInt(2));
                             }
 
@@ -786,13 +980,15 @@ public class CapablitiesSearchActivity extends Activity {
                 }
 
                 case "humanservices": {
-                    Cursor cursor = dataBaseHelper.getDataFromDB("", "", "CapabilitiesMaster", false);
+                    Cursor cursor = dataBaseHelper.getDataFromQuery("Select * from " +
+                            "CapabilitiesMaster ORDER BY TagValueTitle");
                     if (cursor.getCount() > 0) {
                         Data.ActualID_list_humanservice_db.clear();
                         while (cursor.moveToNext()) {
                             if (cursor.getInt(1) == 900){
                                 settingTypeID = 900;
-                                list.add(new ListData_Agency(cursor.getString(3)));
+                                list.add(new ListData_Agency(cursor.getString(3), settingTypeID,
+                                        cursor.getInt(2)));
                                 Data.ActualID_list_humanservice_db.add(cursor.getInt(2));
                             }
 
@@ -803,14 +999,16 @@ public class CapablitiesSearchActivity extends Activity {
                 }
 
                 case "Others": {
-                    Cursor cursor = dataBaseHelper.getDataFromDB("", "", "CapabilitiesMaster", false);
+                    Cursor cursor = dataBaseHelper.getDataFromQuery("Select * from " +
+                            "CapabilitiesMaster ORDER BY TagValueTitle");
                     if (cursor.getCount() > 0) {
                         Data.ActualID_list_others_db.clear();
                         while (cursor.moveToNext()) {
                             if (cursor.getInt(1) == 1000)
                             {
                                 settingTypeID = 1000;
-                                list.add(new ListData_Agency(cursor.getString(3)));
+                                list.add(new ListData_Agency(cursor.getString(3), settingTypeID,
+                                        cursor.getInt(2)));
                                 Data.ActualID_list_others_db.add(cursor.getInt(2));
                             }
 

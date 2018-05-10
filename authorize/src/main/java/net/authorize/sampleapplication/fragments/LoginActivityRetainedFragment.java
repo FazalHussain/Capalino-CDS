@@ -3,6 +3,7 @@ package net.authorize.sampleapplication.fragments;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
@@ -71,7 +72,12 @@ public class LoginActivityRetainedFragment extends Fragment
             intent.putExtra(LoginActivity.LOGIN_ID_TAG, loginId);
             intent.putExtra(LoginActivity.PASSWORD_TAG, password);
             intent.putExtra(AnetResultReceiver.RESULT_RECEIVER_TAG, resultReceiver);
-            getActivity().startService(intent);
+            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O) {
+                getActivity().startForegroundService(intent);
+            }else {
+                getActivity().startService(intent);
+            }
+
         } catch (Exception e) {
             return false;
         }

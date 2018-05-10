@@ -2,11 +2,11 @@ package com.MWBE.Connects.NY.Activities;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.ImageView;
-
-import com.MWBE.Connects.NY.CapalinoServices.CapabilitiesService;
 import com.MWBE.Connects.NY.AppConstants.Utils;
+import com.MWBE.Connects.NY.CapalinoServices.CapabilitiesService;
 import com.MWBE.Connects.NY.R;
 import com.github.lzyzsd.circleprogress.DonutProgress;
 
@@ -56,7 +56,12 @@ public class Splash extends Activity {
         utils = new Utils(this);
         Intent j = new Intent(this, CapabilitiesService.class);
         j.putExtra("Userid", utils.getdata("Userid"));
-        startService(j);
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O) {
+            startForegroundService(j);
+        }else{
+            startService(j);
+        }
+
     }
 
 

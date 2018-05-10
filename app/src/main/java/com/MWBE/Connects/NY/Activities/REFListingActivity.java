@@ -5,17 +5,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -30,12 +32,13 @@ import com.MWBE.Connects.NY.JavaBeen.ListData_RFP;
 import com.MWBE.Connects.NY.JavaBeen.ViewHolder_RfpList;
 import com.MWBE.Connects.NY.R;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public class REFListingActivity extends FragmentActivity {
 
@@ -51,6 +54,9 @@ public class REFListingActivity extends FragmentActivity {
     private String contract_value_tag_id;
     private ProgressDialog pb;
 
+    private ImageView sort_btn;
+    private String sort;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,14 +68,16 @@ public class REFListingActivity extends FragmentActivity {
     private void init() {
 
         lv = (ListView) findViewById(R.id.list_rfp_lv);
+        sort_btn = (ImageView) findViewById(R.id.sort_btn);
         populatelist();
     }
 
     private void populatelist() {
         try {
+
             Data.Geographic_list.clear();
             Data.Contract_list.clear();
-            DataBaseHelper dataBaseHelper = new DataBaseHelper(REFListingActivity.this);
+            final DataBaseHelper dataBaseHelper = new DataBaseHelper(REFListingActivity.this);
             dataBaseHelper.createDataBase();
             dataBaseHelper.close();
             dataBaseHelper.openDataBase();
@@ -84,24 +92,48 @@ public class REFListingActivity extends FragmentActivity {
             }
             if (!Data.isOpen) {
 
-                if (getIntent().getStringExtra("contact_value") != null) {
-                    /*contract_value_tag_id = getIntent().getStringExtra("contracttagid");
-                    Cursor cursor = dataBaseHelper.getDataFromProcurementMaster(contract_value_tag_id, Data.agency, Data.search);
-                    if (cursor.getCount() > 0) {
-                        while (cursor.moveToNext()) {
-                            if (Data.isOpen) {
-                                list.add(new ListData_RFP("Capalino+Company Match", 3.0, cursor.getString(2), cursor.getString(1),
-                                        cursor.getString(4), cursor.getString(3)));
-                            } else {
-                                list.add(new ListData_RFP("Capalino+Company Match", 0.0, cursor.getString(2), cursor.getString(1),
-                                        cursor.getString(4), cursor.getString(3)));
-                            }
+                if (getIntent().getSerializableExtra("list") != null){
+                    list = (ArrayList<ListData_RFP>) getIntent().getSerializableExtra("list");
 
-                        }*/
+                    ((TextView) findViewById(R.id.rfpfound)).setText(list.size() + " RFPs Found");
+                    adapter = new CustomListAdapter(REFListingActivity.this, R.layout.activity_reflisting, list);
+                    lv.setAdapter(adapter);
+
+                    if(list.size() == 0){
+                        new AlertDialog.Builder(context)
+                                .setTitle("Alert!")
+                                .setMessage("Sorry, no results were found. Modify your search criteria and try again.")
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        onBackPressed();
+                                    }
+                                })
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
+                        return;
+                    }
+                }
+
+                if (getIntent().getStringExtra("contact_value") != null) {
+
+                    ((TextView) findViewById(R.id.rfpfound)).setText(list.size() + " RFPs Found");
 
                     if(list.size()>0){
+                        sort_btn.setVisibility(View.VISIBLE);
+                        Collections.sort(list, new Comparator<ListData_RFP>() {
+                            DateFormat f = new SimpleDateFormat("dd-MMM-yyyy");
+                            @Override
+                            public int compare(ListData_RFP o1, ListData_RFP o2) {
+                                try {
+                                    return f.parse(o2.getPublic_date()).compareTo(f.parse(o1.getPublic_date()));
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
 
-
+                                return 0;
+                            }
+                        });
                         adapter = new CustomListAdapter(REFListingActivity.this, R.layout.activity_reflisting, list);
                         lv.setAdapter(adapter);
                     } else {
@@ -120,62 +152,36 @@ public class REFListingActivity extends FragmentActivity {
                 }
 
             } else {
-                Cursor cursor = null;
-                    for(int i=0;i<Data.SettingTypeID_capab_search.size();i++){
-                        cursor = dataBaseHelper.getDataFromProcurementMaster(Data.SettingTypeID_capab_search.get(i));
-                        fillList(cursor,CapabilitiesList);
-                    }
 
+                list = (ArrayList<ListData_RFP>) getIntent().getSerializableExtra("list");
 
-               for(int i=0;i<Data.procid.size();i++){
-                   for(int j=0;j<Data.Actual_id_list_geographic.size();j++){
-                       GeographicList = dataBaseHelper.getDataFromProcurementMasterStar2(Data.Actual_id_list_geographic.get(j),Data.procid.get(i));
-                       //fillList(cursor,GeographicList);
+                ((TextView) findViewById(R.id.rfpfound)).setText(list.size() + " RFPs Found");
+                adapter = new CustomListAdapter(REFListingActivity.this, R.layout.activity_reflisting, list);
+                lv.setAdapter(adapter);
 
-                       if(GeographicList.size()>0){
-                           for(int k=0;k<GeographicList.size();k++)
-                           Data.Geographic_list.add(GeographicList.get(k));
+                sort_btn.setVisibility(View.VISIBLE);
 
-                       }else {
-                           GeographicList = Data.Geographic_list;
-                       }
-                   }
-
-               }
-
-                for(int i=0;i<Data.procid.size();i++){
-                    for(int j=0;j<Data.Actual_id_list_target.size();j++){
-                        ContractList = dataBaseHelper.getDataFromProcurementMasterStar3(Data.Actual_id_list_target.get(j),Data.procid.get(i));
-                        //fillList(cursor,ContractList);
-                        if(ContractList.size()>0){
-                            for(int k=0;k<ContractList.size();k++)
-                                Data.Contract_list.add(ContractList.get(k));
-                        }else {
-                            ContractList = Data.Contract_list;
-                        }
-                    }
-
+                if(list.size() == 0){
+                    new AlertDialog.Builder(context)
+                            .setTitle("Alert!")
+                            .setMessage("Sorry, no results were found. Modify your search criteria and try again.")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    onBackPressed();
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+                    return;
                 }
 
-                fillListFinal();
+
+
                 //lv.setAdapter(adapter);
             }
 
-            ((TextView) findViewById(R.id.rfpfound)).setText(list.size() + " RFPs Found");
-            if(list.size()==0){
-                new AlertDialog.Builder(context)
-                        .setTitle("Alert!")
-                        .setMessage("You have 0 matches.\nIf you don’t see any matches, check back tomorrow! New City and State RFPs are added to MWBE Connect NY every day.")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                finish();
-                            }
-                        })
-                        .setCancelable(false)
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
-            }
+
             //adapter = new CustomListAdapter(REFListingActivity.this, R.layout.activity_reflisting, list);
             //lv.setAdapter(adapter);
 
@@ -197,165 +203,12 @@ public class REFListingActivity extends FragmentActivity {
         }
     }
 
-    private void fillListFinal() {
-        ArrayList<String> geog_title = new ArrayList<>();
-        ArrayList<String> contr_title = new ArrayList<>();
-        GeographicList = Data.Geographic_list;
-        ContractList = Data.Contract_list;
-        for(int i=0;i< CapabilitiesList.size();i++){
-            list.add(CapabilitiesList.get(i));
-        }
-
-        for(int i=0;i<CapabilitiesList.size();i++){
-            for(int j=0;j<GeographicList.size();j++){
-                if(CapabilitiesList.get(i).getTitle().equalsIgnoreCase(GeographicList.get(j).getTitle())){
-                    GeographicList.get(j).setRating(2);
-/*                        list.add(GeographicList.get(i));*/
-
-                }
-            }
-            //list.add();
-        }
-
-        for(int i=0;i<CapabilitiesList.size();i++){
-            for(int j=0;j<ContractList.size();j++){
-                if(CapabilitiesList.get(i).getTitle().equalsIgnoreCase(ContractList.get(j).getTitle())){
-                    ContractList.get(j).setRating(2);
-                    //list.add(ContractList.get(i));
-                }
-            }
-            //list.add();
-        }
-
-        for(int i=0;i<ContractList.size();i++){
-            for(int j=0;j<GeographicList.size();j++){
-                if(ContractList.get(i).getTitle().equalsIgnoreCase(GeographicList.get(j).getTitle())){
-                    ContractList.get(i).setRating(3);
-                        /*list.add(ContractList.get(i));*/
-
-                }
-            }
-            //list.add();
-        }
-
-        for(ListData_RFP geograph_title : GeographicList){
-            geog_title.add(geograph_title.getTitle());
-        }
-
-        for(ListData_RFP contract_title : ContractList){
-            contr_title.add(contract_title.getTitle());
-        }
-
-        for(int i=0;i<CapabilitiesList.size();i++){
-            if(geog_title.contains(CapabilitiesList.get(i).getTitle()) || contr_title.contains(CapabilitiesList.get(i).getTitle())){
-                CapabilitiesList.get(i).setRating(2);
-            }
-        }
-
-        for(int i=0;i<CapabilitiesList.size();i++){
-            if(geog_title.contains(CapabilitiesList.get(i).getTitle()) && contr_title.contains(CapabilitiesList.get(i).getTitle())){
-                CapabilitiesList.get(i).setRating(3);
-            }
-        }
-
-        list.clear();
-        for(int i=0;i<CapabilitiesList.size();i++){
-            if(CapabilitiesList.get(i).getRating()==3){
-                list.add(CapabilitiesList.get(i));
-            }
-        }
-
-        for(int i=0;i<CapabilitiesList.size();i++){
-            if(CapabilitiesList.get(i).getRating()==2){
-                list.add(CapabilitiesList.get(i));
-            }
-        }
-
-        for(int i=0;i<CapabilitiesList.size();i++){
-            if(CapabilitiesList.get(i).getRating()==1){
-                list.add(CapabilitiesList.get(i));
-            }
-        }
-
-        /*for(int i=0;i<CapabilitiesList.size();i++){
-            if(GeographicList.contains(CapabilitiesList.get(i)) || ContractList.contains(CapabilitiesList.get(i))){
-                CapabilitiesList.get(i).setRating(3);
-            }
-        }
-
-        for(int i=0;i<CapabilitiesList.size();i++){
-            if(GeographicList.contains(CapabilitiesList.get(i)) && ContractList.contains(CapabilitiesList.get(i))){
-                CapabilitiesList.get(i).setRating(3);
-            }
-        }*/
-
-        /*if(CapabilitiesList.size()>0 && GeographicList.size()==0 && ContractList.size()==0){
-
-            adapter = new CustomListAdapter(REFListingActivity.this, R.layout.activity_reflisting, list);
-        }
-
-
-
-        if(GeographicList.size()>0 && ContractList.size()==0){
-            adapter = new CustomListAdapter(REFListingActivity.this, R.layout.activity_reflisting, GeographicList);
-        }
-
-        if(ContractList.size()>0 && GeographicList.size()==0){
-            adapter = new CustomListAdapter(REFListingActivity.this, R.layout.activity_reflisting, ContractList);
-        }
-
-        if(ContractList.size()>0 && GeographicList.size()>0){
-            adapter = new CustomListAdapter(REFListingActivity.this, R.layout.activity_reflisting, ContractList);
-        }
-*/
-        for(int i=0;i<list.size();i++){
-            String title = list.get(i).getTitle().replace("\\u0027","'");
-            list.get(i).setTitle(title);
-            String agency = list.get(i).getAgency().replace("\\u0027","'");
-            list.get(i).setAgency(agency);
-            //list.get(i).getTitle().replace("\u0027","'");
-        }
-
-        RemoveDublicate();
-
-
-        adapter = new CustomListAdapter(REFListingActivity.this, R.layout.activity_reflisting, list);
-        lv.setAdapter(adapter);
-
-    }
-
-    private void RemoveDublicate() {
-       /* Set set = new TreeSet(new Comparator() {
-            @Override
-            public int compare(ListData_RFP o1, ListData_RFP o) {
-                if(o1.getTitle().equalsIgnoreCase(o2.getTitle())){
-                    return 0;
-                }
-                return 1;
-            }
-        });
-        set.addAll(list);
-
-        System.out.println("\n***** After removing duplicates *******\n");
-
-        list = new ArrayList(set);
-
-        *//** Printing original list **//*
-        System.out.println(list);*/
-
-        Map<String, ListData_RFP> map = new LinkedHashMap<>();
-        for (ListData_RFP ays : list) {
-            map.put(ays.getTitle(), ays);
-        }
-        list.clear();
-        list.addAll(map.values());
-    }
-
 
     //Footer Tab Event Listener
 
-    private void fillList(Cursor cursor,ArrayList<ListData_RFP> list) {
+    private ArrayList<ListData_RFP> fillList(Cursor cursor) {
         Data.procid.clear();
+        ArrayList<ListData_RFP> list = new ArrayList<>();
         if(!DataBaseHelper.sqliteDataBase.isOpen()){
             DataBaseHelper dataBaseHelper = new DataBaseHelper(this);
             try {
@@ -366,18 +219,7 @@ public class REFListingActivity extends FragmentActivity {
             }
         }
         if (cursor.getCount() > 0) {
-            //list.clear();
-           /* if(CapabilitiesList.size()>0){
-                Data.star=1;
-            }*/
 
-            /*if(GeographicList.size()>0 || ContractList.size()>0){
-                Data.star=2;
-            }
-
-            if(CapabilitiesList.size()>0 && GeographicList.size()>0 && ContractList.size()>0){
-                Data.star=3;
-            }*/
             while (cursor.moveToNext()) {
 
                     list.add(new ListData_RFP(cursor.getString(4),"Capalino+Company Match", Data.star, cursor.getString(0), cursor.getString(1),
@@ -387,6 +229,15 @@ public class REFListingActivity extends FragmentActivity {
                 }
             }
         }
+
+        ArrayList<ListData_RFP> capablitylist = new ArrayList<ListData_RFP>();// unique
+        for (ListData_RFP element : list) {
+            if (!capablitylist.contains(element)) {
+                capablitylist.add(element);
+            }
+        }
+
+        return capablitylist;
     }
 
     public void HomeClick(View view) {
@@ -422,14 +273,174 @@ public class REFListingActivity extends FragmentActivity {
     }
 
     public void BackClick(View view) {
-        finish();
-        Data.isOpen = false;
-        Intent i = new Intent(this,BrowseActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        Data.Actual_id_list_geographic.clear();
-        Data.Actual_id_list_target.clear();
-        Data.SettingTypeID_capab_search.clear();
-        startActivity(i);
+        onBackPressed();
+    }
+
+    public void sortClick(View view) {
+        try{
+            ArrayList<String> list_sortby =new ArrayList<>();
+            if(Data.isOpen) {
+                list_sortby.add("Star Rating");
+                list_sortby.add("Proposal Deadline");
+                popup_dropdown(list_sortby);
+            }else {
+                list_sortby.add("Post Date");
+                list_sortby.add("Proposal Deadline");
+                popup_dropdown_normal(list_sortby);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void popup_dropdown(ArrayList<String> listsort) {
+        try{
+
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            final LayoutInflater li = LayoutInflater.from(this);
+            View promptsView = li.inflate(R.layout.sort_popup, null);
+            alertDialogBuilder.setView(promptsView);
+
+
+
+            alertDialogBuilder.setTitle("Sort By");
+
+
+            final AlertDialog alertDialog = alertDialogBuilder.create();
+
+            final ListView lv_spinner= (ListView) promptsView
+                    .findViewById(R.id.lv_dropdown);
+            final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                    android.R.layout.simple_list_item_1,
+                    listsort);
+            lv_spinner.setAdapter(adapter);
+            lv_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    switch (position){
+                        case 0:{
+                            CustomListAdapter adapter = new CustomListAdapter(REFListingActivity.this, R.layout.activity_reflisting, list);
+                            lv.setAdapter(adapter);
+                            alertDialog.dismiss();
+                            break;
+                        }
+
+                        case 1:{
+                            List<ListData_RFP> sorted_list_proposed_deadline = new ArrayList<ListData_RFP>(list);
+                            Collections.sort(sorted_list_proposed_deadline, new Comparator<ListData_RFP>() {
+                                DateFormat f = new SimpleDateFormat("dd-MMM-yyyy hh:mm a");
+                                @Override
+                                public int compare(ListData_RFP o1, ListData_RFP o2) {
+                                    try {
+                                        return f.parse(o1.getDue_date()).compareTo(f.parse(o2.getDue_date()));
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    return 0;
+                                }
+                            });
+
+                            CustomListAdapter adapter = new CustomListAdapter(REFListingActivity.this, R.layout.activity_reflisting, sorted_list_proposed_deadline);
+                            lv.setAdapter(adapter);
+                            alertDialog.dismiss();
+                            break;
+                        }
+
+
+                    }
+                }
+            });
+
+
+            alertDialog.show();
+            alertDialog.setCanceledOnTouchOutside(false);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void popup_dropdown_normal(ArrayList<String> listsort) {
+        try{
+
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            final LayoutInflater li = LayoutInflater.from(this);
+            View promptsView = li.inflate(R.layout.sort_popup, null);
+            alertDialogBuilder.setView(promptsView);
+
+
+
+            alertDialogBuilder.setTitle("Sort By");
+
+
+            final AlertDialog alertDialog = alertDialogBuilder.create();
+
+            final ListView lv_spinner= (ListView) promptsView
+                    .findViewById(R.id.lv_dropdown);
+            final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                    android.R.layout.simple_list_item_1,
+                    listsort);
+            lv_spinner.setAdapter(adapter);
+            lv_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    switch (position){
+                        case 0:{
+                            List<ListData_RFP> sorted_list_posted_date = new ArrayList<ListData_RFP>(list);
+                            Collections.sort(sorted_list_posted_date, new Comparator<ListData_RFP>() {
+                                DateFormat f = new SimpleDateFormat("dd-MMM-yyyy");
+                                @Override
+                                public int compare(ListData_RFP o1, ListData_RFP o2) {
+                                    try {
+                                        return f.parse(o2.getPublic_date()).compareTo(f.parse(o1.getPublic_date()));
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    return 0;
+                                }
+                            });
+
+                            CustomListAdapter adapter = new CustomListAdapter(REFListingActivity.this, R.layout.activity_reflisting, sorted_list_posted_date);
+                            lv.setAdapter(adapter);
+                            alertDialog.dismiss();
+                            break;
+                        }
+
+                        case 1:{
+                            List<ListData_RFP> sorted_list_proposed_deadline = new ArrayList<ListData_RFP>(list);
+                            Collections.sort(sorted_list_proposed_deadline, new Comparator<ListData_RFP>() {
+                                DateFormat f = new SimpleDateFormat("dd-MMM-yyyy hh:mm a");
+                                @Override
+                                public int compare(ListData_RFP o1, ListData_RFP o2) {
+                                    try {
+                                        return f.parse(o1.getDue_date()).compareTo(f.parse(o2.getDue_date()));
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    return 0;
+                                }
+                            });
+
+                            CustomListAdapter adapter = new CustomListAdapter(REFListingActivity.this, R.layout.activity_reflisting, sorted_list_proposed_deadline);
+                            lv.setAdapter(adapter);
+                            alertDialog.dismiss();
+                            break;
+                        }
+
+
+                    }
+                }
+            });
+
+
+            alertDialog.show();
+            alertDialog.setCanceledOnTouchOutside(false);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public class CustomListAdapter extends ArrayAdapter<ListData_RFP> {
@@ -526,7 +537,7 @@ public class REFListingActivity extends FragmentActivity {
 
                         final ListData_RFP data_rfp = getItem(position);
                         if (list_track.size() > 0) {
-                            String title = data_rfp.getTitle().replace("'","\\u0027");
+                            String title = data_rfp.getTitle().replace("'","''");
                             for (int i = 0; i < list_track.size(); i++) {
                                 if (!list_track.get(i).getTitle().equalsIgnoreCase(title)) {
                                     ispresent = false;
@@ -559,8 +570,8 @@ public class REFListingActivity extends FragmentActivity {
                                         public void onClick(DialogInterface dialog, int which) {
                                             list_track.add(new ListData_RFP(data_rfp.getId(),data_rfp.getHeader(), data_rfp.getRating(), data_rfp.getTitle(),
                                                     data_rfp.getAgency(), data_rfp.getPublic_date(), data_rfp.getDue_date()));
-                                            String title = data_rfp.getTitle().replace("'","\\u0027");
-                                            String agency = data_rfp.getAgency().replace("'","\\u0027");
+                                            String title = data_rfp.getTitle().replace("'","''");
+                                            String agency = data_rfp.getAgency().replace("'","''");
                                             boolean isInserted = dataBaseHelper.InsertUserProcurmentTracking(new TrackingData(title, agency, data_rfp.getPublic_date(),
                                                     data_rfp.getDue_date(), utils.getdata("Userid"), data_rfp.getRating(),data_rfp.getId()));
 
@@ -696,6 +707,17 @@ public class REFListingActivity extends FragmentActivity {
             viewHolder.public_date.setText(data.getPublic_date());
             viewHolder.due_date.setText(data.getDue_date());
             viewHolder.ratingbar.setRating((float) data.getRating());
+
+
+            if(getIntent().getStringExtra("rating") != null){
+                viewHolder.ratingbar.setVisibility(View.GONE);
+                sort_btn.setVisibility(View.GONE);
+                if(data.getRating() < 1) {
+                    viewHolder.match_tagged.setVisibility(View.INVISIBLE);
+                }else {
+                    viewHolder.match_tagged.setVisibility(View.VISIBLE);
+                }
+            }
             if(!Data.isOpen)
             viewHolder.ratingbar.setVisibility(View.GONE);
 

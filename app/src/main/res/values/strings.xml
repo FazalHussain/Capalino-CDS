@@ -13,7 +13,7 @@
     <string name="login_btn_name">LOGIN</string>
     <string name="register_btn_name">Register a new account</string>
     <string name="forgot_password_text">Forgot Password?</string>
-    <string name="header_text">Capalino+Company is an award-winning lobbying + stregic consulting firm, recently ranked #1 in NYC, that specialize in helping companies,
+    <string name="header_text">Capalino+Company is an award-winning lobbying + strategic consulting firm, recently ranked #1 in NYC, that specialize in helping companies,
      not-for-profits and institutions succeed in New York City.</string>
     <string name="name">First Name</string>
     <string name="full_name">Full Name</string>
@@ -46,6 +46,7 @@
     <string name="contract">Contract Value</string>
     <string name="contractvalue">Less than 50,000$</string>
     <string name="browse_btn_name">Browse</string>
+    <string name="browse_btn_todaysRFPs_name">Today\'s RFPs</string>
     <string name="reflisting_header">RFP/BID LISTINGS</string>
     <string name="track_btn_name">TRACK</string>
     <string name="advice_btn_name">ADVICE</string>
@@ -59,7 +60,7 @@
     <string name="comment">Hello, I need some help here.</string>
     <string name="send_btn_name">SEND</string>
     <string name="agency_title">AGENCY</string>
-    <string name="procurement_type_title">CAPABILITY TYPE</string>
+    <string name="procurement_type_title">INDUSTRY TYPE</string>
     <string name="contract_value_title">CONTRACT VALUE</string>
     <string name="settings">SETTINGS</string>
     <string name="pref">PROCUREMENT PREFERENCES</string>
@@ -76,7 +77,7 @@
     <string name="GEOGRAPHIC_COVERAGE">Geographic Coverage</string>
     <string name="target_contact">Target Contract Value</string>
     <string name="certification">Certifications</string>
-    <string name="capablities">Industry and Capabilities</string>
+    <string name="capablities">Industry</string>
     <string name="updateprofile">Update Profile</string>
 
     <string name="GEOGRAPHIC_COVERAGE_title">GEOGRAPHIC COVERAGE</string>
@@ -86,7 +87,7 @@
     <string name="certification_title">CERTIFICATIONS</string>
 
     <string name="update_capablities">UPDATE CAPABILITY</string>
-    <string name="capablity_title">INDUSTRY AND CAPABILITIES</string>
+    <string name="capablity_title">INDUSTRY</string>
     <string name="construction_hint">Construction</string>
     <string name="goods_hint">Goods</string>
     <string name="services_hint">Standard Services</string>
@@ -157,7 +158,7 @@
     <string name="aggrement">This agreement and any operating rules for Capalino’s website established by Capalino constitute the entire agreement of the parties with respect to the subject matter hereof, and supersede all previous written or oral agreements between the parties with respect to such subject matter. This agreement shall be construed in accordance with the laws of the State of New York, without regard to its conflict of laws rules.</string>
 
     <string-array name="capabilities_array">
-        <item>Select Capability</item>
+        <item>Select Industry</item>
         <item>Advertising, Graphic Arts and Marketing</item>
         <item>Architectural, Engineering and Surveying</item>
         <item>Construction (Horizontal and Vertical)</item>
@@ -238,9 +239,10 @@
     <string name="annual_discount">(Get 10% discount on annual subscription)</string>
     <string name="Pay">Pay</string>
 
-    <string name="Promocode_btn">Apply Promo Code</string>
+    <string name="Promocode_btn">Apply</string>
 
     <string name="promocode_discount">(Get 10% discount on annual subscription)</string>
+    <string name="note">Note</string>
 
 
 </resources>

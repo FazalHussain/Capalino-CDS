@@ -228,6 +228,12 @@ public class UpdateProfileActivity extends Activity implements TextWatcher {
 
     public void UpdateClick() {
         showPB("Loading...");
+        if(businessname_et.getText().length() > 0){
+            utils.savedata("BusinessName",businessname_et.getText().toString());
+        }else {
+            businessname_et.setText("NA");
+            utils.savedata("BusinessName",businessname_et.getText().toString());
+        }
         if (fname_et.getText().length() > 0 && lname_et.getText().length() > 0 && email_et.getText().length() > 0) {
             String url = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/updateUserProfileZipCode.php?UserEmailAddress=" + email_et.getText().toString() +
                     "&UserFirstName=" + fname_et.getText().toString() + "&UserLastName=" + lname_et.getText().toString() +
@@ -242,6 +248,9 @@ public class UpdateProfileActivity extends Activity implements TextWatcher {
                         public void onResponse(String response) {
                             if (response.equalsIgnoreCase("Records Updated.")) {
                                 hidePB();
+
+
+
                                 new AlertDialog.Builder(context)
                                         .setTitle("Alert!")
                                         .setMessage("Thank You. Your profile has been updated.")

@@ -261,18 +261,41 @@ public class GeneralInformationSetup extends Fragment {
         nextbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(validate()){
                     setupValues();
 
                     /*UpdateData updatedata = new UpdateData(fname_et.getText().toString(),lname_et.getText().toString(),email_et.getText().toString(),
                             address_et.getText().toString(),phno_et.getText().toString(),city_et.getText().toString(),state_spinner.getSelectedItem().toString(),
                             buisnessname_et.getText().toString(),buisnessweb_et.getText().toString(),zipcode_et.getText().toString());*/
 
-                UpdateData updatedata = new UpdateData(fname_et.getText().toString(),lname_et.getText().toString(),email_et.getText().toString(),
-                        address,phno,city,spinnertext,buisnessname,buisnessweb,zipcode);
+                    UpdateData updatedata = new UpdateData(fname_et.getText().toString(),lname_et.getText().toString(),email_et.getText().toString(),
+                            address,phno,city,spinnertext,buisnessname,buisnessweb,zipcode);
                     Storage.updateData = updatedata;
                     getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.setup,new GeographicCoverageSetup()).addToBackStack("tag").commit();
+                }else {
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("Alert!")
+                            .setMessage("First and Last Name, Email, Phone & Business Name are required to proceed further.")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            }).show();
+                }
+
             }
         });
+    }
+
+    private boolean validate() {
+        if(fname_et.getText().length() == 0 || lname_et.getText().length() == 0
+                || email_et.getText().length() == 0 || phno_et.getText().length() == 0
+                || buisnessname_et.getText().length() == 0){
+            return false;
+        }
+
+        return true;
     }
 
     private void setupValues() {

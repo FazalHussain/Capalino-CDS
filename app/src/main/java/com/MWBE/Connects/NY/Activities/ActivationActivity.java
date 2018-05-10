@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -20,6 +21,12 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.MWBE.Connects.NY.CustomViews.CustomEditText_Book;
 import com.MWBE.Connects.NY.R;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.SignUpEvent;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsConstants;
+import com.facebook.appevents.AppEventsLogger;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
@@ -29,12 +36,16 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import static com.facebook.FacebookSdk.getApplicationContext;
+
 public class ActivationActivity extends Activity {
 
     private CustomEditText_Book email_et;
     private CustomEditText_Book activation_et;
     private Context context = this;
     private ProgressDialog pb;
+    AppEventsLogger logger;
+    Utils utils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,11 +55,13 @@ public class ActivationActivity extends Activity {
     }
 
     private void init() {
+        utils = new Utils(this);
         View view = findViewById(R.id.activationdialog);
         view.getBackground().setAlpha(200);
         if(getIntent().getStringExtra("email")!=null)
         email_et = (CustomEditText_Book)findViewById(R.id.email);
         activation_et = (CustomEditText_Book) findViewById(R.id.activation_code);
+        FacebookSdk.sdkInitialize(getApplicationContext());
         if(getIntent().getStringExtra("email")!=null) {
             email_et.setText(getIntent().getStringExtra("email"));
             activation_et.requestFocus();
@@ -164,13 +177,18 @@ public class ActivationActivity extends Activity {
             @Override
             public void onResponse(String response) {
                 hidePB();
-                new android.app.AlertDialog.Builder(context)
+                logger = AppEventsLogger.newLogger(ActivationActivity.this);
+                //logger.logEvent("Sign_Up");
+                logger.logEvent(AppEventsConstants.EVENT_NAME_COMPLETED_REGISTRATION);
+                new AlertDialog.Builder(context)
                         .setTitle("Alert!")
                         .setMessage("Your Capalino account is now activated. Please sign in to access MWBE Connect NY.")
                         .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setCancelable(false)
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+
                                 finish();
                                 Intent i = new Intent(ActivationActivity.this, LoginActivity.class);
                                 i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -277,5 +295,61 @@ public class ActivationActivity extends Activity {
     }
 
 
+    public void ResendActivationCode(View view) {
+        try{
+            Thread thread_activate = new Thread(new Runnable(){
+                @Override
+                public void run() {
+                    try {
+                        showPB("Sending Activation Code...");
+                        String email = utils.getdata("email");
+                        //String message = "Thank you for registering to use the MWBE Connect NY mobile app. Type the code below into the ACTIVATION screen to activate the app. Activation Code: "+utils.getdata("activationcode");
+                        //message = message.replace(" ","%20");
+                        //String link = "http://hivelet.com/emailCapalinoH.php?message="+message+"&toemail="+utils.getdata("email");
+                        String link = "http://hivelet.com/resendActivationCode.php?UserEmailAddress="+email;
+                        HttpClient httpclient = new DefaultHttpClient();
+                        HttpPost httppost = new HttpPost(link);
 
+                        ResponseHandler<String> responseHandler = new BasicResponseHandler();
+                        final String response = httpclient.execute(httppost,
+                                responseHandler);
+
+                        Log.i("Response", "Response : " + response);
+                        if(response.equalsIgnoreCase("Success")){
+
+                            hidePB();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    new android.app.AlertDialog.Builder(context)
+                                            .setTitle("Alert!")
+                                            .setMessage("An activation code has been emailed to you. Please use this to activate your account.")
+                                            .setIcon(android.R.drawable.ic_dialog_alert)
+                                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+
+                                                }
+                                            })
+                                            .setCancelable(false)
+                                            .show();
+                                }
+                            });
+                            //Toast.makeText(getApplicationContext(),"Activation code send to your email, Check your email & activate your account",Toast.LENGTH_LONG).show();
+
+                        }
+
+
+                        //hidePB();
+                    } catch (Exception e) {
+                        hidePB();
+                        e.printStackTrace();
+                    }
+                }
+            });
+            thread_activate.start();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 }

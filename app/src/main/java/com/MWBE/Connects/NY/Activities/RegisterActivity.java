@@ -20,6 +20,7 @@ import com.MWBE.Connects.NY.AppConstants.Utils;
 import com.MWBE.Connects.NY.CustomViews.CustomEditText_Book;
 import com.MWBE.Connects.NY.PasswordValidator;
 import com.MWBE.Connects.NY.R;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
@@ -55,9 +56,12 @@ public class RegisterActivity extends Activity {
     private boolean emailValid;
     private boolean retypepassValid;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_register);
         getWindow().setBackgroundDrawableResource(R.drawable.background1) ;
         init();
@@ -239,7 +243,7 @@ public class RegisterActivity extends Activity {
     private boolean validate() {
         try {
             if (fname_et.length() == 0 || lastname_et.length() == 0 || email_et.length() == 0 ||
-                    company_et.length() == 0 || password_et.length() == 0 || retype_pass.length() == 0) {
+                     password_et.length() == 0 || retype_pass.length() == 0) {
                 new AlertDialog.Builder(context)
                         .setTitle("Alert!")
                         .setMessage("Please provide all the required information.")
@@ -351,7 +355,8 @@ public class RegisterActivity extends Activity {
         String fname = fname_et.getText().toString();
         String lname = lastname_et.getText().toString();
         email = email_et.getText().toString();
-        String company = company_et.getText().toString();
+        //String company = company_et.getText().toString();
+        String company = "NA";
         password = password_et.getText().toString();
         if(password.contains("#") || password.contains("%"))
         password = URLEncoder.encode(password);
@@ -371,125 +376,6 @@ public class RegisterActivity extends Activity {
 
     }
 
-        /*Thread thread_activate = new Thread(new Runnable(){
-            @Override
-            public void run() {
-                try {
-                    hidePB();
-                    showPB("Registration is in progress...");
-
-                    SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy hh:mm a");
-                    Date date = new Date();
-                    String url = "http://celeritas-solutions.com/cds/capalinoapp/apis/registerUser.php?UserFirstName="+fname+
-                            "&UserLastName="+lname+"&UserEmailAddress="+email+"&UserCompany="+company+"&UserPassword="+password+
-                            "&UserRegisteredDate="+dateformat.format(date)+"&ActivationCode="+String.valueOf(activation_code);
-                    url = url.replace(" ","%20");
-                    //String urlEncoded = Uri.encode(url, ALLOWED_URI_CHARS);
-                    HttpClient httpclient = new DefaultHttpClient();
-                    HttpPost httppost = new HttpPost(url);
-                    httppost.setHeader("Content-type", "application/json;charset=UTF-8");
-
-
-                    ResponseHandler<String> responseHandler = new BasicResponseHandler();
-                    final String response = httpclient.execute(httppost,
-                            responseHandler);
-
-                    if(response.contains("Records Added.Passwords Added.")){
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                activation();
-                            }
-                        });
-                    }
-
-                    Log.i("Response", "Response : " + response);
-
-
-                    //hidePB();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            }
-        });
-        thread_activate.start();
-    }
-
-    public void activation(){
-        Thread thread_activate = new Thread(new Runnable(){
-            @Override
-            public void run() {
-                try {
-                    String message = "Thank you for joining the Capalino community. Please see the activation code below which should be entered into the Join In screen. Note down and activate your account. Activation Code: "+activation_code;
-                    message = message.replace(" ","%20");
-                    String link = "http://hivelet.com/emailCapalinoH.php?message="+message+"&toemail="+email;
-                    HttpClient httpclient = new DefaultHttpClient();
-                    HttpPost httppost = new HttpPost(link);
-
-                    ResponseHandler<String> responseHandler = new BasicResponseHandler();
-                    final String response = httpclient.execute(httppost,
-                            responseHandler);
-
-                    Log.i("Response", "Response : " + response);
-                    if(response.equalsIgnoreCase("Success")){
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                new AlertDialog.Builder(context)
-                                        .setTitle("Alert!")
-                                        .setMessage("Thank you for registering! Activation code has been sent to your email. Kindly use that to activate your account. You will now be redirected...")
-                                        .setIcon(android.R.drawable.ic_dialog_alert)
-                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                Intent i = new Intent(RegisterActivity.this, ActivationActivity.class);
-                                                i.putExtra("email", email);
-                                                i.putExtra("pass", password);
-                                                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                                i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                                                startActivity(i);
-                                                finish();
-                                            }
-                                        })
-                                        .setCancelable(false)
-                                        .show();
-                            }
-                        });
-                        //Toast.makeText(getApplicationContext(),"Activation code send to your email, Check your email & activate your account",Toast.LENGTH_LONG).show();
-
-                    }
-
-
-                    //hidePB();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        thread_activate.start();
-
-
-
-       *//* Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent i = new Intent(RegisterActivity.this, ActivationActivity.class);
-                i.putExtra("email", email);
-                i.putExtra("pass", password);
-                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivity(i);
-                finish();
-            }
-        }, 10000);*//*
-
-
-    }
-*/
     void showPB(final String message) {
 
         runOnUiThread(new Runnable() {

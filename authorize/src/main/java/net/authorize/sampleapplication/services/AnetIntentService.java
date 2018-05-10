@@ -4,9 +4,11 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.provider.Settings;
+import android.support.v7.app.NotificationCompat;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -44,11 +46,15 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
+
+import static net.authorize.sampleapplication.models.StaticData.buildForegroundNotification;
 
 /**
  * Performs all API calls / transaction requests on a background thread asynchronously.
@@ -91,6 +97,15 @@ public class AnetIntentService extends IntentService {
 
     public AnetIntentService() {
         super("AnetIntentService");
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O) {
+            NotificationCompat.Builder b=new NotificationCompat.Builder(this);
+            startForeground(1, buildForegroundNotification(b));
+        }
     }
 
     @Override
@@ -159,7 +174,10 @@ public class AnetIntentService extends IntentService {
 
             // Create a merchant specifying environment type and with the merchant authentication
             AnetSingleton.merchant = Merchant.createMerchant(Environment.PRODUCTION, authentication);
+
             AnetSingleton.merchant.setDuplicateTxnWindowSeconds(30);
+
+
 
             // Create a mobile transaction and specify the type of transaction
             Transaction transaction = AnetSingleton.merchant.createMobileTransaction
@@ -167,6 +185,7 @@ public class AnetIntentService extends IntentService {
 
             // Set the mobile device created to the transaction and post the transaction
             transaction.setMobileDevice(mobileDevice);
+
             Result loginResult = (Result) AnetSingleton.merchant.postTransaction(transaction);
 
             if (loginResult.isOk())
@@ -177,6 +196,31 @@ public class AnetIntentService extends IntentService {
             resultData.putSerializable(ERROR_STATUS, e);
             receiver.send(EXCEPTION_ERROR_CODE, resultData);
         }
+    }
+
+    public static final String md5(final String s) {
+        final String MD5 = "MD5";
+        try {
+            // Create MD5 Hash
+            MessageDigest digest = java.security.MessageDigest
+                    .getInstance(MD5);
+            digest.update(s.getBytes());
+            byte messageDigest[] = digest.digest();
+
+            // Create Hex String
+            StringBuilder hexString = new StringBuilder();
+            for (byte aMessageDigest : messageDigest) {
+                String h = Integer.toHexString(0xFF & aMessageDigest);
+                while (h.length() < 2)
+                    h = "0" + h;
+                hexString.append(h);
+            }
+            return hexString.toString();
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
 

@@ -1,6 +1,7 @@
 package net.authorize.sampleapplication.fragments;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -16,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import net.authorize.sampleapplication.IContractor;
 import net.authorize.sampleapplication.LoginActivity;
 import net.authorize.sampleapplication.NavigationActivity;
 import net.authorize.sampleapplication.TransactionResultActivity;
@@ -66,7 +68,9 @@ public class TransactionFragment extends android.support.v4.app.Fragment
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -92,8 +96,11 @@ public class TransactionFragment extends android.support.v4.app.Fragment
         if(StaticData.isannual.equalsIgnoreCase("true")){
 
             totalAmountEditText.setText("99");
+
         }else {
+            //
             totalAmountEditText.setText("9.99");
+
         }
 
         try{
@@ -102,14 +109,22 @@ public class TransactionFragment extends android.support.v4.app.Fragment
                     if (StaticData.PromoType.equalsIgnoreCase("%")){
                         float discount = Float.valueOf(totalAmountEditText.getText().toString()) * (Float.valueOf(StaticData.discount))/100;
                         float totalammount =  Float.valueOf(totalAmountEditText.getText().toString()) - discount;
-                        String result = String.format("%.02f",totalammount);
-                        totalAmountEditText.setText(String.valueOf(result));
-                    }else if(StaticData.PromoType.equalsIgnoreCase("$")) {
-                        float totalammount =  Float.valueOf(totalAmountEditText.getText().toString()) - Float.valueOf(StaticData.discount);
+                        totalammount = totalammount <= 0 ? 0.0f : totalammount;
                         String result = String.format("%.02f",totalammount);
                         totalAmountEditText.setText(String.valueOf(result));
 
+                    }else if(StaticData.PromoType.equalsIgnoreCase("$")) {
+                        float totalammount =  Float.valueOf(totalAmountEditText.getText().toString()) - Float.valueOf(StaticData.discount);
+                        totalammount = totalammount <= 0 ? 0.0f : totalammount;
+                        String result = String.format("%.02f",totalammount);
+                        totalAmountEditText.setText(String.valueOf(result));
+
+
                     }
+
+
+
+
                 }
 
                 StaticData.discount = "";

@@ -422,7 +422,8 @@ public class CertificationActivity extends Activity {
             @Override
             protected void onPostExecute(ArrayList arrayList) {
                 //super.onPostExecute(arrayList);
-                if(arrayList.size()>0){
+
+                if(arrayList!=null && arrayList.size()>0){
                     Data.tagidlistcertification = arrayList;
                 }
                 ItemListAdapterCertification adapter = new ItemListAdapterCertification(CertificationActivity.this,list);

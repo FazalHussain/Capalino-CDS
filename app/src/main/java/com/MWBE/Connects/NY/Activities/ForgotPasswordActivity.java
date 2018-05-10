@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
 import android.view.View;
@@ -17,6 +18,8 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.MWBE.Connects.NY.AppConstants.Utils;
 import com.MWBE.Connects.NY.R;
+
+import net.authorize.sampleapplication.*;
 
 public class ForgotPasswordActivity extends Activity {
 
@@ -41,76 +44,7 @@ public class ForgotPasswordActivity extends Activity {
 
     public void ForgotPasswordClick(View view) {
         try {
-            if(email_et.getText().length()>0){
-                //String url = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/getPassword.php?UserEmailAddress=" + email_et.getText().toString();
-                String url = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/forgotPasswordWithUserCheck.php?UserEmailAddress=" + email_et.getText().toString();
-                StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        if (response!=null) {
-                            if(response.equalsIgnoreCase("Email does not exist.")){
-                                new AlertDialog.Builder(context)
-                                        .setTitle("Alert!")
-                                        .setMessage("Email does not exist.")
-                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-
-                                            }
-                                        })
-                                        .setIcon(android.R.drawable.ic_dialog_alert)
-                                        .show();
-                                return;
-                            }
-                            SendEmail(response);
-
-                        } else {
-                            new AlertDialog.Builder(context)
-                                    .setTitle("Alert!")
-                                    .setMessage("Email is incorrect, please try again.")
-                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-
-                                        }
-                                    })
-                                    .setIcon(android.R.drawable.ic_dialog_alert)
-                                    .show();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                        new AlertDialog.Builder(context)
-                                .setTitle("Alert!")
-                                .setMessage("Check your Internet Connection")
-                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-
-                                    }
-                                })
-                                .setIcon(android.R.drawable.ic_dialog_alert)
-                                .show();
-                        //Toast.makeText(getApplicationContext(), "", Toast.LENGTH_LONG).show();
-                    }
-                });
-
-                Volley.newRequestQueue(this).add(stringRequest);
-            }else {
-                new AlertDialog.Builder(context)
-                        .setTitle("Alert!")
-                        .setMessage("Email field must be filled to proceed further.")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
-            }
+            SendEmail();
 
         } catch (Exception e) {
             hidePB();
@@ -118,29 +52,28 @@ public class ForgotPasswordActivity extends Activity {
         }
     }
 
-    private void SendEmail(String response) {
+    private void SendEmail() {
         showPB("Loading...");
-        response = response.replace("\n","");
-        String pass = "";
-        char[] resp = response.toCharArray();
-        for(char c : resp){
-            if(c=='#'){
-                pass+="%23";
-            }else if(c=='^'){
-                pass+="%5E";
-            }else if(c=='%'){
-                pass+="%25";
-            }else {
-                pass+=c;
-            }
+        //http://hivelet.com/emailCapalinoForGotPasswordFormated.php?toemail=
+        final String email = email_et.getText().toString();
+
+        if (!isValidEmail(email)){
+            hidePB();
+            new AlertDialog.Builder(context)
+                    .setTitle("Alert!")
+                    .setMessage("Please enter a valid email address.")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+            return;
         }
-        String message = "Please see below for your current login credentials: Username: "+email_et.getText().toString()+" Password:  "+pass+
-                " If you have any questions or comments about the MWBE Assistant Mobile app, please email Safeena Mecklai at safeena@capalino.com.";
-        message = message.replace("\n","");
-        message = message.replace(" ", "%20");
-        //message = getString(R.string.htmlsource);
-        //String url = "http://hivelet.com/emailCapalinoH.php?message="+message+"&toemail="+email_et.getText().toString();
-        String url = "http://hivelet.com/emailCapalinoForGotPassword.php?password="+pass+"&toemail="+email_et.getText().toString();
+
+        String url = "http://hivelet.com/resetPassword.php?toemail="+ email;
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
@@ -148,22 +81,26 @@ public class ForgotPasswordActivity extends Activity {
                 if (response.equalsIgnoreCase("Success")) {
                     hidePB();
                     new AlertDialog.Builder(context)
-                            .setTitle("Alert!")
-                            .setMessage("Password has been sent to your email.")
+                            .setTitle("Reset Password!")
+                            .setMessage("An email is sent to " + email + " with instructions to reset password. ")
                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-
+                                    Intent i = new Intent(ForgotPasswordActivity.this,
+                                            LoginActivity.class);
+                                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(i);
                                 }
                             })
-                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setIcon(android.R.drawable.ic_dialog_info)
                             .show();
 
                 } else {
                     hidePB();
                     new AlertDialog.Builder(context)
                             .setTitle("Alert!")
-                            .setMessage("Email is incorrect, please try again.")
+                            .setMessage("This email doesn't exist in our system. Kindly recheck the email address or create a new account.")
                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -212,6 +149,16 @@ public class ForgotPasswordActivity extends Activity {
         });
 
         Volley.newRequestQueue(this).add(stringRequest);
+
+
+    }
+
+    public static boolean isValidEmail(CharSequence target) {
+        if (target == null) {
+            return false;
+        } else {
+            return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+        }
     }
 
     void showPB(final String message) {

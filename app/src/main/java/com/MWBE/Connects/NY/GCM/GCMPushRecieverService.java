@@ -20,6 +20,7 @@ import com.MWBE.Connects.NY.Activities.HomeActivity;
 import com.MWBE.Connects.NY.Activities.LoginActivity;
 import com.MWBE.Connects.NY.Activities.TrackList;
 import com.MWBE.Connects.NY.AppConstants.Utils;
+import com.MWBE.Connects.NY.CapalinoServices.DailyMethodService;
 import com.MWBE.Connects.NY.R;
 import com.google.android.gms.gcm.GcmListenerService;
 
@@ -41,12 +42,8 @@ public class GCMPushRecieverService extends GcmListenerService {
     @Override
     public void onMessageReceived(String from, Bundle data) {
         utils = new Utils(this);
+
         sendNotification1(data.getString("message"),data.getString("direction"),data.getString("title"));
-       /* if(data.getString("direction").equalsIgnoreCase("Alert")){
-            sendNotificationAlert(data.getString("message"),data.getString("direction"),data.getString("title"));
-        }
-        sendNotificationEvent(data.getString("message"),data.getString("direction"),data.getString("title"));
-        sendNotificationAnnouncement(data.getString("message"),data.getString("direction"),data.getString("title"));*/
 
         Log.d("msg",data.getString("message"));
         Log.d("direction",data.getString("direction"));
@@ -59,10 +56,7 @@ public class GCMPushRecieverService extends GcmListenerService {
         mNotificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        //Custom View for Notification
-        /*RemoteViews remoteViews = new RemoteViews(getPackageName(),
-                R.layout.customnotification);*/
-        Intent intent = null;
+        Intent intent = new Intent();
 
         //Notification Authorization
         if(!utils.getdata("email").equalsIgnoreCase("") && !utils.getdata("pass").equalsIgnoreCase("")) {
@@ -86,7 +80,8 @@ public class GCMPushRecieverService extends GcmListenerService {
             } else if (direction.equalsIgnoreCase("Browse")) {
 
                 intent = new Intent(this, HomeActivity.class);
-                intent.putExtra("notif_status", "Browse");
+                //intent.putExtra("notif_status", "Browse");
+                intent.putExtra("notif_status", "RFP Matched");
             } else if (direction.equalsIgnoreCase("RFP Matched")) {
 
                 intent = new Intent(this, HomeActivity.class);
@@ -100,6 +95,8 @@ public class GCMPushRecieverService extends GcmListenerService {
         }else {
             intent = new Intent(this, LoginActivity.class);
         }
+
+
 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         String[] msg = message.split(":",2);
@@ -121,9 +118,10 @@ public class GCMPushRecieverService extends GcmListenerService {
                 notifmsg = msg[1].trim();
                 Log.d("notif",msg[1].trim());
             } else {
-                notifmsg = "";
+                notifmsg = message;
                 titlemsg = message;
             }
+
         }catch (ArrayIndexOutOfBoundsException e){
             e.printStackTrace();
         }

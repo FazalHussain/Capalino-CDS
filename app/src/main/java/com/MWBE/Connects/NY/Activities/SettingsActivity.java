@@ -124,52 +124,6 @@ public class SettingsActivity extends Activity {
 
     }
 
-    private void getCapabCount() {
-        totalcount = 0;
-        if(Storage.count1>0){
-            totalcount++;
-        }
-
-        if(Storage.count2>0){
-            totalcount++;
-        }
-        if(Storage.count3>0){
-            totalcount++;
-        }
-        if(Storage.count4>0){
-            totalcount++;
-        }
-
-        if(Storage.count5>0){
-            totalcount++;
-        }
-
-        if(Storage.count6>0){
-            totalcount++;
-        }
-
-        if(Storage.count7>0){
-            totalcount++;
-        }
-
-        if(Storage.count8>0){
-            totalcount++;
-        }
-
-        if(Storage.count9>0){
-            totalcount++;
-        }
-
-        if(Storage.count10>0){
-            totalcount++;
-            ((CustomEditText_Book) findViewById(R.id.capability)).setText(totalcount +" Selected");
-        }else {
-            ((CustomEditText_Book) findViewById(R.id.capability)).setText(totalcount +" Selected");
-        }
-
-
-    }
-
     private void getGeographicCount() {
         if(!onlygeographic)
         showPB("Loading...");
@@ -358,6 +312,7 @@ public class SettingsActivity extends Activity {
         if (Utils.isConnected(this)) {
             String link = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/getUserCapabilitiesSelectedTags.php?UserID=" + utils.getdata("Userid") +
                     "&SettingTypeID=" + settingTypeID;
+
 
             new AsyncTask<String, Void, JSONArray>() {
                 @Override

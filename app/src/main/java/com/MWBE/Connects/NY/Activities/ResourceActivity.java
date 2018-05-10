@@ -81,11 +81,11 @@ public class ResourceActivity extends Activity {
         ArrayList<ListData_Resource> list = new ArrayList<>();
         list.add(new ListData_Resource("About Capalino+Company",R.drawable.post));
         list.add(new ListData_Resource("Capalino+Company MWBE Team",R.drawable.post));
-        list.add(new ListData_Resource("NYC and NYS Certification Fact Sheet",R.drawable.pdf));
+        list.add(new ListData_Resource("NYC and NYS Certification Fact Sheet",R.drawable.document));
         list.add(new ListData_Resource("About the App Video",R.drawable.video));
         list.add(new ListData_Resource("Share MWBE Connect NY With a Friend ",R.drawable.post));
         //list.add(new ListData_Resource("Legal Disclaimer",0));
-        list.add(new ListData_Resource("Terms, Conditions and Privacy Policy",R.drawable.pdf));
+        list.add(new ListData_Resource("Terms, Conditions and Privacy Policy",R.drawable.document));
         adapter = new CustomListAdapter(ResourceActivity.this,R.layout.activity_resource,list);
         lv.setAdapter(adapter);
         lvclick(lv,list);
@@ -126,22 +126,27 @@ public class ResourceActivity extends Activity {
 
                             //String url = Environment.getExternalStorageDirectory() + "/Downloadnyclobbyingfirmscapalinocompany.mp4";
                             //File file = new File(url);
-                            i = new Intent(Intent.ACTION_VIEW);
-                            i.setDataAndType(Uri.parse("http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/mwbevideo.mp4"), "video/*");
-                            startActivity(i);
+                            //i = new Intent(Intent.ACTION_VIEW);
+                            //http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/mwbevideo.mp4
+                            //i.setDataAndType(Uri.parse("https://www.youtube.com/watch?time_continue=1&v=0v2qebXPW7Y"), "video/*");
+                            //startActivity(i);
+
+                            Uri uri = Uri.parse("https://www.youtube.com/watch?v=gBQfIuZ6J3c");
+                            uri = Uri.parse( "vnd.youtube:" + uri.getQueryParameter( "v" ) );
+                            startActivity( new Intent( Intent.ACTION_VIEW, uri ) );
+
                             break;
                         }
 
                         case 4:{
                             EmailClick();
-                            //i.putExtra("url", "http://freecs13.hostei.com/celeritas-solutions/Capalino/MWBE%20Elig%20Formatted.pdf");
-                            //i.putExtra("status", "pdf");
+
                             break;
                         }
 
                         case 5:{
-                            //i.putExtra("url", "http://celeritas-solutions.com/cs/pah_brd_v1/capalino_android_v3/old/PrivacyStatement.pdf");
                             i.putExtra("url", "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/Terms.pdf");
+                            //i.putExtra("url", "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/terms.html");
                             i.putExtra("status", "pdf");
                             startActivity(i);
                             break;
@@ -205,7 +210,7 @@ public class ResourceActivity extends Activity {
     }
 
     public void saveResourceToFile() throws IOException {
-        InputStream in = null;
+        /*InputStream in = null;
         FileOutputStream fout = null;
         try {
             in = getResources().openRawResource(R.raw.nyclobbyingfirmscapalinocompany);
@@ -225,7 +230,7 @@ public class ResourceActivity extends Activity {
             if (fout != null) {
                 fout.close();
             }
-        }
+        }*/
     }
 
 

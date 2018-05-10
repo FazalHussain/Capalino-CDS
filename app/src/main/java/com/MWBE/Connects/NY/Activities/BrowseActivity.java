@@ -16,8 +16,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +28,7 @@ import com.MWBE.Connects.NY.DataStorage.Data;
 import com.MWBE.Connects.NY.Database.DataBaseHelper;
 import com.MWBE.Connects.NY.GCM.GCMPushRecieverService;
 import com.MWBE.Connects.NY.JavaBeen.ListData_RFP;
+import com.MWBE.Connects.NY.JavaBeen.PreferenceModel;
 import com.MWBE.Connects.NY.JavaBeen.TaggedRFP;
 import com.MWBE.Connects.NY.R;
 
@@ -41,9 +40,11 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class BrowseActivity extends Activity {
 
@@ -60,15 +61,30 @@ public class BrowseActivity extends Activity {
     private JSONArray jsonArray;
     private String contractvalue_tag_id = "";
     private Button browsebtn;
+    private Button todaysRFP_btn;
     private ArrayList<ListData_RFP> list = new ArrayList<>();
     private String capabilityID = "";
     private String lastupdatedate;
+    private DataBaseHelper dataBaseHelper;
+    private List<ListData_RFP> liststar1 =new ArrayList<>();
+    private List<ListData_RFP> liststar2 =new ArrayList<>();
+    private List<ListData_RFP> liststar3 =new ArrayList<>();
+    private ArrayList<ListData_RFP> listFinal = new ArrayList<>();
+    private List<ListData_RFP> list_1star = new ArrayList<>();
+
+    private List<PreferenceModel> list_pref = new ArrayList<>();
+    private ArrayList<ListData_RFP> geographiclist = new ArrayList<>();
+    private List<ListData_RFP> list_2star = new ArrayList<>();
+    private ArrayList<Integer> list_procurement;
+
+    ArrayList<ListData_RFP> list_todays = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_brows);
         utils = new Utils(this);
+
         init();
 
 
@@ -77,8 +93,16 @@ public class BrowseActivity extends Activity {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void init() {
         //getGeographic();
-        pb = new ProgressDialog(BrowseActivity.this);
 
+        try{
+            dataBaseHelper = new DataBaseHelper(BrowseActivity.this);
+            dataBaseHelper.createDataBase();
+            if(!dataBaseHelper.sqliteDataBase.isOpen()) {
+                dataBaseHelper.openDataBase();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         //hideSoftKeyboard();
         //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -106,6 +130,8 @@ public class BrowseActivity extends Activity {
         browsebtn.setEnabled(false);
         browsebtn.getBackground().setAlpha(200);
 
+        todaysRFP_btn = (Button) findViewById(R.id.todaysRFP);
+
         search.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -126,11 +152,14 @@ public class BrowseActivity extends Activity {
             }
         });
 
-        //switchbtn.setShowText(true);
-        /*switchbtn.setChecked(false);
-        switchbtn.getThumbDrawable().setColorFilter(Color.parseColor("#909090"), PorterDuff.Mode.MULTIPLY);*/
+
         switchbtn.setChecked(false);
-        getTagedRFP();
+        if (utils.getdata("RFPUpdatedDate") == null || utils.getdata("RFPUpdatedDate").equalsIgnoreCase("")){
+            getTagedRFP("FreshDb");
+        }else {
+            getTagedRFP(utils.getdata("RFPUpdatedDate"));
+        }
+
         if(getIntent().getStringExtra("notif_status")!=null){
             GCMPushRecieverService.rfp_match = "";
             switchbtn.setChecked(true);
@@ -150,9 +179,7 @@ public class BrowseActivity extends Activity {
             }
             Data.isOpen = switchbtn.isChecked();
 
-            browsebtn.performClick();
-
-
+            todaysRFP_btn.performClick();
         }
 
         switchbtn.setOnClickListener(new View.OnClickListener() {
@@ -163,6 +190,7 @@ public class BrowseActivity extends Activity {
                 isOpen = false;
 
                 if(switchbtn.isChecked()){
+                    ((Button)findViewById(R.id.todaysRFP)).setVisibility(View.GONE);
                     search.setVisibility(View.GONE);
                     agency.setVisibility(View.GONE);
                     procurment.setVisibility(View.GONE);
@@ -176,6 +204,7 @@ public class BrowseActivity extends Activity {
                     ((TextView) findViewById(R.id.procurementlabel)).setVisibility(View.GONE);
                     ((TextView) findViewById(R.id.contractlabel)).setVisibility(View.GONE);
                 } else {
+                    ((Button)findViewById(R.id.todaysRFP)).setVisibility(View.VISIBLE);
                     browsebtn.setEnabled(false);
                     browsebtn.getBackground().setAlpha(200);
                     search.setVisibility(View.VISIBLE);
@@ -190,53 +219,19 @@ public class BrowseActivity extends Activity {
                 }
             }
         });
-
-        /*switchbtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                switchColor(isChecked);
-                isOpen = isChecked;
-                Data.isOpen = isOpen;
-                isOpen = false;
-
-                if (isChecked) {
-                    search.setVisibility(View.GONE);
-                    agency.setVisibility(View.GONE);
-                    procurment.setVisibility(View.GONE);
-                    contractvalue.setVisibility(View.GONE);
-                    ((View)findViewById(R.id.footertext)).setVisibility(View.VISIBLE);
-                    browsebtn.setEnabled(true);
-                    browsebtn.getBackground().setAlpha(255);
-                    ((TextView) findViewById(R.id.searchlabel)).setVisibility(View.GONE);
-                    ((TextView) findViewById(R.id.agencylabel)).setVisibility(View.GONE);
-                    ((TextView) findViewById(R.id.procurementlabel)).setVisibility(View.GONE);
-                    ((TextView) findViewById(R.id.contractlabel)).setVisibility(View.GONE);
-                } else {
-                    browsebtn.setEnabled(false);
-                    browsebtn.getBackground().setAlpha(200);
-                    search.setVisibility(View.VISIBLE);
-                    agency.setVisibility(View.VISIBLE);
-                    procurment.setVisibility(View.VISIBLE);
-                    contractvalue.setVisibility(View.VISIBLE);
-                    ((View)findViewById(R.id.footertext)).setVisibility(View.GONE);
-                    ((TextView) findViewById(R.id.searchlabel)).setVisibility(View.VISIBLE);
-                    ((TextView) findViewById(R.id.agencylabel)).setVisibility(View.VISIBLE);
-                    ((TextView) findViewById(R.id.procurementlabel)).setVisibility(View.VISIBLE);
-                    ((TextView) findViewById(R.id.contractlabel)).setVisibility(View.VISIBLE);
-                }
-            }
-        });*/
     }
-
-
-
 
     public void ShowAlertPopup(View view){
         try {
             new AlertDialog.Builder(BrowseActivity.this)
                     .setTitle("INFO")
                     .setMessage("Turn on Capalino BID Matching to see ONLY RFPs that match your business’ profile. " +
-                            "Turn it off to search manually using the fields below.")
+                            "Turn it off to search manually using the fields below.\n\n" +
+                            "Star ratings reflect that the RFPs match the following elements of your profile: \n" +
+                            "★★★: Capability and Geographic Coverage\n" +
+                            "★★:  Industry and Geographic Coverage\n" +
+                            "★★:  Capability\n" +
+                            "★:    Industry")
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -269,20 +264,152 @@ public class BrowseActivity extends Activity {
                     //Log.i("Response", "Response : " + response);
                     response = response.replace("\n","");
                     if(response!=null) {
-                        if (response.equalsIgnoreCase("[]")) {
-                            getTargetContract();
-                        } else {
+                        if (!response.equalsIgnoreCase("[]")) {
+
                             JSONArray jsonArray = new JSONArray(response);
                             jsonObject = new JSONObject();
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 jsonObject = jsonArray.getJSONObject(i);
                                 Data.Actual_id_list_geographic.add(Integer.valueOf(jsonObject.getString("ActualTagID")));
-                                if (i == jsonArray.length() - 1) {
-                                    getTargetContract();
-                                }
+
                             }
-                            return jsonObject;
                         }
+                                try {
+                                    //d.	1 star: Construction                                                        category
+                                    Cursor cursor = null;
+                                    ArrayList<ListData_RFP> list = new ArrayList<>();
+                                    for (int i = 0; i < list_pref.size(); i++) {
+                                        if (list_pref.get(i).getSettingTypeID() != 1) {
+                                            cursor = dataBaseHelper.getDataFromProcurementMaster(list_pref.get(i).getSettingTypeID());
+                                            list_1star = fillList(cursor,list);
+                                        }
+                                    }
+
+
+
+                                    //c part : c.	2 stars: Roofing - Geographic Coverage
+                                    //                subcategory - area
+
+                                    for (int i = 0; i < list_pref.size(); i++) {
+                                        if (list_pref.get(i).getSettingTypeID() != 1) {
+                                            Cursor cursor2 = dataBaseHelper.getDataFromProcurementMasterStar2(
+                                                    list_pref.get(i).getActualTagID(),
+                                                    list_pref.get(i).getSettingTypeID());
+                                            if (cursor2 != null && cursor2.getCount() > 0) {
+                                                while (cursor2.moveToNext()) {
+                                                    Data.star = 2;
+                                                    ListData_RFP listData_rfp = new ListData_RFP(cursor2.getString(4), "Capalino+Company Match", Data.star, cursor2.getString(0), cursor2.getString(1),
+                                                            cursor2.getString(3), cursor2.getString(2));
+                                                    for (int j = 0; j < list_1star.size(); j++) {
+                                                        if (list_1star.get(j).equals(listData_rfp)) {
+                                                            list_1star.get(j).setRating(Data.star);
+                                                        }
+                                                    }
+
+                                                }
+
+
+
+                                            }
+                                        }
+
+                                    }
+
+
+                                    //b.	2 stars: Construction + Geographic Coverage       category + area
+                                    for (int i = 0; i < list_pref.size(); i++) {
+                                        if (list_pref.get(i).getSettingTypeID() == 1) {
+                                            for (int j = 0; j < Data.procid.size(); j++) {
+                                                Cursor cursor3 = dataBaseHelper.getDataFromProcurementMasterStar2_(
+                                                        list_pref.get(i).getActualTagID(), Data.procid.get(j));
+                                                if (cursor3 != null && cursor3.getCount() > 0) {
+                                                    while (cursor3.moveToNext()) {
+                                                        Data.star = 2;
+                                                        ListData_RFP listData_rfp = new ListData_RFP(cursor3.getString(4), "Capalino+Company Match", Data.star, cursor3.getString(0), cursor3.getString(1),
+                                                                cursor3.getString(3), cursor3.getString(2));
+
+                                                        geographiclist.add(listData_rfp);
+                                                        for (int k = 0; k < list_1star.size(); k++) {
+                                                            if (list_1star.get(k).equals(listData_rfp)) {
+                                                                list_1star.get(k).setRating(Data.star);
+                                                            }
+                                                        }
+
+                                                    }
+
+
+
+                                                }
+                                            }
+
+
+                                        }
+                                    }
+
+                                    //a.	3 stars: Roofing + Geographic Coverage                 subcategory + area
+                                    for (int i = 0; i < list_pref.size(); i++) {
+                                        if (list_pref.get(i).getSettingTypeID() != 1) {
+                                            Cursor cursor4 = dataBaseHelper.getDataFromProcurementMasterStar3(
+                                                    list_pref.get(i).getActualTagID(),
+                                                    list_pref.get(i).getSettingTypeID());
+                                            if (cursor4 != null && cursor4.getCount() > 0) {
+                                                while (cursor4.moveToNext()) {
+                                                    ListData_RFP listData_rfp = new ListData_RFP(cursor4.getString(4), "Capalino+Company Match", Data.star, cursor4.getString(0), cursor4.getString(1),
+                                                            cursor4.getString(3), cursor4.getString(2));
+                                                    for (int j = 0; j < geographiclist.size(); j++) {
+                                                        if (geographiclist.get(j).equals(listData_rfp)) {
+                                                            Data.star = 3;
+                                                            geographiclist.get(j).setRating(Data.star);
+                                                        }
+                                                    }
+
+
+                                                }
+
+
+                                            }
+                                        }
+                                    }
+
+                                    for (ListData_RFP data : geographiclist) {
+                                        for (int i = 0; i < list_1star.size(); i++) {
+                                            if (list_1star.get(i).equals(data)) {
+                                                list_1star.set(i, data);
+                                            }
+                                        }
+                                    }
+                                    List<ListData_RFP> list_rfp = new ArrayList<ListData_RFP>();
+                                    for (ListData_RFP data_rfp : list_1star) {
+                                        if (data_rfp.getRating() == 3.0) {
+                                            list_rfp.add(data_rfp);
+                                        }
+                                    }
+
+                                    for (ListData_RFP data_rfp : list_1star) {
+                                        if (data_rfp.getRating() == 2.0) {
+                                            list_rfp.add(data_rfp);
+                                        }
+                                    }
+
+                                    for (ListData_RFP data_rfp : list_1star) {
+                                        if (data_rfp.getRating() == 1.0) {
+                                            list_rfp.add(data_rfp);
+                                        }
+                                    }
+
+
+                                    hidePB();
+                                    Intent j = new Intent(BrowseActivity.this, REFListingActivity.class);
+                                    j.putExtra("list", (Serializable) list_rfp);
+                                    startActivity(j);
+                                    finish();
+                                }catch (Exception e){
+                                    e.printStackTrace();
+                                }
+
+
+                            return jsonObject;
+
                     }
                     return null;
 
@@ -303,17 +430,16 @@ public class BrowseActivity extends Activity {
         }.execute(link, "", "");
     }
 
-    private void getTargetContract() {
+    private void getGeographicTodays() {
         //Data.populatelist();
-        Data.Actual_id_list_target.clear();
-        String link = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/getUserContractTags.php?UserID="+utils.getdata("Userid");
+        Data.Actual_id_list_geographic.clear();
+        String link = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/getUserGeoTags.php?UserID="+utils.getdata("Userid");
         new AsyncTask<String, Void, JSONObject>() {
             @Override
             protected JSONObject doInBackground(String... params) {
                 try {
 
                     HttpClient httpclient = new DefaultHttpClient();
-                    //showPB("Loading....");
 
                     HttpPost httppost = new HttpPost(params[0]);
 
@@ -321,23 +447,209 @@ public class BrowseActivity extends Activity {
                     String response = httpclient.execute(httppost,
                             responseHandler);
 
-                    Log.i("Response", "Response : " + response);
-                    if(response!=null) {
-                        response = response.replace("\n","");
-                        if(response.equalsIgnoreCase("[]")){
-                            getCapabilitiesCount();
-                        }
 
-                        JSONArray jsonArray = new JSONArray(response);
-                        JSONObject jsonObject = null;
-                        for(int i=0;i<jsonArray.length();i++){
-                            jsonObject = jsonArray.getJSONObject(i);
-                            Data.Actual_id_list_target.add(Integer.valueOf(jsonObject.getString("ActualTagID")));
-                            if (i == jsonArray.length() - 1) {
-                                getCapabilitiesCount();
+                    response = response.replace("\n","");
+                    if(response!=null) {
+                          if(!response.equalsIgnoreCase("[]")){
+                              JSONArray jsonArray = new JSONArray(response);
+                              jsonObject = new JSONObject();
+                              for (int i = 0; i < jsonArray.length(); i++) {
+                                  jsonObject = jsonArray.getJSONObject(i);
+                                  Data.Actual_id_list_geographic.add(Integer.valueOf(jsonObject.getString("ActualTagID")));
+
+                              }
+                          }
+
+                            try {
+                                //d.	1 star: Construction
+                                //      category
+
+                                Cursor cursor = null;
+                                /*for (int i = 0; i < list_pref.size(); i++) {
+                                    if (list_pref.get(i).getSettingTypeID() != 1) {
+                                        for(int j=0;j<list_procurement.size(); j++){
+                                            cursor = dataBaseHelper.
+                                                    getDataFromProcurementMasterByProcurementID(
+                                                            list_pref.get(i).getSettingTypeID(),
+                                                            list_procurement.get(j));
+                                            list_1star = fillListTodays(cursor);
+                                        }
+
+                                    }
+                                }*/
+
+                                for (int i = 0; i < list_procurement.size(); i++) {
+                                    cursor = dataBaseHelper.getDataFromProcurementMasterByProcurementID(
+                                            list_procurement.get(i));
+                                    fillListTodays(cursor);
+
+
+                                }
+
+
+
+                                ArrayList<ListData_RFP> list = new ArrayList<>();
+                                for (int i = 0; i < list_pref.size(); i++) {
+                                    if (list_pref.get(i).getSettingTypeID() != 1) {
+                                        cursor = dataBaseHelper.getDataFromProcurementMaster(list_pref.get(i).getSettingTypeID());
+                                        list_1star = fillList(cursor, list);
+                                    }
+                                }
+
+                                cursor.close();
+
+                                Log.d("list_todays", String.valueOf(list_todays.size()));
+
+                                //c part : c.	2 stars: Roofing - Geographic Coverage
+                                //                subcategory - area
+
+                                for (int i = 0; i < list_pref.size(); i++) {
+                                    if (list_pref.get(i).getSettingTypeID() != 1) {
+                                        Cursor cursor2 = dataBaseHelper.getDataFromProcurementMasterStar2(
+                                                list_pref.get(i).getActualTagID(),
+                                                list_pref.get(i).getSettingTypeID());
+                                        if (cursor2 != null && cursor2.getCount() > 0) {
+                                            while (cursor2.moveToNext()) {
+                                                Data.star = 2;
+                                                ListData_RFP listData_rfp = new ListData_RFP(cursor2.getString(4), "Capalino+Company Match", Data.star, cursor2.getString(0), cursor2.getString(1),
+                                                        cursor2.getString(3), cursor2.getString(2));
+
+                                                for (int j = 0; j < list_1star.size(); j++) {
+                                                    if (list_1star.get(j).equals(listData_rfp)) {
+                                                        list_1star.get(j).setRating(Data.star);
+
+                                                    }
+                                                }
+
+                                            }
+
+
+
+                                        }
+                                    }
+
+                                }
+
+
+                                //b.	2 stars: Construction + Geographic Coverage       category + area
+                                for (int i = 0; i < list_pref.size(); i++) {
+                                    if (list_pref.get(i).getSettingTypeID() == 1) {
+                                        for (int j = 0; j < Data.procid.size(); j++) {
+                                            Cursor cursor3 = dataBaseHelper.getDataFromProcurementMasterStar2_(
+                                                    list_pref.get(i).getActualTagID(), Data.procid.get(j));
+                                            if (cursor3 != null && cursor3.getCount() > 0) {
+                                                while (cursor3.moveToNext()) {
+                                                    Data.star = 2;
+                                                    ListData_RFP listData_rfp = new ListData_RFP(cursor3.getString(4), "Capalino+Company Match", Data.star, cursor3.getString(0), cursor3.getString(1),
+                                                            cursor3.getString(3), cursor3.getString(2));
+                                                    Log.d("obj", String.valueOf(listData_rfp.
+                                                            getTitle()));
+                                                    geographiclist.add(listData_rfp);
+                                                    for (int k = 0; k < list_1star.size(); k++) {
+                                                        if (list_1star.get(k).equals(listData_rfp)) {
+                                                            list_1star.get(k).setRating(Data.star);
+                                                        }
+                                                    }
+
+                                                }
+
+
+
+                                            }
+                                        }
+
+
+                                    }
+                                }
+
+                                //a.	3 stars: Roofing + Geographic Coverage                 subcategory + area
+                                for (int i = 0; i < list_pref.size(); i++) {
+                                    if (list_pref.get(i).getSettingTypeID() != 1) {
+                                        Cursor cursor4 = dataBaseHelper.getDataFromProcurementMasterStar3(
+                                                list_pref.get(i).getActualTagID(),
+                                                list_pref.get(i).getSettingTypeID());
+                                        if (cursor4 != null && cursor4.getCount() > 0) {
+                                            while (cursor4.moveToNext()) {
+                                                ListData_RFP listData_rfp = new ListData_RFP(cursor4.getString(4), "Capalino+Company Match", Data.star, cursor4.getString(0), cursor4.getString(1),
+                                                        cursor4.getString(3), cursor4.getString(2));
+                                                Log.d("obj_star3", String.valueOf(listData_rfp.
+                                                        getTitle()));
+                                                Log.d("geog_list", String.valueOf(geographiclist
+                                                        .size()));
+
+                                                for (int j = 0; j < geographiclist.size(); j++) {
+                                                    if (geographiclist.get(j).equals(listData_rfp)) {
+                                                        Data.star = 3;
+                                                        geographiclist.get(j).setRating(Data.star);
+
+                                                    }
+                                                }
+
+
+                                            }
+
+
+                                        }
+                                    }
+                                }
+
+                                for (ListData_RFP data : geographiclist) {
+                                    for (int i = 0; i < list_1star.size(); i++) {
+                                        if (list_1star.get(i).equals(data)) {
+                                            list_1star.set(i, data);
+                                        }
+                                    }
+                                }
+
+
+
+                                List<ListData_RFP> list_rfp = new ArrayList<ListData_RFP>();
+                                for (ListData_RFP data_rfp : list_1star) {
+                                    if (data_rfp.getRating() == 3.0) {
+                                        list_rfp.add(data_rfp);
+                                    }
+                                }
+
+                                for (ListData_RFP data_rfp : list_1star) {
+                                    if (data_rfp.getRating() == 2.0) {
+                                        list_rfp.add(data_rfp);
+                                    }
+                                }
+
+                                for (ListData_RFP data_rfp : list_1star) {
+                                    if (data_rfp.getRating() == 1.0) {
+                                        list_rfp.add(data_rfp);
+                                    }
+                                }
+
+                                Log.d("list_rfp", list_rfp.size()+"");
+
+                                for (ListData_RFP data: list_rfp){
+                                    for (ListData_RFP data_rfp : list_todays){
+                                        if (data.equals(data_rfp)){
+                                            data_rfp.setRating(1);
+                                        }
+                                    }
+                                }
+
+
+
+
+
+
+                                hidePB();
+                                Intent j = new Intent(BrowseActivity.this, REFListingActivity.class);
+                                j.putExtra("list", (Serializable) list_todays);
+                                j.putExtra("rating","hide");
+                                startActivity(j);
+                                finish();
+                            }catch (Exception e){
+                                e.printStackTrace();
                             }
-                        }
-                        return jsonObject;
+
+
+                            return jsonObject;
+
                     }
                     return null;
 
@@ -351,8 +663,9 @@ public class BrowseActivity extends Activity {
                     });
                     e.printStackTrace();
                 }
-                return null;
+                return jsonObject;
             }
+
 
         }.execute(link, "", "");
     }
@@ -362,7 +675,8 @@ public class BrowseActivity extends Activity {
         //showPB("Loading...");
         Utils utils = new Utils(context);
         if (Utils.isConnected(this)) {
-            String link = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/getUserCapabilitiesSelectedTagsFinal.php?UserID=" + utils.getdata("Userid");
+            String link = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/" +
+                    "apis/getUserAllPreferences.php?UserID=" + utils.getdata("Userid");
 
             new AsyncTask<String, Void, Void>() {
                 @Override
@@ -387,27 +701,23 @@ public class BrowseActivity extends Activity {
                             if (response.equalsIgnoreCase("[]")) {
                                 hidePB();
                                 Intent j = new Intent(BrowseActivity.this, REFListingActivity.class);
-                                //Data.isOpen = isOpen;
+                                j.putExtra("list", (Serializable) list_1star);
                                 startActivity(j);
+                                finish();
                             } else {
                                 jsonArray = new JSONArray(response);
                                 JSONObject jsonObject = null;
+                                list_pref.clear();
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     jsonObject = jsonArray.getJSONObject(i);
                                     String settingid = jsonObject.get("SettingTypeID").toString();
-                                    if (settingid.length() > 0)
-                                        Data.SettingTypeID_capab_search.add(Integer.valueOf(settingid));
-
-                                    if (i == jsonArray.length() - 1) {
-                                        Intent j = new Intent(BrowseActivity.this, REFListingActivity.class);
-                                        //Data.isOpen = isOpen;
-                                        startActivity(j);
-                                        finish();
-                                        hidePB();
-                                    }
-
-
+                                    String ActualTagID = jsonObject.get("ActualTagID").toString();
+                                        //Data.SettingTypeID_capab_search.add(Integer.valueOf(settingid));
+                                        list_pref.add(new PreferenceModel(Integer.
+                                                valueOf(settingid),Integer.valueOf(ActualTagID)));
                                 }
+
+                                getGeographic();
 
                             }
                         }
@@ -428,12 +738,230 @@ public class BrowseActivity extends Activity {
         }
     }
 
-    /*private void switchColor(boolean checked) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            switchbtn.getThumbDrawable().setColorFilter(checked ? Color.parseColor("#2b3f04") : Color.parseColor("#909090"), PorterDuff.Mode.MULTIPLY);
-            switchbtn.getTrackDrawable().setColorFilter(!checked ? Color.parseColor("#909090") : Color.parseColor("#2b3f04"), PorterDuff.Mode.MULTIPLY);
+    private void getCapabilitiesCountTodays() {
+        Data.SettingTypeID_capab_search.clear();
+        //showPB("Loading...");
+        Utils utils = new Utils(context);
+        if (Utils.isConnected(this)) {
+            String link = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/" +
+                    "apis/getUserAllPreferences.php?UserID=" + utils.getdata("Userid");
+
+            new AsyncTask<String, Void, Void>() {
+                @Override
+                protected Void doInBackground(String... params) {
+                    try {
+
+                        HttpClient httpclient = new DefaultHttpClient();
+                        //showPB("Loading....");
+
+                        HttpPost httppost = new HttpPost(params[0]);
+
+                        ResponseHandler<String> responseHandler = new BasicResponseHandler();
+                        String response = httpclient.execute(httppost,
+                                responseHandler);
+
+                        response = response.replace("\n", "");
+
+                        Log.i("Response", "Response : " + response);
+                        response = response.replace("\n", "");
+                        jsonArray = new JSONArray();
+                        if (response != null) {
+                            if (response.equalsIgnoreCase("[]")) {
+                                hidePB();
+                                Intent j = new Intent(BrowseActivity.this, REFListingActivity.class);
+                                j.putExtra("list", (Serializable) list_1star);
+                                startActivity(j);
+                                finish();
+                            } else {
+                                jsonArray = new JSONArray(response);
+                                JSONObject jsonObject = null;
+                                list_pref.clear();
+                                for (int i = 0; i < jsonArray.length(); i++) {
+                                    jsonObject = jsonArray.getJSONObject(i);
+                                    String settingid = jsonObject.get("SettingTypeID").toString();
+                                    String ActualTagID = jsonObject.get("ActualTagID").toString();
+                                    //Data.SettingTypeID_capab_search.add(Integer.valueOf(settingid));
+                                    list_pref.add(new PreferenceModel(Integer.
+                                            valueOf(settingid),Integer.valueOf(ActualTagID)));
+
+
+
+                                }
+
+
+
+                                getGeographicTodays();
+
+                            }
+                        }
+                    } catch (Exception e) {
+                        hidePB();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Utils.AlertInternetConnection(BrowseActivity.this);
+                            }
+                        });
+                        e.printStackTrace();
+                    }
+
+                    return null;
+                }
+            }.execute(link, "", "");
         }
-    }*/
+    }
+
+    private void getTodaysProcurementID() {
+        //showPB("Loading...");
+        list_procurement = new ArrayList<>();
+        Utils utils = new Utils(context);
+        if (Utils.isConnected(this)) {
+            String link = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/" +
+                    "apis/getTodaysTaggedRFPs_J.php";
+
+            new AsyncTask<String, Void, Void>() {
+                @Override
+                protected Void doInBackground(String... params) {
+                    try {
+
+                        HttpClient httpclient = new DefaultHttpClient();
+                        //showPB("Loading....");
+
+                        HttpPost httppost = new HttpPost(params[0]);
+
+                        ResponseHandler<String> responseHandler = new BasicResponseHandler();
+                        String response = httpclient.execute(httppost,
+                                responseHandler);
+
+                        response = response.replace("\n", "");
+
+                        Log.i("Response", "Response : " + response);
+                        response = response.replace("\n", "");
+                        JSONArray jsonArray = new JSONArray();
+                        if (response != null) {
+                            if (response.equalsIgnoreCase("No RFP Found.")) {
+                                hidePB();
+                                Intent j = new Intent(BrowseActivity.this, REFListingActivity.class);
+                                j.putExtra("list", (Serializable) list_1star);
+                                startActivity(j);
+                                finish();
+
+                            } else {
+                                jsonArray = new JSONArray(response);
+                                JSONObject jsonObject = null;
+                                for (int i = 0; i < jsonArray.length(); i++) {
+                                    jsonObject = jsonArray.getJSONObject(i);
+                                    String ProcurementID = jsonObject.
+                                            get("ProcurementID").toString();
+                                    list_procurement.add(Integer.valueOf(ProcurementID));
+
+
+                                }
+
+                            Log.d("list_size", list_procurement.size()+"");
+                                getCapabilitiesCountTodays();
+
+                            }
+                        }
+                    } catch (Exception e) {
+                        hidePB();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Utils.AlertInternetConnection(BrowseActivity.this);
+                            }
+                        });
+                        e.printStackTrace();
+                    }
+
+                    return null;
+                }
+            }.execute(link, "", "");
+        }
+
+
+    }
+
+    private ArrayList<ListData_RFP> fillList(Cursor cursor, ArrayList<ListData_RFP> list) {
+        Data.procid.clear();
+
+        if(!DataBaseHelper.sqliteDataBase.isOpen()){
+            DataBaseHelper dataBaseHelper = new DataBaseHelper(this);
+            try {
+                dataBaseHelper.createDataBase();
+                dataBaseHelper.openDataBase();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (cursor!=null && cursor.getCount() > 0) {
+
+            while (cursor.moveToNext()) {
+
+                this.list.add(new ListData_RFP(cursor.getString(4),"Capalino+Company Match", Data.star, cursor.getString(0), cursor.getString(1),
+                        cursor.getString(3), cursor.getString(2)));
+                if(Data.star==1) {
+                    Data.procid.add(cursor.getInt(4));
+                }
+            }
+
+            cursor.close();
+        }
+
+        ArrayList<ListData_RFP> capablitylist = new ArrayList<ListData_RFP>();// unique
+        for (ListData_RFP element : this.list) {
+            if (!capablitylist.contains(element)) {
+                capablitylist.add(element);
+            }
+        }
+
+        return capablitylist;
+    }
+
+    private ArrayList<ListData_RFP> fillListTodays(Cursor cursor) {
+
+        ArrayList<ListData_RFP> capablitylist = new ArrayList<ListData_RFP>();// unique
+
+        if(!DataBaseHelper.sqliteDataBase.isOpen()){
+            DataBaseHelper dataBaseHelper = new DataBaseHelper(this);
+            try {
+                dataBaseHelper.createDataBase();
+                dataBaseHelper.openDataBase();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (cursor!=null && cursor.getCount() > 0) {
+
+            while (cursor.moveToNext()) {
+                    if(list_procurement.contains(cursor.getInt(4))) {
+                    list_todays.add(new ListData_RFP(cursor.getString(4), "Capalino+Company Match", 0, cursor.getString(0), cursor.getString(1),
+                            cursor.getString(3), cursor.getString(2)));
+                    if (Data.star == 1) {
+                        Data.procid.add(cursor.getInt(4));
+                        Log.d("procurementID", cursor.getInt(4) + "");
+                    }
+                }
+
+
+                for (ListData_RFP element : list_todays) {
+                    if (!capablitylist.contains(element)) {
+                        capablitylist.add(element);
+                    }
+                }
+
+                return capablitylist;
+
+
+
+
+            }
+
+            cursor.close();
+        }
+
+        return null;
+    }
 
     public void BrowseButtonClick(View view){
         try{
@@ -454,19 +982,23 @@ public class BrowseActivity extends Activity {
                 }
 
                 getBrowseData(i, contractvalue_tag_id);
-               // hidePB();
-                //startActivity(i);
-                //overridePendingTransition(0, 0);
+
             }else {
-                showPB("Running Algorithm....");
-                if(Data.isOpen)
-                    getGeographic();
-                //getCapabilitiesCount();
+
+
+                if(utils.getdata("BusinessName")!=null &&
+                        !utils.getdata("BusinessName").equalsIgnoreCase("NA")) {
+                    showPB("Matching opportunities for " + utils.getdata("BusinessName"));
+                }else{
+                    showPB("Matching opportunities...");
+                }
+
+                if(Data.isOpen) {
+
+                    getCapabilitiesCount();
+                }
                 else {
                     hidePB();
-                /*Intent i = new Intent(BrowseActivity.this,REFListingActivity.class);
-                Data.isOpen = isOpen;
-                startActivity(i);*/
                     new AlertDialog.Builder(context)
                             .setTitle("Alert!")
                             .setMessage("Please select at least one option.")
@@ -667,17 +1199,18 @@ public class BrowseActivity extends Activity {
 
     }
 
-    private void getTagedRFP() {
-        Thread thread_update_rfp = new Thread(new Runnable() {
+    private void getTagedRFP(final String lastupdatedate) {
+        new AsyncTask<Void, Void, Void>(){
+
             @Override
-            public void run() {
+            protected Void doInBackground(Void... params) {
                 try {
-                    showPB("Loading new City and State RFPs. Please wait, this may take up to a minute. Thanks for your patience.");
                     DataBaseHelper dataBaseHelper = new DataBaseHelper(BrowseActivity.this);
                     dataBaseHelper.createDataBase();
                     dataBaseHelper.openDataBase();
 
-                    Cursor cursor = dataBaseHelper.DBRecord("Select LastUpdateDate from ProcurementRFPPreferences");
+
+                    /*Cursor cursor = dataBaseHelper.DBRecord("Select LastUpdateDate from ProcurementRFPPreferences");
                     if(cursor.getCount()>0){
                         while (cursor.moveToNext()){
                             lastupdatedate = cursor.getString(0);
@@ -685,13 +1218,16 @@ public class BrowseActivity extends Activity {
 
 
                         }
-                    }
+                    }*/
 
                     HttpClient httpclient = new DefaultHttpClient();
 
                     SimpleDateFormat format = new SimpleDateFormat("dd-MMM-yyyy hh:mm a");
-                    String link = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/getTaggedRFPUpdatedForStore.php?lastUpdateSql=" +lastupdatedate
-                            +"&CurrentDate="+format.format(new Date());
+                    /*String link = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/getTaggedRFPUpdatedForStore.php?lastUpdateSql=" +lastupdatedate
+                            +"&CurrentDate="+format.format(new Date());*/
+                    String link = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/" +
+                            "getTaggedRFPUpdatedForStore_J.php?CurrentDate="+format.format(new Date()) +
+                            "&UserID=" + utils.getdata("Userid") + "&ContentLastUpdateDate=" + lastupdatedate;
                     link = link.replace(" ","%20");
                     HttpPost httppost = new HttpPost(link);
 
@@ -702,59 +1238,83 @@ public class BrowseActivity extends Activity {
 
 
                     Log.i("Response", "Response : " + response);
-                    if(!response.trim().equalsIgnoreCase("Both are Equal")) {
-                        dataBaseHelper.delete("ProcurementRFPPreferences");
-                        JSONArray jsonarray = new JSONArray(response);
+                    if(!response.equalsIgnoreCase("No new content available.") && !response.equalsIgnoreCase("")) {
+                        JSONObject jsonObject_root = new JSONObject(response);
+                        String result = jsonObject_root.getString("results");
+                        String datastatus = jsonObject_root.getString("datastatus");
+
+                        if (datastatus.equalsIgnoreCase("full")){
+                            showPB("Loading new City and State RFPs. Please wait, this may take up to a minute. Thanks for your patience.");
+                            dataBaseHelper.delete("ProcurementRFPPreferences");
+                        }
+
+                        JSONArray jsonarray = new JSONArray(result);
                         for (int i = 0; i < jsonarray.length(); i++) {
-                           JSONObject jsonobj = jsonarray.getJSONObject(i);
+                            JSONObject jsonobj = jsonarray.getJSONObject(i);
                             String PreferenceID = jsonobj.getString("PreferenceID");
                             String ProcurementID = jsonobj.getString("ProcurementID");
                             String SettingTypeID = jsonobj.getString("SettingTypeID");
                             String ActualTagID = jsonobj.getString("ActualTagID");
                             String AddedDateTime = jsonobj.getString("AddedDateTime");
                             String lastupdate = jsonobj.getString("LASTUPDATE");
+                            String Status = jsonobj.getString("Status");
+
+                            TaggedRFP been = new TaggedRFP(Integer.valueOf(PreferenceID), Integer.valueOf(ProcurementID), Integer.valueOf(SettingTypeID),
+                                    Integer.valueOf(ActualTagID), AddedDateTime, lastupdate, Status);
 
                             //list_data.add(new ListData(image, contentShortDescription, ContentRelevantDateTime));
-                            TaggedRFP been = new TaggedRFP(Integer.valueOf(PreferenceID), Integer.valueOf(ProcurementID), Integer.valueOf(SettingTypeID),
-                                    Integer.valueOf(ActualTagID), AddedDateTime, lastupdate);
-                           final boolean isinserted = dataBaseHelper.InsertinRFPPrefence(been);
+                            if (datastatus.equalsIgnoreCase("full")){
 
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-
-                                    if (isinserted) {
-                                        //Toast.makeText(HomeActivity.this, "Hello", Toast.LENGTH_LONG).show();
-                                        Log.d("RFPUpdated", "Added");
-                                    }
+                                dataBaseHelper.InsertinRFPPrefence(been);
+                            }else {
+                                if (Status.equalsIgnoreCase("1")){
+                                    dataBaseHelper.InsertinRFPPrefence(been);
                                 }
-                            });
+
+                                if (Status.equalsIgnoreCase("0")){
+                                    dataBaseHelper.deleteRFPPrefrence(been.getPreferenceID());
+                                }
+                            }
+
+                            utils.savedata("RFPUpdatedDate","dba");
+
+
                         }
-                        hidePB();
-                    }else {
-                        hidePB();
+
                     }
+
+                    hidePB();
                 } catch (Exception e) {
                     hidePB();
                     e.printStackTrace();
                 }
+                return null;
             }
-        });
-        thread_update_rfp.start();
+        }.execute();
+
+
 
     }
 
     void showPB(final String message) {
+        try {
+            runOnUiThread(new Runnable() {
 
-        runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(pb == null) {
+                        pb = new ProgressDialog(BrowseActivity.this);
+                        pb.setCancelable(false);
 
-            @Override
-            public void run() {
-                pb.setMessage(message);
-                pb.setCancelable(false);
-                pb.show();
-            }
-        });
+                    }
+                    pb.setMessage(message);
+                    pb.show();
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+
+        }
 
     }
 
@@ -769,5 +1329,19 @@ public class BrowseActivity extends Activity {
             }
         });
 
+    }
+
+    public void todaysRFPClick(View view) {
+
+
+        showPB("Please wait...");
+        getTodaysProcurementID();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        hidePB();
     }
 }

@@ -4,8 +4,10 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import com.MWBE.Connects.NY.AppConstants.Utils;
@@ -28,6 +30,16 @@ public class CapabilitiesService extends Service {
     private Context context = this;
     private String userid;
     private int settingTypeID;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O) {
+            NotificationCompat.Builder b=new NotificationCompat.Builder(this);
+            startForeground(1, Utils.buildForegroundNotification(b));
+        }
+
+    }
 
     @Nullable
     @Override
@@ -490,158 +502,11 @@ public class CapabilitiesService extends Service {
         }
     }
 
-    private void DeleteGeographic(final String userid) {
-        try {
-
-            Thread thread_update = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        //Activity activity = (Activity)context;
-                        DataBaseHelper dataBaseHelper = new DataBaseHelper(context);
-                        dataBaseHelper.createDataBase();
-                        dataBaseHelper.openDataBase();
-                        HttpClient httpclient = new DefaultHttpClient();
-                        //showPB("Loading....");
-
-                        String link = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/deleteUserGeoTags.php?UserID="+userid;
-                        HttpPost httppost = new HttpPost(link);
-
-                        ResponseHandler<String> responseHandler = new BasicResponseHandler();
-
-                        String response = httpclient.execute(httppost,
-                                responseHandler);
-
-
-                        Log.i("Response", "Response : " + response);
-                        response = response.replace("\n","");
-                        if(response.equalsIgnoreCase("Record Deleted.")){
-                            stopSelf();
-                        }
-
-                        //list_data.add(new ListData(image, contentShortDescription, ContentRelevantDateTime));
-
-                        //isinserted = dataBaseHelper.InsertUserProcurmentTracking(been);
 
 
 
 
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
 
-
-                }
-            });
-            thread_update.start();
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void DeleteTargetContract(final String userid) {
-        try {
-
-            Thread thread_update = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        //Activity activity = (Activity)context;
-                        DataBaseHelper dataBaseHelper = new DataBaseHelper(context);
-                        dataBaseHelper.createDataBase();
-                        dataBaseHelper.openDataBase();
-                        HttpClient httpclient = new DefaultHttpClient();
-                        //showPB("Loading....");
-
-                        String link = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/deleteUserContractTags.php?UserID="+userid;
-                        HttpPost httppost = new HttpPost(link);
-
-                        ResponseHandler<String> responseHandler = new BasicResponseHandler();
-
-                        final String response = httpclient.execute(httppost,
-                                responseHandler);
-
-
-                        Log.i("Response", "Response : " + response);
-
-                        if(response.equalsIgnoreCase("Record Deleted.")){
-                            stopSelf();
-                        }
-
-                        //list_data.add(new ListData(image, contentShortDescription, ContentRelevantDateTime));
-
-                        //isinserted = dataBaseHelper.InsertUserProcurmentTracking(been);
-
-
-
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-
-                }
-            });
-            thread_update.start();
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void DeleteCertification(final String userid) {
-        try {
-
-            Thread thread_update = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        //Activity activity = (Activity)context;
-                        DataBaseHelper dataBaseHelper = new DataBaseHelper(context);
-                        dataBaseHelper.createDataBase();
-                        dataBaseHelper.openDataBase();
-                        HttpClient httpclient = new DefaultHttpClient();
-                        //showPB("Loading....");
-
-                        String link = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/deleteUserCertificationsTags.php?UserID="+userid;
-                        HttpPost httppost = new HttpPost(link);
-
-                        ResponseHandler<String> responseHandler = new BasicResponseHandler();
-
-                        final String response = httpclient.execute(httppost,
-                                responseHandler);
-
-
-                        Log.i("Response", "Response : " + response);
-
-                        if(response.equalsIgnoreCase("Record Deleted.")){
-                            stopSelf();
-                        }
-
-                            //list_data.add(new ListData(image, contentShortDescription, ContentRelevantDateTime));
-
-                            //isinserted = dataBaseHelper.InsertUserProcurmentTracking(been);
-
-
-
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-
-                }
-            });
-            thread_update.start();
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
 
 }

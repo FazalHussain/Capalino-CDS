@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import com.facebook.appevents.AppEventsLogger;
 
+import net.authorize.sampleapplication.models.ContractorModel;
+
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Currency;
@@ -109,7 +111,11 @@ public class TransactionResultActivity extends AnetBaseActivity {
             transactionDateTextView.setText(calendar.get(Calendar.MONTH) + "/" +
                     calendar.get(Calendar.DATE) + "/" + calendar.get(Calendar.YEAR));
             transactionSuccessfulCard.setVisibility(View.VISIBLE);
-            logger.logPurchase(BigDecimal.valueOf(Double.parseDouble(transactionAmount)), Currency.getInstance("USD"));
+            logger.logPurchase(BigDecimal.valueOf(Double.parseDouble(transactionAmount)),
+                    Currency.getInstance("USD"));
+
+            ContractorModel.getInstance().sendData(Float.valueOf(transactionAmount));
+            ContractorModel.getInstance().sendDataPayment("Payment Success!!");
         }
     }
 }

@@ -17,6 +17,12 @@ import android.webkit.WebViewClient;
 
 import com.MWBE.Connects.NY.AppConstants.Utils;
 import com.MWBE.Connects.NY.R;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.SignUpEvent;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsConstants;
+import com.facebook.appevents.AppEventsLogger;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
@@ -35,6 +41,8 @@ public class PdfViewActivity extends Activity {
     private WebView wv;
     private String url;
     private String expiry;
+    FirebaseAnalytics mFirebaseAnalytics;
+    AppEventsLogger logger;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +52,9 @@ public class PdfViewActivity extends Activity {
     }
 
     private void init() {
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        //FacebookSdk.sdkInitialize(getApplicationContext());
+        //logger = AppEventsLogger.newLogger(PdfViewActivity.this);
         utils = new Utils(this);
         wv = (WebView) findViewById(R.id.pdfview_wv);
         showpdf();
@@ -51,8 +62,8 @@ public class PdfViewActivity extends Activity {
 
     private void showpdf() {
         try {
-                showPBForPDF("Loading PDF");
-                url = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/Terms.pdf";
+                showPBForPDF("Loading Terms & Conditions");
+                url = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/terms.html";
                 wv.getSettings().setJavaScriptEnabled(true);
                 wv.getSettings().setSaveFormData(true);
                 //wv.getSettings().setBuiltInZoomControls(false);
@@ -75,7 +86,7 @@ public class PdfViewActivity extends Activity {
                 }
             });
             //wv.loadUrl("https://docs.google.com/viewer?url=" + url);
-            wv.loadUrl("http://drive.google.com/viewerng/viewer?embedded=true&url=" + url);
+            wv.loadUrl(url);
         }catch (Exception e){
             hidePB();
             e.printStackTrace();
@@ -136,7 +147,6 @@ public class PdfViewActivity extends Activity {
 
                 Log.i("Response", "Response : " + response);
 
-
                 //hidePB();
             } catch (Exception e) {
                 hidePB();
@@ -169,6 +179,19 @@ public class PdfViewActivity extends Activity {
 
                     Log.i("Response", "Response : " + response);
                     if(response.equalsIgnoreCase("Success")){
+                        Bundle params = new Bundle();
+                        params.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "Register");
+                        params.putString(FirebaseAnalytics.Param.ITEM_NAME, "Registration Activity");
+                        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SIGN_UP, params);
+
+                        Answers.getInstance().logSignUp(new SignUpEvent()
+                                .putMethod("Sign_up")
+                                .putSuccess(true));
+
+
+                        //logger.logEvent(AppEventsConstants.EVENT_PARAM_REGISTRATION_METHOD);
+
+
                         hidePB();
                         runOnUiThread(new Runnable() {
                             @Override
@@ -255,7 +278,7 @@ public class PdfViewActivity extends Activity {
                 pb.setCancelable(false);
                 pb.show();
 
-                new CountDownTimer(5000, 3000) {
+                new CountDownTimer(3000, 3000) {
                     @Override
                     public void onTick(long millisUntilFinished) {
                         // TODO Auto-generated method stub

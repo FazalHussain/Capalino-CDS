@@ -6,7 +6,6 @@
     android:background="@color/white"
     tools:context="com.MWBE.Connects.NY.Activities.BrowseActivity">
 
-
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="30dp"
@@ -52,10 +51,11 @@
             android:id="@+id/image"
             android:onClick="ShowAlertPopup"
             android:src="@drawable/info"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="16dp"/>
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"/>
 
     </RelativeLayout>
     <!--<ImageView
@@ -117,12 +117,16 @@
         </LinearLayout>
 
 
-
+    <ScrollView
+        android:layout_marginTop="4dp"
+        android:layout_below="@+id/head"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:layout_marginTop="4dp"
-            android:layout_below="@+id/head"
+
             android:orientation="vertical"
+            android:focusableInTouchMode="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -180,7 +184,7 @@
                 android:id="@+id/procurementlabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Capability Type"/>
+                android:text="Industry Type"/>
 
             <com.MWBE.Connects.NY.CustomViews.CustomEditText_Book
                 android:padding="8dp"
@@ -228,6 +232,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp" />
 
+
             <com.MWBE.Connects.NY.CustomViews.CustomButton
                 android:layout_gravity="center_horizontal"
                 android:textColor="@color/white"
@@ -239,6 +244,20 @@
                 android:id="@+id/browsebtn"
                 android:onClick="BrowseButtonClick"
                 android:background="@drawable/button_round"
+                android:layout_width="180dp"
+                android:layout_height="45dp" />
+
+            <com.MWBE.Connects.NY.CustomViews.CustomButton
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/white"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="5dp"
+                android:text="@string/browse_btn_todaysRFPs_name"
+                android:id="@+id/todaysRFP"
+                android:onClick="todaysRFPClick"
+                android:background="@drawable/button_round_orange"
                 android:layout_width="180dp"
                 android:layout_height="45dp" />
 
@@ -265,6 +284,8 @@
 
 
         </LinearLayout>
+
+    </ScrollView>
 
 
     </RelativeLayout>

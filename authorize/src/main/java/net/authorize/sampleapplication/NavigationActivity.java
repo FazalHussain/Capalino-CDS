@@ -437,61 +437,12 @@ public class NavigationActivity extends AnetBaseActivity implements
         }
     }
 
-    private void DeletePaymentData() {
-        try{
-            String url = "https://celeritas-solutions.com/cds/capalinoapp/apis/deleteCustomer.php?UserID="+StaticData.Userid;
-            url = url.replace(" ", "%20");
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
-                    if (response.equalsIgnoreCase("Record Deleted")) {
-
-                    } else {
-                        //hidePB();
-                       /* new AlertDialog.Builder(context)
-                                .setTitle("Alert!")
-                                .setMessage("No Record Added, Please Try Again.")
-                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-
-                                    }
-                                })
-                                .setIcon(android.R.drawable.ic_dialog_alert)
-                                .show();*/
-                    }
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    error.printStackTrace();
-                   /* new AlertDialog.Builder(context)
-                            .setTitle("Alert!")
-                            .setMessage("No Record Added, Please Try Again.")
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                }
-                            })
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .show();*/
-                    //Toast.makeText(getApplicationContext(), "", Toast.LENGTH_LONG).show();
-                }
-            });
-
-            Volley.newRequestQueue(NavigationActivity.this).add(stringRequest);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
     public void SendData(final Result transactionResult){
 
         if (Boolean.valueOf(StaticData.isannual) || Boolean.valueOf(StaticData.isquarter)) {
             final SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy hh:mm a");
             final Date date = new Date();
-            String url = "https://celeritas-solutions.com/cds/capalinoapp/apis/updateCustomerDataApp.php?UserID="+StaticData.Userid+"&Email="+StaticData.email+"&PaymentStatus="+StaticData.paymentStatus+"&PaymentDate="+dateformat.format(date)+"&ExpirationDate="+StaticData.expiry;
+            String url = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/updateCustomerDataApp.php?UserID="+StaticData.Userid+"&Email="+StaticData.email+"&PaymentStatus="+StaticData.paymentStatus+"&PaymentDate="+dateformat.format(date)+"&ExpirationDate="+StaticData.expiry;
             url = url.replace(" ","%20");
             StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
                 @Override

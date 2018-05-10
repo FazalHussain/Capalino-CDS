@@ -1,12 +1,17 @@
 package com.MWBE.Connects.NY.AppConstants;
 
+import android.app.Notification;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+
+import com.MWBE.Connects.NY.CapalinoServices.DailyMethodService;
+
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -15,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by asif on 2/24/2016.
@@ -28,6 +34,12 @@ public class Utils {
     public static final String PROPERTY_REG_ID = "registration_id";
     private static final String PROPERTY_APP_VERSION = "appVersion";
 
+    public static final int REMINDER_INTERVAL_MINUTE = 1;
+    public static final int REMINDER_INTERVAL_SECONDS = ((int) TimeUnit.MINUTES.toSeconds(REMINDER_INTERVAL_MINUTE));
+    public static final int REMINDER_INTERVAL_SYNC = REMINDER_INTERVAL_SECONDS;
+
+    public static boolean sInitialized;
+
     SharedPreferences.Editor editor;
 
     public Utils(Context context) {
@@ -36,6 +48,18 @@ public class Utils {
         preferences = context.getSharedPreferences("gcmdemo", Context.MODE_PRIVATE);
         editor = preferences.edit();
     }
+
+    public static Notification buildForegroundNotification(NotificationCompat.Builder b) {
+        b.setPriority(Notification.PRIORITY_MIN);
+        b.setOngoing(true)
+                .setContentTitle("Loading")
+                .setSmallIcon(android.R.drawable.stat_sys_download)
+                .setTicker("Loading");
+
+        return(b.build());
+    }
+
+
 
     public void savedata(String key, String val) {
         editor.putString(key, val).commit();

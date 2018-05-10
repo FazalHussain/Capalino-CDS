@@ -30,8 +30,9 @@
 
 
     <application
-        tools:node="replace"
-        android:allowBackup="true"
+        tools:node="merge"
+        tools:replace="android:label, android:icon, android:theme, android:allowBackup"
+        android:allowBackup="false"
         android:icon="@mipmap/icon"
         android:label="MWBE Connect NY"
         android:supportsRtl="true"
@@ -48,6 +49,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data android:name="com.facebook.sdk.AutoLogAppEventsEnabled"
+            android:value="false"/>
         
         <receiver android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"
@@ -72,8 +76,8 @@
             </intent-filter>
         </service>
 
-        <service android:name=".CapalinoServices.DailyMethodService"
-            android:exported="false"/>
+        <service android:name=".CapalinoServices.DailyMethodService"/>
+        <service android:name=".CapalinoServices.CapabilitiesService"/>
 
 
        <!-- <service android:name="com.MWBE.Connects.NY.FirebaseMessagingService"
@@ -125,7 +129,8 @@
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name="com.MWBE.Connects.NY.Activities.ActivationActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:exported="true"/>
         <activity
             android:name="com.MWBE.Connects.NY.Activities.HomeActivity"
             android:screenOrientation="portrait"
@@ -222,9 +227,6 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan" />
 
-        <service android:name="com.MWBE.Connects.NY.CapalinoServices.TrackingService" />
-        <service android:name="com.MWBE.Connects.NY.CapalinoServices.CapabilitiesService" />
-
         <service
             android:name="net.authorize.sampleapplication.services.AnetIntentService"
             android:exported="false" >
@@ -268,6 +270,8 @@
             android:name="io.fabric.ApiKey"
             android:value="51e4e2011f1c76f4f453ff7ff73413af1902e7b4"
             />
+
+
 
     </application>
 

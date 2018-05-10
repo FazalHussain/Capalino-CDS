@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Handler;
+import android.os.Looper;
 import android.provider.CalendarContract;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
@@ -23,6 +24,7 @@ import com.MWBE.Connects.NY.AppConstants.Utils;
 import com.MWBE.Connects.NY.CustomViews.CustomTextView_Bold;
 import com.MWBE.Connects.NY.DataStorage.Data;
 import com.MWBE.Connects.NY.Database.DataBaseHelper;
+import com.MWBE.Connects.NY.Database.DatabaseBeen.TrackingData;
 import com.MWBE.Connects.NY.JavaBeen.ListData_Track;
 import com.MWBE.Connects.NY.JavaBeen.ViewHolder_Track;
 import com.android.volley.DefaultRetryPolicy;
@@ -34,6 +36,14 @@ import com.android.volley.toolbox.Volley;
 import com.MWBE.Connects.NY.JavaBeen.ListData_RFP;
 import com.MWBE.Connects.NY.R;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -44,6 +54,7 @@ public class TrackList extends FragmentActivity {
     private ListView lv_track_list;
     private Context context = this;
     private ArrayList<ListData_Track> list_track;
+    private Utils utils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +66,7 @@ public class TrackList extends FragmentActivity {
 
 
     private void init() {
+        utils = new Utils(this);
         lv_track_list = (ListView) findViewById(R.id.list_tracking_item);
         list_track = new ArrayList<ListData_Track>();
         Data.ActualID_list_advertising.clear();
@@ -79,16 +91,98 @@ public class TrackList extends FragmentActivity {
             }*/
 
             //label show
-            getTrackeddata();
 
+        GetTrackedDataServer(utils.getdata("Userid"));
 
-
-        CustomListAdapter adapter = new CustomListAdapter(TrackList.this, R.layout.activity_track_list, list_track);
-        lv_track_list.setAdapter(adapter);
-        ((TextView)findViewById(R.id.rfpfound)).setText(list_track.size()+" RFPs Found");
 //            lvClick();
         clickActionList();
 
+    }
+
+    private void GetTrackedDataServer(final String userid) {
+        try {
+
+            Thread thread_update = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        //Activity activity = (Activity)context;
+                        DataBaseHelper dataBaseHelper = new DataBaseHelper(context);
+                        dataBaseHelper.createDataBase();
+                        dataBaseHelper.openDataBase();
+                        HttpClient httpclient = new DefaultHttpClient();
+                        //showPB("Loading....");
+
+                        String link = "http://ec2-52-4-106-227.compute-1.amazonaws.com/capalinoappaws/apis/getUserTrackListUpdated.php?UserID="+userid;
+                        HttpPost httppost = new HttpPost(link);
+
+                        ResponseHandler<String> responseHandler = new BasicResponseHandler();
+
+                        final String response = httpclient.execute(httppost,
+                                responseHandler);
+
+
+                        Log.i("Response", "Response : " + response);
+
+                        dataBaseHelper.delete("TrackListing");
+                        JSONArray jsonarray = new JSONArray(response);
+                        for (int i = 0; i < jsonarray.length(); i++) {
+                            JSONObject jsonobj = jsonarray.getJSONObject(i);
+
+                            String title = jsonobj.getString("ProcurementTitle");
+                            String agency = jsonobj.getString("AgencyTitle");
+                            String tracked_date = jsonobj.getString("TrackDate");
+                            String deadline_date = jsonobj.getString("ProposalDeadLine");
+                            String userid = jsonobj.getString("UserID");
+                            String rating = jsonobj.getString("Rating");
+                            String ProcId = jsonobj.getString("ProcurementID");
+                            double rating1 = 0.0;
+                            if(!rating.equalsIgnoreCase("")){
+                                try{
+                                    rating1 = Double.parseDouble(rating);
+                                }catch (NumberFormatException e){
+                                    rating1 = 0.0;
+                                }
+                            }
+
+                            title = title.replace("'","''");
+                            agency = agency.replace("'","''");
+
+                            boolean isInserted = dataBaseHelper.InsertUserProcurmentTracking(new TrackingData(title, agency, tracked_date,
+                                    deadline_date, userid, rating1,ProcId));
+                            Log.d("trackeddata", "tracked");
+
+                            //list_data.add(new ListData(image, contentShortDescription, ContentRelevantDateTime));
+
+                            //isinserted = dataBaseHelper.InsertUserProcurmentTracking(been);
+                        }
+
+                        Handler handler = new Handler(Looper.getMainLooper());
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                getTrackeddata();
+                            }
+                        });
+
+
+
+
+
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+
+                }
+            });
+            thread_update.start();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void getTrackeddata() {
@@ -111,8 +205,9 @@ public class TrackList extends FragmentActivity {
                 ((CustomTextView_Bold) findViewById(R.id.label)).setVisibility(View.VISIBLE);
             }
 
-
-
+            CustomListAdapter adapter = new CustomListAdapter(TrackList.this, R.layout.activity_track_list, list_track);
+            lv_track_list.setAdapter(adapter);
+            ((TextView)findViewById(R.id.rfpfound)).setText(list_track.size()+" RFPs Found");
 
         }catch (Exception e){
             e.printStackTrace();
@@ -269,7 +364,7 @@ public class TrackList extends FragmentActivity {
                 DataBaseHelper dataBaseHelper = new DataBaseHelper(TrackList.this);
                 dataBaseHelper.createDataBase();
                 dataBaseHelper.openDataBase();
-                title =  title.replace("'","\\u0027");
+                title =  title.replace("'","''");
                 Cursor cursor = dataBaseHelper.getDataFromDB("ProcurementTitle",title,"ProcurementMaster",true);
                 if(cursor.getCount()>0){
                     while (cursor.moveToNext()){
@@ -289,7 +384,7 @@ public class TrackList extends FragmentActivity {
         private void DeleteRFPClick(final int position, View convertView, final ListData_Track data) {
             try{
 
-                //http://celeritas-solutions.com/cds/capalinoapp/apis/unTrackRFP.php?ProcurementTitle=%@&UserID=%@
+
                 ((ImageView)convertView.findViewById(R.id.delete)).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(final View v) {

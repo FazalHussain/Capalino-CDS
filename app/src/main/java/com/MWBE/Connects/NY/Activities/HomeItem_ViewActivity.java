@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.provider.CalendarContract;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
@@ -43,29 +44,7 @@ public class HomeItem_ViewActivity extends Activity {
         finish();
     }
 
-    public void UrlClick(View view){
-        new AlertDialog.Builder(context)
-                .setTitle("Alert!")
-                .setMessage("You are being redirected to an external site. When you want to return to the app, tap the top of the site, click done and you'll return to MWBE Connect NY.")
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //String url = ((CustomTextView_Book) findViewById(R.id.link_content)).getText().toString();
-                        Intent i = new Intent(HomeItem_ViewActivity.this,ShowPDFActivity.class);
-                        i.putExtra("status","url");
-                        i.putExtra("url",url);
-                        startActivity(i);
-                    }
-                })
-                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
 
-                    }
-                })
-                .show();
-    }
 
     private void init() {
         try{
@@ -80,16 +59,16 @@ public class HomeItem_ViewActivity extends Activity {
                 public void onClick(View v) {
                     new AlertDialog.Builder(context)
                             .setTitle("Alert!")
-                            .setMessage("You are being redirected to an external site. When you want to return to the app, tap the top of the site, click done and you'll return to MWBE Connect NY.")
+                            .setMessage("You are being redirected to an external site.")
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     //String url = ((CustomTextView_Book) findViewById(R.id.link_content)).getText().toString();
-                                    Intent i = new Intent(HomeItem_ViewActivity.this, ShowPDFActivity.class);
-                                    i.putExtra("status", "url");
-                                    i.putExtra("url", url);
-                                    startActivity(i);
+                                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                                    if (intent.resolveActivity(getPackageManager()) != null) {
+                                        startActivity(intent);
+                                    }
                                 }
                             })
                             .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -201,6 +180,7 @@ public class HomeItem_ViewActivity extends Activity {
                             ((ImageView)findViewById(R.id.calender)).setVisibility(View.VISIBLE);
                             View view = findViewById(R.id.subheader);
                             view.setVisibility(View.VISIBLE);
+                            ((CustomTextView_Book)findViewById(R.id.time_duration)).setText(cursor.getString(3));
                             ((CustomTextView_Book)findViewById(R.id.startdate)).setText(cursor.getString(3));
                             ((CustomTextView_Book)findViewById(R.id.enddate)).setText(cursor.getString(4));
                             ((CustomTextView_Book) findViewById(R.id.cost)).setText(cursor.getString(6));

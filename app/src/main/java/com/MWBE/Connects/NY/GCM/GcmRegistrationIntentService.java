@@ -1,8 +1,11 @@
 package com.MWBE.Connects.NY.GCM;
 
 import android.app.IntentService;
+import android.app.Notification;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import com.MWBE.Connects.NY.AppConstants.Utils;
@@ -27,6 +30,19 @@ public class GcmRegistrationIntentService extends IntentService {
     public GcmRegistrationIntentService() {
         super("");
     }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O) {
+            NotificationCompat.Builder b=new NotificationCompat.Builder(this);
+            startForeground(1, Utils.buildForegroundNotification(b));
+        }
+
+
+    }
+
+
 
     @Override
     protected void onHandleIntent(Intent intent) {

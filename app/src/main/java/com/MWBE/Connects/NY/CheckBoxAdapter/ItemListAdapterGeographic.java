@@ -32,7 +32,6 @@ public class ItemListAdapterGeographic extends ArrayAdapter<ListData_Agency> {
      */
     public ItemListAdapterGeographic(Context context, List<ListData_Agency> items) {
         super(context, 0, items);
-        li = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
@@ -46,7 +45,8 @@ public class ItemListAdapterGeographic extends ArrayAdapter<ListData_Agency> {
         // --
         ViewHolder holder;
         if (convertView == null) {
-            convertView = li.inflate(R.layout.list_row_agency1, null);
+            LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+            convertView = layoutInflater.inflate(R.layout.list_row_agency1, null);
             holder = new ViewHolder(convertView);
             convertView.setTag(R.id.holder, holder);
         } else {
@@ -60,24 +60,28 @@ public class ItemListAdapterGeographic extends ArrayAdapter<ListData_Agency> {
 
         final ListView lv = (ListView) parent;
 
-        try {
+        holder.layout.setChecked(lv.isItemChecked(position));
 
-            if (Data.tagidlist.size() > 0) {
+        return convertView;
+
+
+
+            /*if (Data.tagidlist.size() > 0) {
                 if(Data.tagidlist.contains("0")){
                     lv.setItemChecked(0, true);
                     Data.list_check.set(0, true);
                 }
                 for (int i = 0; i < Data.tagidlist.size(); i++) {
 
-                    /*if(Data.tagidlist.contains("0")){
+                    *//*if(Data.tagidlist.contains("0")){
                         lv.setItemChecked(0, true);
                         Data.list_check.set(0, true);
-                    }*/
+                    }*//*
 
-                    /*if(Data.tagidlist.get(i).equalsIgnoreCase("63")){
+                    *//*if(Data.tagidlist.get(i).equalsIgnoreCase("63")){
                         lv.setItemChecked(1, true);
                         Data.list_check.set(1, true);
-                    }*/
+                    }*//*
 
                     for (int j = 0; j < Data.tagidlist_db.size(); j++) {
                         if (Data.tagidlist.get(i).equalsIgnoreCase(Data.tagidlist_db.get(j))) {
@@ -93,32 +97,14 @@ public class ItemListAdapterGeographic extends ArrayAdapter<ListData_Agency> {
                 if(Data.list_check.get(position)) {
                     lv.setItemChecked(position, true);
                 }
+*/
 
 
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        holder.layout.setChecked(lv.isItemChecked(position));
 
-        return convertView;
     }
 
-    @Override
-    public long getItemId(int position) {
-        return 0;
-    }
 
-    public int getPos() {
-        return pos;
-    }
-
-    @Override
-    public boolean hasStableIds() {
-        return true;
-    }
-
-    private LayoutInflater li;
 
     private static class ViewHolder {
         public ViewHolder(View root) {
