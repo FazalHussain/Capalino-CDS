@@ -572,9 +572,9 @@ public class REFListingActivity extends FragmentActivity {
                                                     data_rfp.getAgency(), data_rfp.getPublic_date(), data_rfp.getDue_date()));
                                             String title = data_rfp.getTitle().replace("'","''");
                                             String agency = data_rfp.getAgency().replace("'","''");
-                                            boolean isInserted = dataBaseHelper.InsertUserProcurmentTracking(new TrackingData(title, agency, data_rfp.getPublic_date(),
+                                           /* boolean isInserted = dataBaseHelper.InsertUserProcurmentTracking(new TrackingData(title, agency, data_rfp.getPublic_date(),
                                                     data_rfp.getDue_date(), utils.getdata("Userid"), data_rfp.getRating(),data_rfp.getId()));
-
+*/
                                             SendDataToTheServer();
                                            final AlertDialog dialog_alert = new AlertDialog.Builder(context)
                                                     .setTitle("Alert!")
